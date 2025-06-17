@@ -1,0 +1,11 @@
+{
+    "entryPoints": [
+        "../../packages/ui/src/index.ts"
+    ],
+    "out": "typedoc",
+    "plugin": [
+        "typedoc-plugin-markdown"
+    ],
+    "excludeExternals": true,
+    "theme": "markdown"
+}

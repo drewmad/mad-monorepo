@@ -1,0 +1,16 @@
+{
+  "name": "@db",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@supabase/postgrest-js": "^1.6.1",
+    "@supabase/supabase-js": "^2.43.0",
+    "zod": "^3.23.8"
+  }
+} 

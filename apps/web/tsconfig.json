@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "jsx": "preserve",
+    "types": ["@types/react", "vite/client"]
+  },
+  "include": ["app", "components", "lib"]
+} 
