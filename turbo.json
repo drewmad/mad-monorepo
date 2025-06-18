@@ -5,7 +5,12 @@
     "NEXT_PUBLIC_SUPABASE_ANON_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
     "TURBO_TELEMETRY_DISABLED",
-    "NEXT_TELEMETRY_DISABLED"
+    "NEXT_TELEMETRY_DISABLED",
+    "VERCEL",
+    "VERCEL_ENV",
+    "VERCEL_URL",
+    "VERCEL_GIT_COMMIT_SHA",
+    "VERCEL_GIT_COMMIT_REF"
   ],
   "tasks": {
     "build": {
@@ -20,7 +25,12 @@
       "env": [
         "NEXT_PUBLIC_SUPABASE_URL",
         "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-        "SUPABASE_SERVICE_ROLE_KEY"
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "VERCEL",
+        "VERCEL_ENV",
+        "VERCEL_URL",
+        "VERCEL_GIT_COMMIT_SHA",
+        "VERCEL_GIT_COMMIT_REF"
       ]
     },
     "dev": {
