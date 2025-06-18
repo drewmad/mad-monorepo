@@ -33,10 +33,10 @@ export function ModalManager() {
                 return (
                     <div className="text-center">
                         <h3 className="text-lg font-medium text-gray-900 mb-4">
-                            {modal.props?.title || 'Confirm Action'}
+                            {(modal.props?.title as string) || 'Confirm Action'}
                         </h3>
                         <p className="text-gray-600 mb-6">
-                            {modal.props?.message || 'Are you sure you want to proceed?'}
+                            {(modal.props?.message as string) || 'Are you sure you want to proceed?'}
                         </p>
                         <div className="flex justify-center space-x-4">
                             <button
@@ -47,12 +47,12 @@ export function ModalManager() {
                             </button>
                             <button
                                 onClick={() => {
-                                    modal.props?.onConfirm?.();
+                                    (modal.props?.onConfirm as (() => void))?.();
                                     closeModal();
                                 }}
                                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                             >
-                                {modal.props?.confirmText || 'Confirm'}
+                                {(modal.props?.confirmText as string) || 'Confirm'}
                             </button>
                         </div>
                     </div>
@@ -67,8 +67,8 @@ export function ModalManager() {
         <Modal
             isOpen={modal.isOpen}
             onClose={closeModal}
-            title={modal.props?.title}
-            size={modal.props?.size || 'md'}
+            title={(modal.props?.title as string) || undefined}
+            size={(modal.props?.size as 'sm' | 'md' | 'lg' | 'xl') || 'md'}
         >
             {renderModalContent()}
         </Modal>
