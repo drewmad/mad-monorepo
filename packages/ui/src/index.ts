@@ -11,4 +11,5 @@ export * from './Avatar';
 export * from './IconButton';
 export * from './Dropdown';
 export * from './Modal';
-export * from './Tabs'; 
+export * from './Tabs';
+export * from './Toast'; 
