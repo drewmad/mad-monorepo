@@ -1,5 +1,23 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-pnpm exec lint-staged
-pnpm test --silent 
+# Run lint-staged for code formatting
+npx lint-staged
+
+# Check if package.json changed but pnpm-lock.yaml didn't
+if git diff --cached --name-only | grep -E "package\.json$" > /dev/null; then
+  if ! git diff --cached --name-only | grep "pnpm-lock.yaml" > /dev/null; then
+    echo "⚠️  package.json changed but pnpm-lock.yaml wasn't updated"
+    echo "Run 'pnpm install' to update the lockfile"
+    exit 1
+  fi
+fi
+
+# Check if pnpm-lock.yaml exists
+if [ ! -f "pnpm-lock.yaml" ]; then
+  echo "❌ pnpm-lock.yaml is missing!"
+  echo "Run 'pnpm install' to generate it"
+  exit 1
+fi
+
+echo "✅ Pre-commit checks passed" 

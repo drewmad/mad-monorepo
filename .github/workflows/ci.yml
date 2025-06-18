@@ -6,29 +6,64 @@ on:
   pull_request:
 
 jobs:
-  build-test:
+  validate:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [18.x, 20.x]
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Setup PNPM
         uses: pnpm/action-setup@v2
         with:
           version: 8
-      - name: Setup Node
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
-      - run: |
+
+      - name: Check lockfile exists
+        run: |
+          if [ ! -f "pnpm-lock.yaml" ]; then
+            echo "❌ pnpm-lock.yaml is missing!"
+            echo "Run 'pnpm install' and commit the lockfile"
+            exit 1
+          fi
+          echo "✅ pnpm-lock.yaml exists"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type checking
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test
+        run: |
           if [ "${{ env.CI_E2E }}" != "false" ]; then
             pnpm test
           else
             echo "E2E tests skipped (CI_E2E=false)"
+            CI_E2E=false pnpm test
           fi
         env:
-          CI_E2E: ${{ secrets.CI_E2E || 'false' }} 
+          CI_E2E: ${{ secrets.CI_E2E || 'false' }}
+
+      - name: Check for uncommitted lockfile changes
+        run: |
+          if git diff --exit-code pnpm-lock.yaml; then
+            echo "✅ pnpm-lock.yaml is up to date"
+          else
+            echo "❌ pnpm-lock.yaml has uncommitted changes"
+            echo "Please run 'pnpm install' and commit the changes"
+            exit 1
+          fi 
