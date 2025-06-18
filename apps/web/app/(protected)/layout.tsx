@@ -1,5 +1,3 @@
-import Sidebar from '@/components/sidebar/Sidebar';
-import Header from '@/components/header/Header';
 import { getSession } from '@/lib/user';
 import { redirect } from 'next/navigation';
 import ProtectedLayoutClient from './ProtectedLayoutClient';

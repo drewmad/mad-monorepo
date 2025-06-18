@@ -560,6 +560,7 @@ export function DirectoryTabs({ members, employees, companies }: DirectoryTabsPr
             {/* Toast Notification */}
             {showToast && (
                 <Toast
+                    id="directory-toast"
                     message={toastMessage}
                     type={toastType}
                     onClose={() => setShowToast(false)}

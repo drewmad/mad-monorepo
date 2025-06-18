@@ -470,6 +470,7 @@ export function SmartAnalytics({ projectId, timeframe = '30d' }: SmartAnalyticsP
             {/* Toast Notification */}
             {showToast && (
                 <Toast
+                    id="smart-analytics-toast"
                     message={toastMessage}
                     type="success"
                     onClose={() => setShowToast(false)}

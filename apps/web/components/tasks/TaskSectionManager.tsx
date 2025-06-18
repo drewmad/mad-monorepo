@@ -707,6 +707,7 @@ export function TaskSectionManager({
             {/* Toast Notification */}
             {showToast && (
                 <Toast
+                    id="task-manager-toast"
                     message={toastMessage}
                     type="success"
                     onClose={() => setShowToast(false)}

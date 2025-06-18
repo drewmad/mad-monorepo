@@ -2,7 +2,7 @@
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Input, Button, Card, Badge } from '@ui';
+import { Button, Card, Badge } from '@ui';
 import { Eye, EyeOff, Check, X, Shield, Mail, User, Lock, ArrowRight } from 'lucide-react';
 
 interface PasswordStrength {

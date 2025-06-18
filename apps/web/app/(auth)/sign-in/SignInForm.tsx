@@ -2,7 +2,7 @@
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Input, Button, Card } from '@ui';
+import { Button, Card } from '@ui';
 import { Eye, EyeOff, X, LogIn, Mail, Lock, ArrowRight, Shield } from 'lucide-react';
 
 export default function SignInForm() {

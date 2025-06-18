@@ -3,7 +3,6 @@ import { useState, useRef, useEffect } from 'react';
 import { Search, Bell, Sun, Moon, ChevronDown, LogOut, Settings, User, Command } from 'lucide-react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
-import { useSidebar } from '../sidebar/context';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import { useRouter } from 'next/navigation';
 import { Dropdown, DropdownItem, Badge, Input } from '@ui';
@@ -18,7 +17,6 @@ interface HeaderProps {
 
 export default function Header({ user }: HeaderProps) {
   const { theme, setTheme } = useTheme();
-  const { expanded } = useSidebar();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);

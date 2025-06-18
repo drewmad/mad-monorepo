@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Card, KpiCard, Button, Badge, Tabs, TabsList, TabsTrigger, TabsContent, Modal, Input, Textarea, Select, Toast } from '@ui';
 import { ProjectsGrid } from '@/components/projects';
 import { TaskTable } from '@/components/tasks';
@@ -140,7 +139,6 @@ const mockTasks: Task[] = [
 ];
 
 export default function DashboardPage() {
-  const router = useRouter();
   const [showCreateProject, setShowCreateProject] = useState(false);
   const [showCreateTask, setShowCreateTask] = useState(false);
   const [showInviteMember, setShowInviteMember] = useState(false);
@@ -364,7 +362,7 @@ export default function DashboardPage() {
               <Card className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold text-gray-900">Active Projects</h2>
-                  <Button variant="ghost" onClick={() => router.push('/projects' as any)}>View All</Button>
+                  <Button variant="ghost" onClick={() => window.location.href = '/projects'}>View All</Button>
                 </div>
                 <ProjectsGrid projects={mockProjects} />
               </Card>
@@ -761,6 +759,7 @@ export default function DashboardPage() {
       {/* Toast Notification */}
       {showToast && (
         <Toast
+          id="dashboard-toast"
           message={toastMessage}
           type="success"
           onClose={() => setShowToast(false)}
