@@ -2,7 +2,7 @@
   "version": 2,
   "buildCommand": "cd ../.. && pnpm build --filter=@apps/web",
   "installCommand": "pnpm install --frozen-lockfile --prefer-offline",
-  "outputDirectory": "apps/web/.next",
+  "outputDirectory": ".next",
   "framework": "nextjs",
   "env": {
     "NEXT_TELEMETRY_DISABLED": "1",
