@@ -1,59 +1,34 @@
 import { getSession } from '@/lib/user';
 import { redirect } from 'next/navigation';
 import { DirectoryTabs } from '@/components/directory/DirectoryTabs';
+import { getTeamMembers } from '@/actions/workspace';
 
 export default async function Directory() {
   const session = await getSession();
   if (!session) redirect('/sign-in');
 
-  // Mock data - in real app, this would come from your database
-  const members = [
-    {
-      id: '1',
-      name: 'Joe Romanos',
-      role: 'Owner',
-      email: 'joe@example.com',
-      avatar_url: null,
-      status: 'active' as const,
-      department: 'Leadership',
-      joined_date: '2023-01-15',
-      last_active: '2024-01-20'
-    },
-    {
-      id: '2',
-      name: 'Jane Doe',
-      role: 'Admin',
-      email: 'jane@example.com',
-      avatar_url: null,
-      status: 'active' as const,
-      department: 'Engineering',
-      joined_date: '2023-02-20',
-      last_active: '2024-01-19'
-    },
-    {
-      id: '3',
-      name: 'Mike Chen',
-      role: 'Member',
-      email: 'mike@example.com',
-      avatar_url: null,
-      status: 'active' as const,
-      department: 'Design',
-      joined_date: '2023-03-10',
-      last_active: '2024-01-18'
-    },
-    {
-      id: '4',
-      name: 'Sarah Wilson',
-      role: 'Member',
-      email: 'sarah@example.com',
-      avatar_url: null,
-      status: 'inactive' as const,
-      department: 'Marketing',
-      joined_date: '2023-04-05',
-      last_active: '2024-01-10'
-    }
-  ];
+  // Get current workspace ID from session or cookies
+  // For now, we'll use a hardcoded workspace ID - in production this would come from the session
+  const workspaceId = session.user?.user_metadata?.current_workspace_id || 'default-workspace';
 
+  // Load real team members from database
+  const { members, error } = await getTeamMembers(workspaceId);
+  
+  // Map team members to the expected format
+  const formattedMembers = members.map(member => ({
+    id: member.id,
+    name: member.name,
+    role: member.role,
+    email: member.email,
+    avatar_url: member.avatar_url,
+    status: member.status,
+    department: member.role, // Using role as department for now
+    joined_date: member.created_at,
+    last_active: member.updated_at,
+    user_id: member.user_id
+  }));
+
+  // Mock employees data - in a real app, this might come from a separate table
   const employees = [
     {
       id: 'emp1',
@@ -77,6 +52,7 @@ export default async function Directory() {
     }
   ];
 
+  // Mock companies data - in a real app, this would come from a companies table
   const companies = [
     {
       id: 'comp1',
@@ -100,6 +76,10 @@ export default async function Directory() {
     }
   ];
 
+  if (error) {
+    console.error('Error loading directory data:', error);
+  }
+
   return (
     <main className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
       <div className="mb-8 flex items-center justify-between">
@@ -110,7 +90,9 @@ export default async function Directory() {
       </div>
 
       <DirectoryTabs
-        members={members}
+        workspaceId={workspaceId}
+        currentUserId={session.user?.id}
+        members={formattedMembers}
         employees={employees}
         companies={companies}
       />
