@@ -1,8 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Avatar, Badge, Input, Modal, Select, Toast } from '@ui';
-import { Search, Plus, Mail, Phone, Building, Calendar, Users } from 'lucide-react';
+import { Search, Plus, Mail, Phone, Building, Calendar, Users, MessageCircle, Settings } from 'lucide-react';
+import { inviteTeamMember } from '@/actions/workspace';
+import { createDirectMessage } from '@/actions/messages';
 
 interface Member {
     id: string;
@@ -14,6 +17,7 @@ interface Member {
     department: string;
     joined_date: string;
     last_active: string;
+    user_id?: string;
 }
 
 interface Employee {
@@ -39,12 +43,16 @@ interface Company {
 }
 
 interface DirectoryTabsProps {
+    workspaceId: string;
+    currentUserId: string;
     members: Member[];
     employees: Employee[];
     companies: Company[];
 }
 
-export function DirectoryTabs({ members, employees, companies }: DirectoryTabsProps) {
+export function DirectoryTabs({ workspaceId, currentUserId, members, employees, companies }: DirectoryTabsProps) {
+    const router = useRouter();
+    const [isPending, startTransition] = useTransition();
     const [searchQuery, setSearchQuery] = useState('');
     const [showAddMember, setShowAddMember] = useState(false);
     const [showAddEmployee, setShowAddEmployee] = useState(false);
@@ -82,12 +90,48 @@ export function DirectoryTabs({ members, employees, companies }: DirectoryTabsPr
         setTimeout(() => setShowToast(false), 3000);
     };
 
+    const handleMessageUser = async (member: Member) => {
+        if (!member.user_id) {
+            showNotification('Cannot message this user - they have not accepted their invitation yet', 'error');
+            return;
+        }
+
+        startTransition(async () => {
+            const { channel, error } = await createDirectMessage(workspaceId, currentUserId, member.user_id!);
+            
+            if (error) {
+                showNotification(`Failed to start conversation: ${error}`, 'error');
+            } else {
+                // Navigate to messages page with the direct message channel
+                router.push(`/messages?channel=${channel.id}`);
+            }
+        });
+    };
+
     const handleAddMember = () => {
-        console.log('Adding member:', newMember);
-        showNotification(`${newMember.name} has been added as a ${newMember.role}!`);
-        setShowAddMember(false);
-        setNewMember({ name: '', email: '', role: 'member', department: '' });
-        // In a real app, this would make an API call to add the member
+        if (!newMember.name.trim() || !newMember.email.trim()) {
+            showNotification('Please fill in all required fields', 'error');
+            return;
+        }
+
+        startTransition(async () => {
+            const { error } = await inviteTeamMember({
+                workspace_id: workspaceId,
+                user_id: '', // Will be set when user accepts invitation
+                name: newMember.name,
+                email: newMember.email,
+                role: newMember.role as 'owner' | 'admin' | 'member' | 'guest',
+            });
+
+            if (error) {
+                showNotification(error, 'error');
+            } else {
+                showNotification(`Invitation sent to ${newMember.name}!`);
+                setShowAddMember(false);
+                setNewMember({ name: '', email: '', role: 'member', department: '' });
+                router.refresh(); // Refresh to show new member
+            }
+        });
     };
 
     const handleAddEmployee = () => {
@@ -151,9 +195,14 @@ export function DirectoryTabs({ members, employees, companies }: DirectoryTabsPr
                                 className="pl-10"
                             />
                         </div>
-                        <Button onClick={() => setShowAddMember(true)} variant="primary" className="ml-4">
+                        <Button 
+                            onClick={() => setShowAddMember(true)} 
+                            variant="primary" 
+                            className="ml-4"
+                            disabled={isPending}
+                        >
                             <Plus className="h-4 w-4 mr-2" />
-                            Add Member
+                            {isPending ? 'Adding...' : 'Add Member'}
                         </Button>
                     </div>
 
@@ -171,7 +220,7 @@ export function DirectoryTabs({ members, employees, companies }: DirectoryTabsPr
                                         <h3 className="font-semibold text-gray-900 truncate">{member.name}</h3>
                                         <p className="text-sm text-gray-600">{member.role}</p>
                                         <Badge variant={getStatusColor(member.status) as 'default' | 'success' | 'warning' | 'danger'} size="sm" className="mt-1">
-                                            {member.status}
+                                            {member.status === 'pending' ? 'Invitation Pending' : member.status}
                                         </Badge>
                                     </div>
                                 </div>
@@ -192,10 +241,18 @@ export function DirectoryTabs({ members, employees, companies }: DirectoryTabsPr
                                 </div>
 
                                 <div className="mt-4 flex space-x-2">
-                                    <Button variant="ghost" size="sm" className="flex-1">
+                                    <Button 
+                                        variant="ghost" 
+                                        size="sm" 
+                                        className="flex-1"
+                                        onClick={() => handleMessageUser(member)}
+                                        disabled={isPending || !member.user_id}
+                                    >
+                                        <MessageCircle className="h-4 w-4 mr-1" />
                                         Message
                                     </Button>
                                     <Button variant="ghost" size="sm" className="flex-1">
+                                        <Settings className="h-4 w-4 mr-1" />
                                         Edit
                                     </Button>
                                 </div>
@@ -423,9 +480,9 @@ export function DirectoryTabs({ members, employees, companies }: DirectoryTabsPr
                         <Button
                             variant="primary"
                             onClick={handleAddMember}
-                            disabled={!newMember.name.trim() || !newMember.email.trim()}
+                            disabled={!newMember.name.trim() || !newMember.email.trim() || isPending}
                         >
-                            Add Member
+                            {isPending ? 'Sending Invitation...' : 'Add Member'}
                         </Button>
                     </div>
                 </div>

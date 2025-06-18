@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button, Input, Avatar, Badge, Dropdown, DropdownItem, IconButton } from '@ui';
+import { createMessage, getMessages, createChannel } from '@/actions/messages';
 import type { Database } from '@mad/db';
 
 interface Channel {
@@ -38,22 +40,25 @@ interface Message {
 }
 
 interface MessagesInterfaceProps {
-    channels: Channel[];
-    messages: Message[];
-    currentChannel: Channel | null;
-    onChannelSelect: (channel: Channel) => void;
-    onMessageSend: (channelId: string, text: string, parentId?: string) => void;
-    onChannelCreate: (channel: Partial<Channel>) => void;
+    workspaceId: string;
+    currentUserId: string;
+    initialChannels: Channel[];
+    initialMessages: Message[];
+    initialCurrentChannel: Channel | null;
 }
 
 export function MessagesInterface({
-    channels,
-    messages,
-    currentChannel,
-    onChannelSelect,
-    onMessageSend,
-    onChannelCreate
+    workspaceId,
+    currentUserId,
+    initialChannels,
+    initialMessages,
+    initialCurrentChannel
 }: MessagesInterfaceProps) {
+    const router = useRouter();
+    const [, startTransition] = useTransition();
+    const [channels, setChannels] = useState<Channel[]>(initialChannels);
+    const [messages, setMessages] = useState<Message[]>(initialMessages);
+    const [currentChannel, setCurrentChannel] = useState<Channel | null>(initialCurrentChannel);
     const [messageText, setMessageText] = useState('');
     const [replyToMessage, setReplyToMessage] = useState<Message | null>(null);
     const [showChannelCreate, setShowChannelCreate] = useState(false);
@@ -72,9 +77,25 @@ export function MessagesInterface({
     const handleSendMessage = () => {
         if (!messageText.trim() || !currentChannel) return;
 
-        onMessageSend(currentChannel.id, messageText, replyToMessage?.id);
-        setMessageText('');
-        setReplyToMessage(null);
+        startTransition(async () => {
+            const { message, error } = await createMessage({
+                workspace_id: workspaceId,
+                channel_id: currentChannel.id,
+                user_id: currentUserId,
+                text: messageText,
+                timestamp: new Date().toISOString(),
+                parent_id: replyToMessage?.id || null,
+            });
+
+            if (error) {
+                console.error('Error sending message:', error);
+            } else if (message) {
+                // Add the new message to the local state
+                setMessages(prev => [...prev, message]);
+                setMessageText('');
+                setReplyToMessage(null);
+            }
+        });
     };
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -113,17 +134,46 @@ export function MessagesInterface({
         }
     };
 
-    const handleCreateChannel = () => {
-        const channelData = {
-            name: newChannel.name,
-            description: newChannel.description || null,
-            type: newChannel.type,
-            project_id: null,
-        };
+    const handleChannelSelect = async (channel: Channel) => {
+        setCurrentChannel(channel);
+        
+        // Load messages for the selected channel
+        startTransition(async () => {
+            const { messages: channelMessages, error } = await getMessages(channel.id);
+            if (!error && channelMessages) {
+                setMessages(channelMessages);
+            }
+        });
+        
+        // Update URL to reflect selected channel
+        router.push(`/messages?channel=${channel.id}`);
+    };
 
-        onChannelCreate(channelData);
-        setShowChannelCreate(false);
-        setNewChannel({ name: '', description: '', type: 'public' });
+    const handleCreateChannel = () => {
+        if (!newChannel.name.trim()) return;
+
+        startTransition(async () => {
+            const { channel, error } = await createChannel({
+                workspace_id: workspaceId,
+                name: newChannel.name,
+                description: newChannel.description || null,
+                type: newChannel.type,
+                project_id: null,
+                created_by: currentUserId,
+            });
+
+            if (error) {
+                console.error('Error creating channel:', error);
+            } else if (channel) {
+                // Add the new channel to the local state
+                setChannels(prev => [...prev, channel]);
+                setShowChannelCreate(false);
+                setNewChannel({ name: '', description: '', type: 'public' });
+                
+                // Select the new channel
+                handleChannelSelect(channel);
+            }
+        });
     };
 
     const groupedChannels = channels.reduce((acc, channel) => {
@@ -172,7 +222,7 @@ export function MessagesInterface({
                                 {groupedChannels.channels.map((channel) => (
                                     <button
                                         key={channel.id}
-                                        onClick={() => onChannelSelect(channel)}
+                                        onClick={() => handleChannelSelect(channel)}
                                         className={`
                       w-full flex items-center space-x-2 px-2 py-1.5 rounded text-sm transition-colors text-left
                       ${currentChannel?.id === channel.id
@@ -203,7 +253,7 @@ export function MessagesInterface({
                                 {groupedChannels.project.map((channel) => (
                                     <button
                                         key={channel.id}
-                                        onClick={() => onChannelSelect(channel)}
+                                        onClick={() => handleChannelSelect(channel)}
                                         className={`
                       w-full flex items-center space-x-2 px-2 py-1.5 rounded text-sm transition-colors text-left
                       ${currentChannel?.id === channel.id
@@ -234,7 +284,7 @@ export function MessagesInterface({
                                 {groupedChannels.direct.map((channel) => (
                                     <button
                                         key={channel.id}
-                                        onClick={() => onChannelSelect(channel)}
+                                        onClick={() => handleChannelSelect(channel)}
                                         className={`
                       w-full flex items-center space-x-2 px-2 py-1.5 rounded text-sm transition-colors text-left
                       ${currentChannel?.id === channel.id
