@@ -2,7 +2,7 @@
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Input, Button } from '@ui/index';
+import { Input, Button } from '@ui';
 
 export default function SignUp() {
   const [email, setEmail] = useState('');

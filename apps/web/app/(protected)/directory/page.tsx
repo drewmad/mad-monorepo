@@ -1,8 +1,6 @@
 import { getSession } from '@/lib/user';
 import { redirect } from 'next/navigation';
 import { DirectoryGrid } from '@/components/directory/DirectoryGrid';
-import Sidebar from '@/components/sidebar/Sidebar';
-import Header from '@/components/header/Header';
 
 export default async function Directory() {
   const session = await getSession();
@@ -15,13 +13,9 @@ export default async function Directory() {
   ];
 
   return (
-    <>
-      <Sidebar />
-      <Header user={session.user.user_metadata as any} />
-      <main className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
-        <h1 className="mb-8 text-3xl font-bold">Directory</h1>
-        <DirectoryGrid members={members} />
-      </main>
-    </>
+    <main className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
+      <h1 className="mb-8 text-3xl font-bold">Directory</h1>
+      <DirectoryGrid members={members} />
+    </main>
   );
 } 

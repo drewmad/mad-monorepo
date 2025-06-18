@@ -3,7 +3,7 @@ import { supabaseServer } from '@/lib/supabase-server';
 
 /** list projects for given workspace (server‑only) */
 export async function listProjects(workspaceId: string) {
-  const supabase = supabaseServer();
+  const supabase = await supabaseServer();
   const { data, error } = await supabase
     .from('projects')
     .select(
@@ -22,7 +22,7 @@ export async function listProjects(workspaceId: string) {
 
 /** get single project + tasks */
 export async function getProject(id: string) {
-  const supabase = supabaseServer();
+  const supabase = await supabaseServer();
   const { data, error } = await supabase
     .from('projects')
     .select(`

@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ['@ui', '@db'],
   experimental: {
     appDir: true,
     typedRoutes: true,
@@ -8,6 +9,9 @@ const nextConfig = {
   reactStrictMode: true,
   eslint: {
     dirs: ['app', 'components', 'lib']
+  },
+  images: {
+    domains: ['avatars.githubusercontent.com', 'images.unsplash.com']
   }
 };
 
