@@ -1,40 +1,38 @@
 'use server';
-import { supabaseServer } from '@/lib/supabase-server';
+import { createClient } from '@/lib/supabase-server';
+import type { Project } from '@mad/db';
 
 /** list projects for given workspace (server‑only) */
-export async function listProjects(workspaceId: string) {
-  const supabase = await supabaseServer();
-  const { data, error } = await supabase
+export async function listProjects(): Promise<Project[]> {
+  const supabase = createClient();
+
+  const { data: projects, error } = await supabase
     .from('projects')
-    .select(
-      `id,
-       name,
-       status,
-       progress,
-       budget,
-       tasks:tasks(count),
-       time_last_30:time_tracked_last_30_days(total_hours)`
-    )
-    .eq('workspace_id', workspaceId as string);
-  if (error) throw error;
-  return data;
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching projects:', error);
+    return [];
+  }
+
+  return projects || [];
 }
 
 /** get single project + tasks */
-export async function getProject(id: string) {
-  const supabase = await supabaseServer();
-  const { data, error } = await supabase
+export async function getProject(id: string): Promise<Project | null> {
+  const supabase = createClient();
+
+  const { data: project, error } = await supabase
     .from('projects')
-    .select(`
-      id,
-      name,
-      status,
-      progress,
-      budget,
-      tasks ( id, name, status, priority, assignee, due_date, time_tracked )
-    `)
-    .eq('id', id as string)
+    .select('*')
+    .eq('id', id)
     .single();
-  if (error) throw error;
-  return data;
+
+  if (error) {
+    console.error('Error fetching project:', error);
+    return null;
+  }
+
+  return project;
 } 

@@ -5,11 +5,11 @@ import Link from 'next/link';
 import clsx from 'clsx';
 
 const nav = [
-  { href: '/dashboard', label: 'Projects', icon: Folder },
-  { href: '/directory', label: 'Directory', icon: Users },
-  { href: '/calendar', label: 'Calendar', icon: Calendar },
-  { href: '/messages', label: 'Messages', icon: MessageSquare }
-];
+  { href: '/dashboard' as const, label: 'Projects', icon: Folder },
+  { href: '/directory' as const, label: 'Directory', icon: Users },
+  { href: '/calendar' as const, label: 'Calendar', icon: Calendar },
+  { href: '/messages' as const, label: 'Messages', icon: MessageSquare }
+] as const;
 
 export default function Sidebar() {
   const { expanded, setExpanded } = useSidebar();

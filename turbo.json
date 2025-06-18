@@ -17,18 +17,24 @@
     "test": {
       "outputs": []
     },
+    "typecheck": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": []
+    },
     "dev": {
       "cache": false,
       "persistent": true
     },
-    "@db#build": {
+    "@mad/db#build": {
       "outputs": [
         "dist/**"
       ]
     },
     "@apps/web#build": {
       "dependsOn": [
-        "@db#build"
+        "@mad/db#build"
       ],
       "outputs": [
         ".next/**",

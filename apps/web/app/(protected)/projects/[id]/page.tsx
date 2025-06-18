@@ -1,15 +1,28 @@
 import { getSession } from '@/lib/user';
 import { getProject } from '@/actions/projects';
-import { redirect } from 'next/navigation';
+import { redirect, notFound } from 'next/navigation';
 import { TaskTable } from '@/components/tasks/TaskTable';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-export default async function ProjectDetail({ params }: { params: { id: string } }) {
+interface ProjectPageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default async function ProjectPage({ params }: ProjectPageProps) {
   const session = await getSession();
-  if (!session) redirect('/sign-in');
+
+  if (!session) {
+    redirect('/sign-in');
+  }
 
   const project = await getProject(params.id);
+
+  if (!project) {
+    notFound();
+  }
 
   return (
     <div className="space-y-8">

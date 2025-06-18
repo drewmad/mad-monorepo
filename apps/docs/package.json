@@ -13,6 +13,9 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/react": "^9.0.11",
+    "storybook": "^8.6.14",
     "typedoc": "^0.26.2",
     "typedoc-plugin-markdown": "^3.16.0"
   }

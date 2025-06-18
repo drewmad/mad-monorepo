@@ -20,9 +20,8 @@ export default function Header({ user }: { user: { name: string; avatar_url?: st
 
   return (
     <header
-      className={`flex h-16 items-center justify-between border-b bg-white px-4 dark:bg-gray-800 ${
-        expanded ? 'ml-64' : 'ml-20'
-      } transition-all`}
+      className={`flex h-16 items-center justify-between border-b bg-white px-4 dark:bg-gray-800 ${expanded ? 'ml-64' : 'ml-20'
+        } transition-all`}
     >
       <div className="flex-1">
         <div className="relative max-w-md">
@@ -59,10 +58,10 @@ export default function Header({ user }: { user: { name: string; avatar_url?: st
           <div className="invisible absolute right-0 mt-2 w-48 rounded-md bg-white p-2 text-sm shadow-lg group-hover:visible dark:bg-gray-700">
             <button
               className="flex w-full items-center space-x-2 rounded-md p-2 hover:bg-gray-100 dark:hover:bg-gray-600"
-              onClick={() => router.push('/settings/profile')}
+              onClick={() => router.push('/settings')}
             >
               <Settings className="h-4 w-4" />
-              <span>Profile Settings</span>
+              <span>Settings</span>
             </button>
             <button
               className="flex w-full items-center space-x-2 rounded-md p-2 hover:bg-gray-100 dark:hover:bg-gray-600"

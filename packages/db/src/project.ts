@@ -1,5 +1,11 @@
 import { supabaseClient } from './client';
 import { z } from 'zod';
+import type { Database } from '../types';
+
+// Export Project type from Database
+export type Project = Database['public']['Tables']['projects']['Row'] & {
+  tasks?: Database['public']['Tables']['tasks']['Row'][];
+};
 
 const createProjectSchema = z.object({
   workspace_id: z.string().uuid(),

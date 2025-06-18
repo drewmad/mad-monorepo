@@ -1,9 +1,9 @@
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { validate } from '@/lib/_utils/validate';
-import { z } from 'zod';
+import { validateProjectData } from '@/lib/_utils/validate';
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 
-const createSchema = z.object({
+const createProjectSchema = z.object({
     workspace_id: z.string().uuid(),
     name: z.string().min(1),
     status: z.string().optional(),
@@ -11,50 +11,64 @@ const createSchema = z.object({
     budget: z.number().min(0).optional()
 });
 
-export const runtime = 'edge';
+export async function GET() {
+    try {
+        const { data: projects, error } = await supabaseAdmin
+            .from('projects')
+            .select('*')
+            .order('created_at', { ascending: false });
 
-export async function GET(req: NextRequest) {
-    const supabase = supabaseAdmin();
-    const { searchParams } = new URL(req.url);
-    const workspaceId = searchParams.get('workspace_id');
+        if (error) {
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
 
-    if (!workspaceId) {
+        return NextResponse.json({ projects });
+    } catch (error) {
         return NextResponse.json(
-            { message: 'workspace_id query param required' },
-            { status: 400 }
+            { error: 'Internal server error' },
+            { status: 500 }
         );
     }
-
-    const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('workspace_id', workspaceId);
-
-    if (error) {
-        return NextResponse.json({ message: error.message }, { status: 500 });
-    }
-
-    return NextResponse.json(data);
 }
 
-export async function POST(req: NextRequest) {
-    const supabase = supabaseAdmin();
-    const body = await req.json();
-    const res = validate(createSchema, body);
+export async function POST(request: NextRequest) {
+    try {
+        const body = await request.json();
 
-    if (!res.success) {
-        return res.error;
+        // Validate the request body
+        const validation = validateProjectData(body);
+        if (!validation.isValid) {
+            return NextResponse.json(
+                { error: validation.error },
+                { status: 400 }
+            );
+        }
+
+        // Parse with Zod for additional validation
+        const parsed = createProjectSchema.parse(body);
+
+        const { data: project, error } = await supabaseAdmin
+            .from('projects')
+            .insert(parsed)
+            .select()
+            .single();
+
+        if (error) {
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        return NextResponse.json({ project }, { status: 201 });
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return NextResponse.json(
+                { error: 'Invalid request data', details: error.errors },
+                { status: 400 }
+            );
+        }
+
+        return NextResponse.json(
+            { error: 'Internal server error' },
+            { status: 500 }
+        );
     }
-
-    const { data, error } = await supabase
-        .from('projects')
-        .insert(res.data)
-        .select()
-        .single();
-
-    if (error) {
-        return NextResponse.json({ message: error.message }, { status: 500 });
-    }
-
-    return NextResponse.json(data, { status: 201 });
 } 

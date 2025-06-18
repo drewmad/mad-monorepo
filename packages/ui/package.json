@@ -5,12 +5,18 @@
   "types": "src/index.ts",
   "sideEffects": false,
   "scripts": {
-    "build": "echo 'Using transpilePackages in Next.js'"
+    "build": "echo 'Using transpilePackages in Next.js'",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "clsx": "^2.0.0"
   },
   "peerDependencies": {
     "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@storybook/react": "^9.0.11",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7"
   }
 }

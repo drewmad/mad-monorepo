@@ -33,10 +33,10 @@
       "@ui/*": [
         "../../packages/ui/src/*"
       ],
-      "@db": [
+      "@mad/db": [
         "../../packages/db/src/index.ts"
       ],
-      "@db/*": [
+      "@mad/db/*": [
         "../../packages/db/src/*"
       ]
     }

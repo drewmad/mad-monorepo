@@ -10,21 +10,38 @@ echo "🔍 Checking imports..."
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx)$' || true)
 
 if [ -n "$STAGED_FILES" ]; then
+  IMPORT_ERRORS=0
+  
   for file in $STAGED_FILES; do
     # Check for @ui subpath imports
     if grep -E "from ['\"]@ui/" "$file" 2>/dev/null; then
       echo "❌ Error: Found @ui subpath import in $file"
       echo "   Change to: import { Component } from '@ui';"
-      exit 1
+      IMPORT_ERRORS=$((IMPORT_ERRORS + 1))
     fi
     
     # Check for @db subpath imports (excluding types)
     if grep -E "from ['\"]@db/" "$file" 2>/dev/null | grep -v "from ['\"]@db/types"; then
       echo "❌ Error: Found @db subpath import in $file"
       echo "   Change to: import { function } from '@db';"
-      exit 1
+      IMPORT_ERRORS=$((IMPORT_ERRORS + 1))
+    fi
+    
+    # Check for dist imports
+    if grep -E "from ['\"]@[^'\"]*\/dist\/" "$file" 2>/dev/null; then
+      echo "❌ Error: Found dist folder import in $file"
+      echo "   Import from package root instead"
+      IMPORT_ERRORS=$((IMPORT_ERRORS + 1))
     fi
   done
+  
+  if [ $IMPORT_ERRORS -gt 0 ]; then
+    echo ""
+    echo "💡 To fix automatically, run:"
+    echo "   sed -i '' \"s/from '@ui\\/[^']*'/from '@ui'/g\" $STAGED_FILES"
+    echo "   sed -i '' \"s/from '@db\\/[^']*'/from '@db'/g\" $STAGED_FILES"
+    exit 1
+  fi
 fi
 
 # Check if package.json changed but pnpm-lock.yaml didn't
@@ -41,6 +58,15 @@ if [ ! -f "pnpm-lock.yaml" ]; then
   echo "❌ pnpm-lock.yaml is missing!"
   echo "Run 'pnpm install' to generate it"
   exit 1
+fi
+
+# Run quick validation on staged files
+if [ -n "$STAGED_FILES" ]; then
+  echo "🔍 Running TypeScript check on staged files..."
+  npx tsc --noEmit --skipLibCheck $STAGED_FILES || {
+    echo "❌ TypeScript errors found in staged files"
+    exit 1
+  }
 fi
 
 echo "✅ Pre-commit checks passed"
