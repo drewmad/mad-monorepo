@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Card, Button, Badge, Modal, Textarea } from '@ui';
 import { Sparkles, Plus, Clock, User, Target, Zap } from 'lucide-react';
 
-interface Task {
+interface TaskSuggestion {
     id: string;
     name: string;
     description?: string;
@@ -17,8 +17,8 @@ interface TaskSuggestionsProps {
     projectId: string;
     projectName: string;
     projectDescription?: string;
-    onTaskCreate?: (task: Partial<Task>) => void;
-    onSubtaskGenerate?: (parentTaskId: string, subtasks: Partial<Task>[]) => void;
+    onTaskCreate?: (task: Partial<TaskSuggestion>) => void;
+    onSubtaskGenerate?: (parentTaskId: string, subtasks: Partial<TaskSuggestion>[]) => void;
 }
 
 export function TaskSuggestions({
@@ -29,7 +29,7 @@ export function TaskSuggestions({
     const [isGenerating, setIsGenerating] = useState(false);
     const [showAIModal, setShowAIModal] = useState(false);
     const [aiPrompt, setAiPrompt] = useState('');
-    const [suggestions, setSuggestions] = useState<Task[]>([]);
+    const [suggestions, setSuggestions] = useState<TaskSuggestion[]>([]);
     const [selectedParentTask, setSelectedParentTask] = useState<string | null>(null);
 
     // Mock AI suggestions based on project type
@@ -39,7 +39,7 @@ export function TaskSuggestions({
         // Simulate AI processing
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        const mockSuggestions: Task[] = [
+        const mockSuggestions: TaskSuggestion[] = [
             {
                 id: 'ai-1',
                 name: 'Set up project repository',
@@ -94,7 +94,7 @@ export function TaskSuggestions({
         await new Promise(resolve => setTimeout(resolve, 1500));
 
         // Mock subtask generation based on parent task
-        const mockSubtasks: Partial<Task>[] = [];
+        const mockSubtasks: Partial<TaskSuggestion>[] = [];
 
         if (taskName.toLowerCase().includes('authentication')) {
             mockSubtasks.push(
@@ -198,7 +198,7 @@ export function TaskSuggestions({
         // Simulate AI processing
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        const customSuggestions: Task[] = [
+        const customSuggestions: TaskSuggestion[] = [
             {
                 id: 'custom-1',
                 name: `Analyze ${aiPrompt}`,
@@ -228,7 +228,7 @@ export function TaskSuggestions({
         setAiPrompt('');
     };
 
-    const acceptSuggestion = (suggestion: Task) => {
+    const acceptSuggestion = (suggestion: TaskSuggestion) => {
         onTaskCreate?.(suggestion);
         setSuggestions(prev => prev.filter(s => s.id !== suggestion.id));
     };
