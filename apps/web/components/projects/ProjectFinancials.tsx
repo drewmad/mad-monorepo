@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, Button, Badge, Progress, Modal, Input, Select, Tabs } from '@ui';
+import { Card, Button, Badge, Progress, Modal, Input, Select, Tabs, TabsList, TabsTrigger, TabsContent } from '@ui';
 import { DollarSign, TrendingUp, TrendingDown, AlertTriangle, Plus, Download, Receipt } from 'lucide-react';
 
 interface Transaction {
@@ -35,10 +35,18 @@ export function ProjectFinancials({
     onTransactionAdd
 }: ProjectFinancialsProps) {
     const [showAddTransaction, setShowAddTransaction] = useState(false);
-    const [newTransaction, setNewTransaction] = useState({
+    const [newTransaction, setNewTransaction] = useState<{
+        item: string;
+        description: string;
+        category: 'materials' | 'labor' | 'equipment' | 'software' | 'services' | 'other';
+        amount: string;
+        currency: string;
+        transaction_date: string;
+        receipt_url: string;
+    }>({
         item: '',
         description: '',
-        category: 'materials' as const,
+        category: 'materials',
         amount: '',
         currency: 'USD',
         transaction_date: new Date().toISOString().split('T')[0],
@@ -434,7 +442,25 @@ export function ProjectFinancials({
 
     return (
         <div className="space-y-6">
-            <Tabs tabs={tabs} />
+            <Tabs defaultValue="overview" className="w-full">
+                <TabsList>
+                    <TabsTrigger value="overview">Overview</TabsTrigger>
+                    <TabsTrigger value="transactions">Transactions</TabsTrigger>
+                    <TabsTrigger value="reports">Reports</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="overview">
+                    {tabs[0].content}
+                </TabsContent>
+
+                <TabsContent value="transactions">
+                    {tabs[1].content}
+                </TabsContent>
+
+                <TabsContent value="reports">
+                    {tabs[2].content}
+                </TabsContent>
+            </Tabs>
 
             {/* Add Transaction Modal */}
             <Modal

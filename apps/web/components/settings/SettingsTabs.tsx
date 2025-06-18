@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Tabs, Card, Button, Input, Select, Toggle, Badge, Modal } from '@ui';
+import { Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Input, Select, Toggle, Badge, Modal } from '@ui';
 import { Shield, CreditCard, AlertTriangle, Settings, Users, Key, Clock, Bell } from 'lucide-react';
 
 export function SettingsTabs() {
@@ -128,10 +128,10 @@ export function SettingsTabs() {
                                     <p className="text-sm text-gray-500">Receive notifications via email</p>
                                 </div>
                                 <Toggle
-                                    checked={settings.notifications.email}
-                                    onChange={(checked) => setSettings({
+                                    enabled={settings.notifications.email}
+                                    onChange={(enabled) => setSettings({
                                         ...settings,
-                                        notifications: { ...settings.notifications, email: checked }
+                                        notifications: { ...settings.notifications, email: enabled }
                                     })}
                                 />
                             </div>
@@ -141,10 +141,10 @@ export function SettingsTabs() {
                                     <p className="text-sm text-gray-500">Receive push notifications in browser</p>
                                 </div>
                                 <Toggle
-                                    checked={settings.notifications.push}
-                                    onChange={(checked) => setSettings({
+                                    enabled={settings.notifications.push}
+                                    onChange={(enabled) => setSettings({
                                         ...settings,
-                                        notifications: { ...settings.notifications, push: checked }
+                                        notifications: { ...settings.notifications, push: enabled }
                                     })}
                                 />
                             </div>
@@ -154,10 +154,10 @@ export function SettingsTabs() {
                                     <p className="text-sm text-gray-500">Get notified when someone mentions you</p>
                                 </div>
                                 <Toggle
-                                    checked={settings.notifications.mentions}
-                                    onChange={(checked) => setSettings({
+                                    enabled={settings.notifications.mentions}
+                                    onChange={(enabled) => setSettings({
                                         ...settings,
-                                        notifications: { ...settings.notifications, mentions: checked }
+                                        notifications: { ...settings.notifications, mentions: enabled }
                                     })}
                                 />
                             </div>
@@ -167,10 +167,10 @@ export function SettingsTabs() {
                                     <p className="text-sm text-gray-500">Get notified about task assignments and updates</p>
                                 </div>
                                 <Toggle
-                                    checked={settings.notifications.tasks}
-                                    onChange={(checked) => setSettings({
+                                    enabled={settings.notifications.tasks}
+                                    onChange={(enabled) => setSettings({
                                         ...settings,
-                                        notifications: { ...settings.notifications, tasks: checked }
+                                        notifications: { ...settings.notifications, tasks: enabled }
                                     })}
                                 />
                             </div>
@@ -257,10 +257,10 @@ export function SettingsTabs() {
                                     <p className="text-sm text-gray-500">Add an extra layer of security to your account</p>
                                 </div>
                                 <Toggle
-                                    checked={settings.security.twoFactor}
-                                    onChange={(checked) => setSettings({
+                                    enabled={settings.security.twoFactor}
+                                    onChange={(enabled) => setSettings({
                                         ...settings,
-                                        security: { ...settings.security, twoFactor: checked }
+                                        security: { ...settings.security, twoFactor: enabled }
                                     })}
                                 />
                             </div>
@@ -270,10 +270,10 @@ export function SettingsTabs() {
                                     <p className="text-sm text-gray-500">Enable SSO for your workspace</p>
                                 </div>
                                 <Toggle
-                                    checked={settings.security.sso}
-                                    onChange={(checked) => setSettings({
+                                    enabled={settings.security.sso}
+                                    onChange={(enabled) => setSettings({
                                         ...settings,
-                                        security: { ...settings.security, sso: checked }
+                                        security: { ...settings.security, sso: enabled }
                                     })}
                                 />
                             </div>
@@ -488,7 +488,50 @@ export function SettingsTabs() {
 
     return (
         <div>
-            <Tabs tabs={tabs} />
+            <Tabs defaultValue="general" className="w-full">
+                <TabsList className="mb-6">
+                    <TabsTrigger value="general" className="flex items-center gap-2">
+                        <Settings className="h-4 w-4" />
+                        General
+                    </TabsTrigger>
+                    <TabsTrigger value="roles" className="flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        Roles & Permissions
+                    </TabsTrigger>
+                    <TabsTrigger value="security" className="flex items-center gap-2">
+                        <Shield className="h-4 w-4" />
+                        Security
+                    </TabsTrigger>
+                    <TabsTrigger value="billing" className="flex items-center gap-2">
+                        <CreditCard className="h-4 w-4" />
+                        Billing & Subscription
+                    </TabsTrigger>
+                    <TabsTrigger value="danger" className="flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4" />
+                        Danger Zone
+                    </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="general">
+                    {tabs[0].content}
+                </TabsContent>
+
+                <TabsContent value="roles">
+                    {tabs[1].content}
+                </TabsContent>
+
+                <TabsContent value="security">
+                    {tabs[2].content}
+                </TabsContent>
+
+                <TabsContent value="billing">
+                    {tabs[3].content}
+                </TabsContent>
+
+                <TabsContent value="danger">
+                    {tabs[4].content}
+                </TabsContent>
+            </Tabs>
 
             {/* Delete Workspace Modal */}
             <Modal

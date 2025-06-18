@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Tabs, Card, Button, Avatar, Badge, Input, Modal, Select } from '@ui';
+import { Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Avatar, Badge, Input, Modal, Select } from '@ui';
 import { Search, Plus, Mail, Phone, Building, Calendar, Users } from 'lucide-react';
 
 interface Member {
@@ -339,7 +339,25 @@ export function DirectoryTabs({ members, employees, companies }: DirectoryTabsPr
 
     return (
         <div>
-            <Tabs tabs={tabs} />
+            <Tabs defaultValue="members" className="w-full">
+                <TabsList className="mb-6">
+                    <TabsTrigger value="members">Members ({members.length})</TabsTrigger>
+                    <TabsTrigger value="employees">Employees ({employees.length})</TabsTrigger>
+                    <TabsTrigger value="companies">Companies ({companies.length})</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="members">
+                    {tabs[0].content}
+                </TabsContent>
+
+                <TabsContent value="employees">
+                    {tabs[1].content}
+                </TabsContent>
+
+                <TabsContent value="companies">
+                    {tabs[2].content}
+                </TabsContent>
+            </Tabs>
 
             {/* Add Member Modal */}
             <Modal

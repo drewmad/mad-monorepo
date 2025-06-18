@@ -244,7 +244,7 @@ export default function Header({ user }: HeaderProps) {
           }
           align="right"
         >
-          <DropdownItem onClick={() => router.push('/profile')}>
+          <DropdownItem onClick={() => router.push('/settings')}>
             <User className="h-4 w-4 mr-2" />
             Profile
           </DropdownItem>

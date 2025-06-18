@@ -6,7 +6,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "echo 'Using transpilePackages in Next.js'",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --project tsconfig.typecheck.json"
   },
   "dependencies": {
     "clsx": "^2.0.0"
