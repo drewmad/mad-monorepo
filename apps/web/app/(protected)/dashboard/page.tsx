@@ -178,20 +178,14 @@ export default function DashboardPage() {
     }
   ];
 
-  const handleTaskSuggestionAccept = (suggestion: {
-    id: string;
-    title: string;
-    description: string;
-    priority: 'low' | 'medium' | 'high' | 'urgent';
-    estimatedHours: number;
-    category: string;
-    reasoning: string;
-    confidence: number;
-    relatedProject?: string;
-    suggestedAssignee?: string;
-  }) => {
-    console.log('Accepted task suggestion:', suggestion);
+  const handleTaskCreate = (task: Partial<Task>) => {
+    console.log('Creating new task:', task);
     // In a real app, this would create a new task
+  };
+
+  const handleSubtaskGenerate = (parentTaskId: string, subtasks: Partial<Task>[]) => {
+    console.log('Generating subtasks for:', parentTaskId, subtasks);
+    // In a real app, this would create subtasks
   };
 
   return (
@@ -307,8 +301,11 @@ export default function DashboardPage() {
             {/* Task Suggestions */}
             <div>
               <TaskSuggestions
-                limit={3}
-                onAcceptSuggestion={handleTaskSuggestionAccept}
+                projectId="dashboard"
+                projectName="All Projects"
+                projectDescription="AI-powered task suggestions for all your projects"
+                onTaskCreate={handleTaskCreate}
+                onSubtaskGenerate={handleSubtaskGenerate}
               />
             </div>
 
