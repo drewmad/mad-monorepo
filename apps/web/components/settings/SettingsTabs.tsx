@@ -1,16 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import { Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Input, Select, Toggle, Badge, Modal } from '@ui';
+import { useTheme } from 'next-themes';
+import { Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Input, Select, Toggle, Badge, Modal, Toast } from '@ui';
 import { Shield, CreditCard, AlertTriangle, Settings, Users, Key, Clock, Bell } from 'lucide-react';
 
 export function SettingsTabs() {
+    const { theme, setTheme } = useTheme();
+    
     const [settings, setSettings] = useState({
         workspaceName: 'My Workspace',
         workspaceDescription: 'A productive workspace for our team',
         timezone: 'America/New_York',
         dateFormat: 'MM/dd/yyyy',
-        theme: 'system',
         notifications: {
             email: true,
             push: true,
@@ -26,18 +28,71 @@ export function SettingsTabs() {
 
     const [showDeleteWorkspace, setShowDeleteWorkspace] = useState(false);
     const [deleteConfirmation, setDeleteConfirmation] = useState('');
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState<'success' | 'error'>('success');
+    const [loading, setLoading] = useState(false);
 
-    const handleSaveGeneral = () => {
-        console.log('Saving general settings:', settings);
-        // TODO: Implement save functionality
+    const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
+        setToastMessage(message);
+        setToastType(type);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
     };
 
-    const handleDeleteWorkspace = () => {
+    const handleSaveGeneral = async () => {
+        setLoading(true);
+        try {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            console.log('Saving general settings:', settings);
+            
+            // In a real app, this would be an API call to save settings
+            // await saveWorkspaceSettings(settings);
+            
+            showNotification('Settings saved successfully!');
+        } catch (error) {
+            console.error('Failed to save settings:', error);
+            showNotification('Failed to save settings. Please try again.', 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSaveSection = async (sectionName: string) => {
+        setLoading(true);
+        try {
+            await new Promise(resolve => setTimeout(resolve, 800));
+            console.log(`Saving ${sectionName} settings:`, settings);
+            showNotification(`${sectionName} settings saved successfully!`);
+        } catch (error) {
+            console.error(`Failed to save ${sectionName} settings:`, error);
+            showNotification(`Failed to save ${sectionName} settings. Please try again.`, 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleDeleteWorkspace = async () => {
         if (deleteConfirmation === 'DELETE') {
-            console.log('Deleting workspace...');
-            // TODO: Implement delete functionality
-            setShowDeleteWorkspace(false);
-            setDeleteConfirmation('');
+            setLoading(true);
+            try {
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                console.log('Deleting workspace...');
+                // TODO: Implement delete functionality
+                showNotification('Workspace deleted successfully!');
+                setShowDeleteWorkspace(false);
+                setDeleteConfirmation('');
+                // Redirect to workspace selection or sign-in
+                setTimeout(() => {
+                    window.location.href = '/workspace-selection';
+                }, 1500);
+            } catch (error) {
+                console.error('Failed to delete workspace:', error);
+                showNotification('Failed to delete workspace. Please try again.', 'error');
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -94,8 +149,19 @@ export function SettingsTabs() {
                             />
                         </div>
                         <div className="flex justify-end mt-6">
-                            <Button onClick={handleSaveGeneral} variant="primary">
-                                Save Changes
+                            <Button 
+                                onClick={handleSaveGeneral} 
+                                variant="primary"
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <div className="flex items-center space-x-2">
+                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                        <span>Saving...</span>
+                                    </div>
+                                ) : (
+                                    'Save Changes'
+                                )}
                             </Button>
                         </div>
                     </Card>
@@ -108,11 +174,18 @@ export function SettingsTabs() {
                                 options={[
                                     { value: 'light', label: 'Light' },
                                     { value: 'dark', label: 'Dark' },
+                                    { value: 'glass', label: 'Glass' },
                                     { value: 'system', label: 'System Default' }
                                 ]}
-                                value={settings.theme}
-                                onChange={(e) => setSettings({ ...settings, theme: e.target.value })}
+                                value={theme || 'system'}
+                                onChange={(e) => {
+                                    setTheme(e.target.value);
+                                    showNotification(`Theme changed to ${e.target.value === 'system' ? 'system default' : e.target.value}!`);
+                                }}
                             />
+                            <p className="text-sm text-gray-500">
+                                Choose your preferred theme. Glass theme provides a modern translucent experience.
+                            </p>
                         </div>
                     </Card>
 
@@ -304,6 +377,22 @@ export function SettingsTabs() {
                             <p className="text-sm text-gray-500">
                                 Users will be automatically logged out after this period of inactivity
                             </p>
+                        </div>
+                        <div className="flex justify-end mt-6">
+                            <Button 
+                                onClick={() => handleSaveSection('Security')} 
+                                variant="primary"
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <div className="flex items-center space-x-2">
+                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                        <span>Saving...</span>
+                                    </div>
+                                ) : (
+                                    'Save Security Settings'
+                                )}
+                            </Button>
                         </div>
                     </Card>
 
@@ -573,13 +662,30 @@ export function SettingsTabs() {
                             variant="ghost"
                             className="bg-red-600 text-white hover:bg-red-700"
                             onClick={handleDeleteWorkspace}
-                            disabled={deleteConfirmation !== 'DELETE'}
+                            disabled={deleteConfirmation !== 'DELETE' || loading}
                         >
-                            Delete Workspace
+                            {loading ? (
+                                <div className="flex items-center space-x-2">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                    <span>Deleting...</span>
+                                </div>
+                            ) : (
+                                'Delete Workspace'
+                            )}
                         </Button>
                     </div>
                 </div>
-            </Modal>
+                            </Modal>
+
+            {/* Toast Notification */}
+            {showToast && (
+                <Toast
+                    id="settings-toast"
+                    message={toastMessage}
+                    type={toastType}
+                    onClose={() => setShowToast(false)}
+                />
+            )}
         </div>
     );
 } 
