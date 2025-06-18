@@ -321,7 +321,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <main className="flex-1 p-6 pt-24 md:p-8 md:pt-24 space-y-8">
+    <main className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -364,7 +364,7 @@ export default function DashboardPage() {
               <Card className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold text-gray-900">Active Projects</h2>
-                  <Button variant="ghost" onClick={() => router.push('/projects')}>View All</Button>
+                  <Button variant="ghost" onClick={() => router.push('/projects' as any)}>View All</Button>
                 </div>
                 <ProjectsGrid projects={mockProjects} />
               </Card>

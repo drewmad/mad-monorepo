@@ -89,8 +89,7 @@ export default function Header({ user }: HeaderProps) {
 
   return (
     <header
-      className={`fixed top-0 right-0 z-20 flex h-16 items-center justify-between border-b bg-white px-4 dark:bg-gray-800 ${expanded ? 'left-64' : 'left-20'
-        } transition-all`}
+      className="sticky top-0 z-20 flex h-16 items-center justify-between border-b bg-white px-4 dark:bg-gray-800"
     >
       {/* Search Section */}
       <div className="flex-1 max-w-2xl" ref={searchRef}>
