@@ -17,7 +17,10 @@
     "cz": "git-cz",
     "prepare": "husky install",
     "typecheck": "tsc --noEmit",
+    "validate:imports": "./scripts/validate-imports.sh",
+    "validate:all": "pnpm validate:imports && pnpm typecheck && pnpm lint",
     "validate:deploy": "./scripts/validate-deploy.sh",
+    "prevalidate:deploy": "pnpm validate:imports",
     "preinstall": "npx only-allow pnpm",
     "setup": "./scripts/setup.sh"
   },
