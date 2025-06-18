@@ -23,3 +23,19 @@
         "SUPABASE_SERVICE_ROLE_KEY"
       ]
     },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "typecheck": {
+      "dependsOn": [
+        "^build"
+      ]
+    }
+  }
+}
