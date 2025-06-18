@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Avatar, Badge, Input, Modal, Select } from '@ui';
+import { Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Avatar, Badge, Input, Modal, Select, Toast } from '@ui';
 import { Search, Plus, Mail, Phone, Building, Calendar, Users } from 'lucide-react';
 
 interface Member {
@@ -49,6 +49,10 @@ export function DirectoryTabs({ members, employees, companies }: DirectoryTabsPr
     const [showAddMember, setShowAddMember] = useState(false);
     const [showAddEmployee, setShowAddEmployee] = useState(false);
     const [showAddCompany, setShowAddCompany] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastType, setToastType] = useState<'success' | 'error'>('success');
+    
     const [newMember, setNewMember] = useState({
         name: '',
         email: '',
@@ -71,22 +75,35 @@ export function DirectoryTabs({ members, employees, companies }: DirectoryTabsPr
         relationship: 'client'
     });
 
+    const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
+        setToastMessage(message);
+        setToastType(type);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+    };
+
     const handleAddMember = () => {
         console.log('Adding member:', newMember);
+        showNotification(`${newMember.name} has been added as a ${newMember.role}!`);
         setShowAddMember(false);
         setNewMember({ name: '', email: '', role: 'member', department: '' });
+        // In a real app, this would make an API call to add the member
     };
 
     const handleAddEmployee = () => {
         console.log('Adding employee:', newEmployee);
+        showNotification(`${newEmployee.name} has been added as ${newEmployee.position}!`);
         setShowAddEmployee(false);
         setNewEmployee({ name: '', position: '', department: '', email: '', phone: '' });
+        // In a real app, this would make an API call to add the employee
     };
 
     const handleAddCompany = () => {
         console.log('Adding company:', newCompany);
+        showNotification(`${newCompany.name} has been added as a ${newCompany.relationship}!`);
         setShowAddCompany(false);
         setNewCompany({ name: '', industry: '', contact_name: '', contact_email: '', contact_phone: '', relationship: 'client' });
+        // In a real app, this would make an API call to add the company
     };
 
     const filteredMembers = members.filter(member =>
@@ -539,6 +556,15 @@ export function DirectoryTabs({ members, employees, companies }: DirectoryTabsPr
                     </div>
                 </div>
             </Modal>
+
+            {/* Toast Notification */}
+            {showToast && (
+                <Toast
+                    message={toastMessage}
+                    type={toastType}
+                    onClose={() => setShowToast(false)}
+                />
+            )}
         </div>
     );
 } 

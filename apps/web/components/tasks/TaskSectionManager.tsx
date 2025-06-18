@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, Button, Badge, Input, Modal, Select, Dropdown, DropdownItem, IconButton } from '@ui';
+import { Card, Button, Badge, Input, Modal, Select, Dropdown, DropdownItem, IconButton, Textarea, Toast } from '@ui';
 import { useModal } from '@/contexts/AppContext';
 
 interface Task {
@@ -39,7 +39,14 @@ export function TaskSectionManager({
     const { openModal } = useModal();
     const [showCreateTask, setShowCreateTask] = useState(false);
     const [showCreateSection, setShowCreateSection] = useState(false);
+    const [showEditTask, setShowEditTask] = useState(false);
+    const [showCreateSubtask, setShowCreateSubtask] = useState(false);
     const [selectedSection, setSelectedSection] = useState<string | null>(null);
+    const [editingTask, setEditingTask] = useState<Task | null>(null);
+    const [parentTask, setParentTask] = useState<Task | null>(null);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    
     const [newTask, setNewTask] = useState<{
         name: string;
         description: string;
@@ -137,6 +144,115 @@ export function TaskSectionManager({
                 console.log('Deleting task:', task.id);
             }
         });
+    };
+
+    const showNotification = (message: string) => {
+        setToastMessage(message);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+    };
+
+    const handleEditTask = (task: Task) => {
+        setEditingTask(task);
+        setNewTask({
+            name: task.name,
+            description: task.description || '',
+            priority: task.priority,
+            section: task.section || '',
+            estimated_hours: task.estimated_hours?.toString() || '',
+            due_date: task.due_date || ''
+        });
+        setShowEditTask(true);
+    };
+
+    const handleUpdateTask = () => {
+        if (!editingTask) return;
+        
+        const updatedTask = {
+            ...editingTask,
+            name: newTask.name,
+            description: newTask.description || null,
+            priority: newTask.priority,
+            section: newTask.section || null,
+            estimated_hours: newTask.estimated_hours ? parseFloat(newTask.estimated_hours) : null,
+            due_date: newTask.due_date || null
+        };
+
+        onTaskUpdate?.(updatedTask);
+        showNotification(`Task "${updatedTask.name}" updated successfully!`);
+        setShowEditTask(false);
+        setEditingTask(null);
+        setNewTask({
+            name: '',
+            description: '',
+            priority: 'medium',
+            section: '',
+            estimated_hours: '',
+            due_date: ''
+        });
+    };
+
+    const handleCreateSubtask = (parent: Task) => {
+        setParentTask(parent);
+        setNewTask({
+            name: '',
+            description: '',
+            priority: parent.priority,
+            section: parent.section || '',
+            estimated_hours: '',
+            due_date: ''
+        });
+        setShowCreateSubtask(true);
+    };
+
+    const handleSaveSubtask = () => {
+        if (!parentTask) return;
+
+        const subtaskData = {
+            project_id: projectId,
+            name: newTask.name,
+            description: newTask.description || null,
+            priority: newTask.priority,
+            section: parentTask.section,
+            estimated_hours: newTask.estimated_hours ? parseFloat(newTask.estimated_hours) : null,
+            due_date: newTask.due_date || null,
+            status: 'todo' as const,
+            parent_task_id: parentTask.id,
+            assignee_id: null,
+            time_tracked: 0
+        };
+
+        onTaskCreate?.(subtaskData);
+        showNotification(`Subtask created for "${parentTask.name}"`);
+        setShowCreateSubtask(false);
+        setParentTask(null);
+        setNewTask({
+            name: '',
+            description: '',
+            priority: 'medium',
+            section: '',
+            estimated_hours: '',
+            due_date: ''
+        });
+    };
+
+    const handleDuplicateTask = (task: Task) => {
+        const duplicatedTask = {
+            project_id: task.project_id,
+            name: `${task.name} (copy)`,
+            description: task.description,
+            priority: task.priority,
+            section: task.section,
+            estimated_hours: task.estimated_hours,
+            due_date: task.due_date,
+            status: 'todo' as const,
+            parent_task_id: task.parent_task_id,
+            assignee_id: null,
+            time_tracked: 0
+        };
+
+        onTaskCreate?.(duplicatedTask);
+        showNotification(`Task "${task.name}" duplicated successfully!`);
     };
 
     const priorityOptions = [
@@ -281,13 +397,13 @@ export function TaskSectionManager({
                                                 }
                                                 align="right"
                                             >
-                                                <DropdownItem onClick={() => console.log('Edit task:', task.id)}>
+                                                <DropdownItem onClick={() => handleEditTask(task)}>
                                                     Edit task
                                                 </DropdownItem>
-                                                <DropdownItem onClick={() => console.log('Create sub-task for:', task.id)}>
+                                                <DropdownItem onClick={() => handleCreateSubtask(task)}>
                                                     Add sub-task
                                                 </DropdownItem>
-                                                <DropdownItem onClick={() => console.log('Duplicate task:', task.id)}>
+                                                <DropdownItem onClick={() => handleDuplicateTask(task)}>
                                                     Duplicate
                                                 </DropdownItem>
                                                 <DropdownItem
@@ -425,6 +541,177 @@ export function TaskSectionManager({
                     </div>
                 </div>
             </Modal>
+
+            {/* Edit Task Modal */}
+            <Modal
+                isOpen={showEditTask}
+                onClose={() => {
+                    setShowEditTask(false);
+                    setEditingTask(null);
+                    setNewTask({
+                        name: '',
+                        description: '',
+                        priority: 'medium',
+                        section: '',
+                        estimated_hours: '',
+                        due_date: ''
+                    });
+                }}
+                title="Edit Task"
+                size="lg"
+            >
+                <div className="space-y-4">
+                    <Input
+                        label="Task Name"
+                        placeholder="What needs to be done?"
+                        value={newTask.name}
+                        onChange={(e) => setNewTask({ ...newTask, name: e.target.value })}
+                        required
+                    />
+
+                    <Textarea
+                        label="Description (optional)"
+                        placeholder="Additional details about this task"
+                        value={newTask.description}
+                        onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                        rows={3}
+                    />
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <Select
+                            label="Priority"
+                            options={priorityOptions}
+                            value={newTask.priority}
+                            onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as 'low' | 'medium' | 'high' | 'urgent' })}
+                        />
+
+                        <Select
+                            label="Section"
+                            options={[
+                                { value: '', label: 'No Section' },
+                                ...sectionOptions
+                            ]}
+                            value={newTask.section}
+                            onChange={(e) => setNewTask({ ...newTask, section: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <Input
+                            label="Estimated Hours (optional)"
+                            type="number"
+                            step="0.5"
+                            placeholder="2.5"
+                            value={newTask.estimated_hours}
+                            onChange={(e) => setNewTask({ ...newTask, estimated_hours: e.target.value })}
+                        />
+
+                        <Input
+                            label="Due Date (optional)"
+                            type="date"
+                            value={newTask.due_date}
+                            onChange={(e) => setNewTask({ ...newTask, due_date: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+                        <Button variant="secondary" onClick={() => setShowEditTask(false)}>
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="primary"
+                            onClick={handleUpdateTask}
+                            disabled={!newTask.name.trim()}
+                        >
+                            Update Task
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
+
+            {/* Create Subtask Modal */}
+            <Modal
+                isOpen={showCreateSubtask}
+                onClose={() => {
+                    setShowCreateSubtask(false);
+                    setParentTask(null);
+                    setNewTask({
+                        name: '',
+                        description: '',
+                        priority: 'medium',
+                        section: '',
+                        estimated_hours: '',
+                        due_date: ''
+                    });
+                }}
+                title={`Create Subtask for "${parentTask?.name || ''}"`}
+                size="lg"
+            >
+                <div className="space-y-4">
+                    <Input
+                        label="Subtask Name"
+                        placeholder="What needs to be done?"
+                        value={newTask.name}
+                        onChange={(e) => setNewTask({ ...newTask, name: e.target.value })}
+                        required
+                    />
+
+                    <Textarea
+                        label="Description (optional)"
+                        placeholder="Additional details about this subtask"
+                        value={newTask.description}
+                        onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                        rows={3}
+                    />
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <Select
+                            label="Priority"
+                            options={priorityOptions}
+                            value={newTask.priority}
+                            onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as 'low' | 'medium' | 'high' | 'urgent' })}
+                        />
+
+                        <Input
+                            label="Estimated Hours (optional)"
+                            type="number"
+                            step="0.5"
+                            placeholder="2.5"
+                            value={newTask.estimated_hours}
+                            onChange={(e) => setNewTask({ ...newTask, estimated_hours: e.target.value })}
+                        />
+                    </div>
+
+                    <Input
+                        label="Due Date (optional)"
+                        type="date"
+                        value={newTask.due_date}
+                        onChange={(e) => setNewTask({ ...newTask, due_date: e.target.value })}
+                    />
+
+                    <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+                        <Button variant="secondary" onClick={() => setShowCreateSubtask(false)}>
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="primary"
+                            onClick={handleSaveSubtask}
+                            disabled={!newTask.name.trim()}
+                        >
+                            Create Subtask
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
+
+            {/* Toast Notification */}
+            {showToast && (
+                <Toast
+                    message={toastMessage}
+                    type="success"
+                    onClose={() => setShowToast(false)}
+                />
+            )}
         </div>
     );
 } 

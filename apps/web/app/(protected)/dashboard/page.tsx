@@ -1,10 +1,13 @@
 'use client';
 
-import { Card, KpiCard, Button, Badge, Tabs, TabsList, TabsTrigger, TabsContent } from '@ui';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Card, KpiCard, Button, Badge, Tabs, TabsList, TabsTrigger, TabsContent, Modal, Input, Textarea, Select, Toast } from '@ui';
 import { ProjectsGrid } from '@/components/projects';
 import { TaskTable } from '@/components/tasks';
 import { TaskSuggestions } from '@/components/ai/TaskSuggestions';
 import { SmartAnalytics } from '@/components/ai/SmartAnalytics';
+import { Plus, Download, Calendar, Users } from 'lucide-react';
 import type { Database } from '@mad/db';
 
 type Project = Database['public']['Tables']['projects']['Row'];
@@ -137,6 +140,43 @@ const mockTasks: Task[] = [
 ];
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const [showCreateProject, setShowCreateProject] = useState(false);
+  const [showCreateTask, setShowCreateTask] = useState(false);
+  const [showInviteMember, setShowInviteMember] = useState(false);
+  const [showScheduleMeeting, setShowScheduleMeeting] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  
+  // Form states
+  const [newProject, setNewProject] = useState({
+    name: '',
+    description: '',
+    budget: '',
+    start_date: new Date().toISOString().split('T')[0],
+    end_date: ''
+  });
+  
+  const [newTask, setNewTask] = useState({
+    name: '',
+    description: '',
+    project_id: '',
+    priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
+    due_date: '',
+    estimated_hours: ''
+  });
+  
+  const [newMeeting, setNewMeeting] = useState({
+    title: '',
+    description: '',
+    date: '',
+    time: '',
+    duration: '60',
+    attendees: ''
+  });
+  
+  const [inviteEmail, setInviteEmail] = useState('');
+
   const upcomingTasks = mockTasks.filter(task =>
     task.status !== 'completed' &&
     task.due_date &&
@@ -187,7 +227,7 @@ export default function DashboardPage() {
     assignee: string;
   }>) => {
     console.log('Creating new task:', task);
-    // In a real app, this would create a new task
+    showNotification('Task created successfully!');
   };
 
   const handleSubtaskGenerate = (parentTaskId: string, subtasks: Partial<{
@@ -199,7 +239,85 @@ export default function DashboardPage() {
     assignee: string;
   }>[]) => {
     console.log('Generating subtasks for:', parentTaskId, subtasks);
-    // In a real app, this would create subtasks
+    showNotification(`${subtasks.length} subtasks generated!`);
+  };
+
+  const showNotification = (message: string) => {
+    setToastMessage(message);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
+  const handleExportReport = () => {
+    showNotification('Generating report... This will download shortly.');
+    // In a real app, this would generate and download a report
+    setTimeout(() => {
+      const data = {
+        projects: mockProjects,
+        tasks: mockTasks,
+        kpis: mockKpis,
+        generated_at: new Date().toISOString()
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `report-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }, 1000);
+  };
+
+  const handleCreateProject = () => {
+    console.log('Creating project:', newProject);
+    showNotification('Project created successfully!');
+    setShowCreateProject(false);
+    setNewProject({
+      name: '',
+      description: '',
+      budget: '',
+      start_date: new Date().toISOString().split('T')[0],
+      end_date: ''
+    });
+    // In a real app, this would create a project via API
+  };
+
+  const handleCreateTask = () => {
+    console.log('Creating task:', newTask);
+    showNotification('Task created successfully!');
+    setShowCreateTask(false);
+    setNewTask({
+      name: '',
+      description: '',
+      project_id: '',
+      priority: 'medium',
+      due_date: '',
+      estimated_hours: ''
+    });
+    // In a real app, this would create a task via API
+  };
+
+  const handleScheduleMeeting = () => {
+    console.log('Scheduling meeting:', newMeeting);
+    showNotification('Meeting scheduled successfully!');
+    setShowScheduleMeeting(false);
+    setNewMeeting({
+      title: '',
+      description: '',
+      date: '',
+      time: '',
+      duration: '60',
+      attendees: ''
+    });
+    // In a real app, this would create a calendar event
+  };
+
+  const handleInviteMember = () => {
+    console.log('Inviting member:', inviteEmail);
+    showNotification(`Invitation sent to ${inviteEmail}`);
+    setShowInviteMember(false);
+    setInviteEmail('');
+    // In a real app, this would send an invitation email
   };
 
   return (
@@ -211,16 +329,12 @@ export default function DashboardPage() {
           <p className="text-gray-600 mt-1">Welcome back! Here&apos;s what&apos;s happening with your projects.</p>
         </div>
         <div className="flex items-center space-x-3">
-          <Button variant="secondary">
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+          <Button variant="secondary" onClick={handleExportReport}>
+            <Download className="w-4 h-4 mr-2" />
             Export Report
           </Button>
-          <Button variant="primary">
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
+          <Button variant="primary" onClick={() => setShowCreateProject(true)}>
+            <Plus className="w-4 h-4 mr-2" />
             New Project
           </Button>
         </div>
@@ -250,7 +364,7 @@ export default function DashboardPage() {
               <Card className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold text-gray-900">Active Projects</h2>
-                  <Button variant="ghost">View All</Button>
+                  <Button variant="ghost" onClick={() => router.push('/projects')}>View All</Button>
                 </div>
                 <ProjectsGrid projects={mockProjects} />
               </Card>
@@ -342,10 +456,8 @@ export default function DashboardPage() {
                   <option>In Progress</option>
                   <option>Completed</option>
                 </select>
-                <Button variant="primary">
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
+                <Button variant="primary" onClick={() => setShowCreateProject(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
                   New Project
                 </Button>
               </div>
@@ -366,10 +478,8 @@ export default function DashboardPage() {
                   <option>Overdue</option>
                   <option>Completed</option>
                 </select>
-                <Button variant="primary">
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
+                <Button variant="primary" onClick={() => setShowCreateTask(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
                   New Task
                 </Button>
               </div>
@@ -385,22 +495,16 @@ export default function DashboardPage() {
           <div className="flex items-center space-x-4">
             <span className="text-sm font-medium text-gray-700">Quick Actions:</span>
             <div className="flex items-center space-x-2">
-              <Button variant="ghost">
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
+              <Button variant="ghost" onClick={() => setShowCreateTask(true)}>
+                <Plus className="w-4 h-4 mr-1" />
                 Add Task
               </Button>
-              <Button variant="ghost">
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+              <Button variant="ghost" onClick={() => setShowScheduleMeeting(true)}>
+                <Calendar className="w-4 h-4 mr-1" />
                 Schedule Meeting
               </Button>
-              <Button variant="ghost">
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
+              <Button variant="ghost" onClick={() => setShowInviteMember(true)}>
+                <Users className="w-4 h-4 mr-1" />
                 Invite Member
               </Button>
             </div>
@@ -410,6 +514,258 @@ export default function DashboardPage() {
           </div>
         </div>
       </Card>
+
+      {/* Create Project Modal */}
+      <Modal
+        isOpen={showCreateProject}
+        onClose={() => setShowCreateProject(false)}
+        title="Create New Project"
+        size="md"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Project Name"
+            placeholder="Enter project name"
+            value={newProject.name}
+            onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+            required
+          />
+          <Textarea
+            label="Description"
+            placeholder="Describe your project..."
+            value={newProject.description}
+            onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+            rows={3}
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Budget"
+              type="number"
+              placeholder="Enter budget"
+              value={newProject.budget}
+              onChange={(e) => setNewProject({ ...newProject, budget: e.target.value })}
+            />
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Status</label>
+              <select className="w-full border border-gray-300 rounded-md px-3 py-2 bg-white">
+                <option>Planning</option>
+                <option>Active</option>
+                <option>On Hold</option>
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Start Date"
+              type="date"
+              value={newProject.start_date}
+              onChange={(e) => setNewProject({ ...newProject, start_date: e.target.value })}
+            />
+            <Input
+              label="End Date"
+              type="date"
+              value={newProject.end_date}
+              onChange={(e) => setNewProject({ ...newProject, end_date: e.target.value })}
+            />
+          </div>
+          <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+            <Button variant="secondary" onClick={() => setShowCreateProject(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleCreateProject}
+              disabled={!newProject.name.trim()}
+            >
+              Create Project
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Create Task Modal */}
+      <Modal
+        isOpen={showCreateTask}
+        onClose={() => setShowCreateTask(false)}
+        title="Create New Task"
+        size="md"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Task Name"
+            placeholder="Enter task name"
+            value={newTask.name}
+            onChange={(e) => setNewTask({ ...newTask, name: e.target.value })}
+            required
+          />
+          <Textarea
+            label="Description"
+            placeholder="Describe the task..."
+            value={newTask.description}
+            onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+            rows={3}
+          />
+          <Select
+            label="Project"
+            options={[
+              { value: '', label: 'Select a project' },
+              ...mockProjects.map(p => ({ value: p.id, label: p.name }))
+            ]}
+            value={newTask.project_id}
+            onChange={(e) => setNewTask({ ...newTask, project_id: e.target.value })}
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <Select
+              label="Priority"
+              options={[
+                { value: 'low', label: 'Low' },
+                { value: 'medium', label: 'Medium' },
+                { value: 'high', label: 'High' },
+                { value: 'urgent', label: 'Urgent' }
+              ]}
+              value={newTask.priority}
+              onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as 'low' | 'medium' | 'high' | 'urgent' })}
+            />
+            <Input
+              label="Estimated Hours"
+              type="number"
+              placeholder="Hours"
+              value={newTask.estimated_hours}
+              onChange={(e) => setNewTask({ ...newTask, estimated_hours: e.target.value })}
+            />
+          </div>
+          <Input
+            label="Due Date"
+            type="date"
+            value={newTask.due_date}
+            onChange={(e) => setNewTask({ ...newTask, due_date: e.target.value })}
+          />
+          <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+            <Button variant="secondary" onClick={() => setShowCreateTask(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleCreateTask}
+              disabled={!newTask.name.trim()}
+            >
+              Create Task
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Schedule Meeting Modal */}
+      <Modal
+        isOpen={showScheduleMeeting}
+        onClose={() => setShowScheduleMeeting(false)}
+        title="Schedule Meeting"
+        size="md"
+      >
+        <div className="space-y-4">
+          <Input
+            label="Meeting Title"
+            placeholder="Enter meeting title"
+            value={newMeeting.title}
+            onChange={(e) => setNewMeeting({ ...newMeeting, title: e.target.value })}
+            required
+          />
+          <Textarea
+            label="Description"
+            placeholder="Meeting agenda..."
+            value={newMeeting.description}
+            onChange={(e) => setNewMeeting({ ...newMeeting, description: e.target.value })}
+            rows={3}
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Date"
+              type="date"
+              value={newMeeting.date}
+              onChange={(e) => setNewMeeting({ ...newMeeting, date: e.target.value })}
+            />
+            <Input
+              label="Time"
+              type="time"
+              value={newMeeting.time}
+              onChange={(e) => setNewMeeting({ ...newMeeting, time: e.target.value })}
+            />
+          </div>
+          <Select
+            label="Duration"
+            options={[
+              { value: '30', label: '30 minutes' },
+              { value: '60', label: '1 hour' },
+              { value: '90', label: '1.5 hours' },
+              { value: '120', label: '2 hours' }
+            ]}
+            value={newMeeting.duration}
+            onChange={(e) => setNewMeeting({ ...newMeeting, duration: e.target.value })}
+          />
+          <Textarea
+            label="Attendees"
+            placeholder="Enter email addresses separated by commas"
+            value={newMeeting.attendees}
+            onChange={(e) => setNewMeeting({ ...newMeeting, attendees: e.target.value })}
+            rows={2}
+          />
+          <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+            <Button variant="secondary" onClick={() => setShowScheduleMeeting(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleScheduleMeeting}
+              disabled={!newMeeting.title.trim() || !newMeeting.date || !newMeeting.time}
+            >
+              Schedule Meeting
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Invite Member Modal */}
+      <Modal
+        isOpen={showInviteMember}
+        onClose={() => setShowInviteMember(false)}
+        title="Invite Team Member"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">
+            Send an invitation to join your workspace. They&apos;ll receive an email with instructions to get started.
+          </p>
+          <Input
+            label="Email Address"
+            type="email"
+            placeholder="colleague@example.com"
+            value={inviteEmail}
+            onChange={(e) => setInviteEmail(e.target.value)}
+            required
+          />
+          <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+            <Button variant="secondary" onClick={() => setShowInviteMember(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleInviteMember}
+              disabled={!inviteEmail.includes('@')}
+            >
+              Send Invitation
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Toast Notification */}
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type="success"
+          onClose={() => setShowToast(false)}
+        />
+      )}
     </main>
   );
 } 

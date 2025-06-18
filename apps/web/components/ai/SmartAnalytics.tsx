@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, Badge, Progress, Button } from '@ui';
+import { Card, Badge, Progress, Button, Modal, Toast } from '@ui';
 import { useProjects, useTasks } from '@/contexts/AppContext';
 
 interface Insight {
@@ -27,6 +27,10 @@ export function SmartAnalytics({ projectId, timeframe = '30d' }: SmartAnalyticsP
     const [insights, setInsights] = useState<Insight[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedInsightType, setSelectedInsightType] = useState<string>('all');
+    const [showActionModal, setShowActionModal] = useState(false);
+    const [selectedInsight, setSelectedInsight] = useState<Insight | null>(null);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
 
     useEffect(() => {
         const generateInsights = () => {
@@ -207,6 +211,43 @@ export function SmartAnalytics({ projectId, timeframe = '30d' }: SmartAnalyticsP
         }
     };
 
+    const showNotification = (message: string) => {
+        setToastMessage(message);
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+    };
+
+    const handleTakeAction = (insight: Insight) => {
+        setSelectedInsight(insight);
+        setShowActionModal(true);
+    };
+
+    const executeAction = () => {
+        if (!selectedInsight) return;
+
+        // Simulate taking action based on insight type
+        switch (selectedInsight.type) {
+            case 'risk':
+                if (selectedInsight.id === 'risk-1') {
+                    showNotification('Workload redistribution initiated. Sarah Chen\'s tasks are being reviewed.');
+                } else if (selectedInsight.id === 'risk-2') {
+                    showNotification('Dependencies update process started. Security patches will be applied.');
+                }
+                break;
+            case 'prediction':
+                showNotification('Resource allocation optimization scheduled for next sprint.');
+                break;
+            case 'recommendation':
+                showNotification('Task prioritization strategy review added to next team meeting agenda.');
+                break;
+            default:
+                showNotification(`Action executed for: ${selectedInsight.title}`);
+        }
+
+        setShowActionModal(false);
+        setSelectedInsight(null);
+    };
+
     const filteredInsights = selectedInsightType === 'all'
         ? insights
         : insights.filter(insight => insight.type === selectedInsightType);
@@ -347,7 +388,7 @@ export function SmartAnalytics({ projectId, timeframe = '30d' }: SmartAnalyticsP
                                         <span className="text-sm text-gray-600">Recommended Action: {insight.action}</span>
                                         <Button
                                             variant={insight.severity === 'critical' ? 'danger' : 'primary'}
-                                            onClick={() => console.log('Taking action for:', insight.id)}
+                                            onClick={() => handleTakeAction(insight)}
                                         >
                                             Take Action
                                         </Button>
@@ -376,6 +417,63 @@ export function SmartAnalytics({ projectId, timeframe = '30d' }: SmartAnalyticsP
                         </p>
                     </div>
                 </Card>
+            )}
+
+            {/* Action Modal */}
+            <Modal
+                isOpen={showActionModal}
+                onClose={() => {
+                    setShowActionModal(false);
+                    setSelectedInsight(null);
+                }}
+                title="Confirm Action"
+                size="md"
+            >
+                {selectedInsight && (
+                    <div className="space-y-4">
+                        <div className="p-4 bg-gray-50 rounded-lg">
+                            <h4 className="font-medium text-gray-900 mb-2">{selectedInsight.title}</h4>
+                            <p className="text-sm text-gray-600">{selectedInsight.description}</p>
+                        </div>
+
+                        {selectedInsight.action && (
+                            <div className="p-4 bg-blue-50 rounded-lg">
+                                <p className="text-sm font-medium text-blue-900 mb-1">Recommended Action:</p>
+                                <p className="text-sm text-blue-700">{selectedInsight.action}</p>
+                            </div>
+                        )}
+
+                        <div className="border-t pt-4">
+                            <p className="text-sm text-gray-600">
+                                {selectedInsight.type === 'risk' && 'This will initiate the risk mitigation process.'}
+                                {selectedInsight.type === 'prediction' && 'This will schedule resource optimization for your team.'}
+                                {selectedInsight.type === 'recommendation' && 'This will add the recommendation to your action items.'}
+                                {(selectedInsight.type === 'performance' || selectedInsight.type === 'trend') && 'This will log the insight for future reference.'}
+                            </p>
+                        </div>
+
+                        <div className="flex justify-end space-x-3 pt-4">
+                            <Button variant="secondary" onClick={() => setShowActionModal(false)}>
+                                Cancel
+                            </Button>
+                            <Button
+                                variant={selectedInsight.severity === 'critical' ? 'danger' : 'primary'}
+                                onClick={executeAction}
+                            >
+                                Execute Action
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </Modal>
+
+            {/* Toast Notification */}
+            {showToast && (
+                <Toast
+                    message={toastMessage}
+                    type="success"
+                    onClose={() => setShowToast(false)}
+                />
             )}
         </div>
     );
