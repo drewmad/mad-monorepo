@@ -178,12 +178,24 @@ export default function DashboardPage() {
     }
   ];
 
-  const handleTaskCreate = (task: any) => {
+  const handleTaskCreate = (task: {
+    id?: string;
+    name: string;
+    description?: string;
+    priority?: 'low' | 'medium' | 'high' | 'urgent';
+    estimated_hours?: number;
+    assignee?: string;
+  }) => {
     console.log('Creating new task:', task);
     // In a real app, this would create a new task
   };
 
-  const handleSubtaskGenerate = (parentTaskId: string, subtasks: any[]) => {
+  const handleSubtaskGenerate = (parentTaskId: string, subtasks: {
+    name: string;
+    description?: string;
+    priority?: 'low' | 'medium' | 'high' | 'urgent';
+    estimated_hours?: number;
+  }[]) => {
     console.log('Generating subtasks for:', parentTaskId, subtasks);
     // In a real app, this would create subtasks
   };
