@@ -3,7 +3,13 @@
   "compilerOptions": {
     "outDir": "dist",
     "declaration": true,
-    "emitDeclarationOnly": true
+    "declarationMap": true,
+    "sourceMap": true,
+    "rootDir": ".",
+    "composite": false,
+    "tsBuildInfoFile": null,
+    "removeComments": true
   },
-  "include": ["src", "types.ts"]
-} 
+  "include": ["src/**/*", "types.ts"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -9,11 +9,8 @@ const nextConfig = {
     dirs: ['app', 'components', 'lib']
   },
   images: {
-    domains: ['avatars.githubusercontent.com', 'images.unsplash.com']
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+    domains: ['avatars.githubusercontent.com', 'images.unsplash.com', 'i.pravatar.cc']
+  }
 };
 
-module.exports = nextConfig; 
+module.exports = nextConfig;

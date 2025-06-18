@@ -1,6 +1,7 @@
+// apps/web/lib/supabase-server.ts
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
-import { Database } from '@db/types';
+import type { Database } from '@db';
 
 export const supabaseServer = async () => {
   const cookieStore = await cookies();
@@ -27,4 +28,24 @@ export const supabaseServer = async () => {
       },
     }
   );
-}; 
+};
+
+// apps/web/lib/supabase-browser.ts
+import { createBrowserClient } from '@supabase/ssr';
+import type { Database } from '@db';
+
+export const supabaseBrowser = () =>
+  createBrowserClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+
+// apps/web/lib/supabase-admin.ts
+import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@db';
+
+export const supabaseAdmin = () =>
+    createClient<Database>(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
