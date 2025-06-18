@@ -2,18 +2,5 @@
   "version": 2,
   "buildCommand": "pnpm build",
   "installCommand": "pnpm install --frozen-lockfile --prefer-offline",
-  "outputDirectory": "apps/web/.next",
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/apps/api/$1"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/apps/web/$1"
-    }
-  ]
+  "outputDirectory": "apps/web/.next"
 }
