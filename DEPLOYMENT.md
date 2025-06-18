@@ -26,12 +26,36 @@ Set these in Vercel Dashboard → Project Settings → Environment Variables:
 **Optional:**
 - [ ] `CI_E2E` - Set to `false` to skip E2E tests in CI
 
+**Telemetry (Auto-configured):**
+- [ ] `NEXT_TELEMETRY_DISABLED=1` - Disables Next.js telemetry
+- [ ] `TURBO_TELEMETRY_DISABLED=1` - Disables Turborepo telemetry
+
 ### 4. **Vercel Configuration**
 Ensure these settings in Vercel:
 - [ ] **Node.js Version:** 20.x
 - [ ] **Install Command:** `pnpm install --frozen-lockfile --prefer-offline`
 - [ ] **Build Command:** `pnpm build`
 - [ ] **Output Directory:** `apps/web/.next`
+
+## Telemetry Opt-out
+
+This project has telemetry disabled for both Next.js and Turborepo:
+
+### **Local Development**
+Telemetry is automatically disabled via:
+- Environment variables in all npm scripts
+- Local telemetry settings: `npx next telemetry disable` & `npx turbo telemetry disable`
+
+### **CI/CD & Deployment**
+- GitHub Actions workflow includes telemetry opt-out environment variables
+- Vercel deployment automatically sets `NEXT_TELEMETRY_DISABLED=1` and `TURBO_TELEMETRY_DISABLED=1`
+
+### **Team Setup**
+New team members should run:
+```bash
+npx turbo telemetry disable
+npx next telemetry disable
+```
 
 ## Deployment Process
 
@@ -81,6 +105,13 @@ git commit -m "chore: add pnpm-lock.yaml"
 ### Issue: "Build failed"
 **Solution:** Run `pnpm validate:deploy` locally to catch issues before deployment
 
+### Issue: "Telemetry collection notices"
+**Solution:** Telemetry is already disabled project-wide. If you see notices, run:
+```bash
+npx turbo telemetry disable
+npx next telemetry disable
+```
+
 ## Emergency Rollback
 
 If deployment fails:
@@ -97,6 +128,7 @@ If deployment fails:
 - ✅ Set up proper environment variables
 - ✅ Monitor deployments in Vercel Dashboard
 - ✅ Test deployed application after each deployment
+- ✅ Telemetry is disabled project-wide for privacy
 
 ## Support
 

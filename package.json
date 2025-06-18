@@ -7,11 +7,11 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo run dev --parallel",
-    "build": "turbo run build",
-    "lint": "turbo run lint",
+    "dev": "NEXT_TELEMETRY_DISABLED=1 TURBO_TELEMETRY_DISABLED=1 turbo run dev --parallel",
+    "build": "NEXT_TELEMETRY_DISABLED=1 TURBO_TELEMETRY_DISABLED=1 turbo run build",
+    "lint": "NEXT_TELEMETRY_DISABLED=1 TURBO_TELEMETRY_DISABLED=1 turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "test": "vitest run && pnpm e2e",
+    "test": "NEXT_TELEMETRY_DISABLED=1 vitest run && pnpm e2e",
     "e2e": "playwright test",
     "e2e:headed": "playwright test --headed",
     "cz": "git-cz",
@@ -19,7 +19,7 @@
     "typecheck": "tsc --noEmit",
     "validate:imports": "./scripts/validate-imports.sh",
     "validate:all": "pnpm validate:imports && pnpm typecheck && pnpm lint",
-    "validate:deploy": "./scripts/validate-deploy.sh",
+    "validate:deploy": "NEXT_TELEMETRY_DISABLED=1 TURBO_TELEMETRY_DISABLED=1 ./scripts/validate-deploy.sh",
     "prevalidate:deploy": "pnpm validate:imports",
     "preinstall": "npx only-allow pnpm",
     "setup": "./scripts/setup.sh"

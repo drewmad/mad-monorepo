@@ -3,5 +3,9 @@
   "buildCommand": "cd ../.. && pnpm build --filter=@apps/web",
   "installCommand": "pnpm install --frozen-lockfile --prefer-offline",
   "outputDirectory": "apps/web/.next",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "env": {
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "TURBO_TELEMETRY_DISABLED": "1"
+  }
 }
