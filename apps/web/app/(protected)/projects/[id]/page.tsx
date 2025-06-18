@@ -18,9 +18,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     redirect('/sign-in');
   }
 
-  const project = await getProject(params.id);
+  const { project, error } = await getProject(params.id);
 
-  if (!project) {
+  if (error || !project) {
     notFound();
   }
 
@@ -38,7 +38,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         <p className="text-gray-500">{project.status}</p>
       </div>
 
-      <TaskTable tasks={project.tasks ?? []} />
+      <TaskTable tasks={[]} />
     </div>
   );
 } 
