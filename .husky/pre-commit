@@ -63,7 +63,8 @@ fi
 # Run quick validation on staged files
 if [ -n "$STAGED_FILES" ]; then
   echo "🔍 Running TypeScript check on staged files..."
-  npx tsc --noEmit --skipLibCheck $STAGED_FILES || {
+  # Use proper project-based type checking instead of individual files
+  pnpm typecheck || {
     echo "❌ TypeScript errors found in staged files"
     exit 1
   }
