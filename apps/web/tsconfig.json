@@ -27,6 +27,12 @@
       "@/*": [
         "./*"
       ],
+      "@ui": [
+        "../../packages/ui/src/index.ts"
+      ],
+      "@ui/*": [
+        "../../packages/ui/src/*"
+      ],
       "@db/*": [
         "../../packages/db/src/*"
       ]

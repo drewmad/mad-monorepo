@@ -1,7 +1,7 @@
 import { getSession } from '@/lib/user';
 import { redirect } from 'next/navigation';
 import { listProjects } from '@/actions/projects';
-import { KpiCard } from '@ui/KpiCard';
+import { KpiCard } from '@ui';
 import { Folder, List, CheckCircle, Users } from 'lucide-react';
 import { ProjectsGrid } from '@/components/projects/ProjectsGrid';
 

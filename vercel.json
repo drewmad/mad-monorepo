@@ -1,6 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "pnpm build",
+  "buildCommand": "cd ../.. && pnpm build --filter=@apps/web",
   "installCommand": "pnpm install --frozen-lockfile --prefer-offline",
-  "outputDirectory": "apps/web/.next"
+  "outputDirectory": "apps/web/.next",
+  "framework": "nextjs"
 }

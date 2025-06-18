@@ -15,7 +15,7 @@ export async function listProjects(workspaceId: string) {
        tasks:tasks(count),
        time_last_30:time_tracked_last_30_days(total_hours)`
     )
-    .eq('workspace_id', workspaceId);
+    .eq('workspace_id', workspaceId as string);
   if (error) throw error;
   return data;
 }
@@ -33,7 +33,7 @@ export async function getProject(id: string) {
       budget,
       tasks ( id, name, status, priority, assignee, due_date, time_tracked )
     `)
-    .eq('id', id)
+    .eq('id', id as string)
     .single();
   if (error) throw error;
   return data;

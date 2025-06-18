@@ -1,6 +1,6 @@
 import { getSession } from '@/lib/user';
 import { redirect } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@ui';
 
 export default async function Settings() {
   const session = await getSession();

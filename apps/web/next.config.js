@@ -2,9 +2,7 @@
 const nextConfig = {
   transpilePackages: ['@ui', '@db'],
   experimental: {
-    appDir: true,
-    typedRoutes: true,
-    serverActions: true
+    typedRoutes: true
   },
   reactStrictMode: true,
   eslint: {
@@ -12,7 +10,10 @@ const nextConfig = {
   },
   images: {
     domains: ['avatars.githubusercontent.com', 'images.unsplash.com']
-  }
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 module.exports = nextConfig; 

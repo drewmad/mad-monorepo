@@ -1,0 +1,186 @@
+# Cursor Rules for Mad Engineering Monorepo
+
+## Project Structure
+This is a pnpm workspace monorepo with the following structure:
+- `/apps/*` - Application packages (Next.js web app, docs)
+- `/packages/*` - Shared packages (@ui, @db)
+- Root configuration files for Turbo, pnpm, and TypeScript
+
+## Import Rules
+
+### 1. Package Imports
+- **ALWAYS** import from package root index: `import { Component } from '@ui'`
+- **NEVER** import from subpaths: `import { Component } from '@ui/Component'`
+- **NEVER** import from dist folders: `import { Component } from '@ui/dist'`
+
+### 2. Internal Package Structure
+When creating components in packages:
+```typescript
+// packages/ui/src/Component.tsx
+export const Component = () => { ... }
+
+// packages/ui/src/index.ts
+export * from './Component';
+```
+
+### 3. Cross-Package Dependencies
+- Workspace packages use `workspace:*` protocol in package.json
+- External packages use specific versions
+
+## TypeScript Configuration
+
+### 1. Path Mappings
+In `apps/web/tsconfig.json`, ensure ALL workspace packages are mapped:
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"],
+      "@ui": ["../../packages/ui/src/index.ts"],
+      "@ui/*": ["../../packages/ui/src/*"],
+      "@db": ["../../packages/db/src/index.ts"],
+      "@db/*": ["../../packages/db/src/*"]
+    }
+  }
+}
+```
+
+### 2. Package Main/Types Fields
+For packages meant to be consumed by Next.js with transpilePackages:
+```json
+{
+  "name": "@ui",
+  "main": "src/index.ts",
+  "types": "src/index.ts"
+}
+```
+
+For packages that need to be built:
+```json
+{
+  "name": "@db",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  }
+}
+```
+
+## Next.js Configuration
+
+### 1. TranspilePackages
+In `next.config.js`, list all workspace packages:
+```javascript
+const nextConfig = {
+  transpilePackages: ['@ui', '@db'],
+  // ... other config
+};
+```
+
+### 2. Module Resolution
+- Next.js will transpile TypeScript packages listed in transpilePackages
+- No build step needed for UI packages used only by Next.js
+
+## Vercel Deployment
+
+### 1. Build Commands
+- Use Turbo for coordinated builds: `pnpm build`
+- Ensure `turbo.json` has proper dependency graph
+
+### 2. Install Commands
+Always use frozen lockfile:
+```json
+{
+  "installCommand": "pnpm install --frozen-lockfile --prefer-offline"
+}
+```
+
+## Common Pitfalls to Avoid
+
+### ❌ DON'T: Import from subpaths
+```typescript
+// Wrong
+import { Button } from '@ui/Button';
+import { KpiCard } from '@ui/KpiCard';
+```
+
+### ✅ DO: Import from package root
+```typescript
+// Correct
+import { Button, KpiCard } from '@ui';
+```
+
+### ❌ DON'T: Mix import styles
+```typescript
+// Wrong - inconsistent
+import { Button } from '@ui';
+import { Card } from '@ui/Card';
+```
+
+### ✅ DO: Use consistent imports
+```typescript
+// Correct - all from root
+import { Button, Card } from '@ui';
+```
+
+### ❌ DON'T: Import from dist in development
+```typescript
+// Wrong
+import { createClient } from '@db/dist/client';
+```
+
+### ✅ DO: Import from source
+```typescript
+// Correct
+import { createClient } from '@db';
+```
+
+## File Creation Rules
+
+### When creating new components in @ui:
+1. Create component file: `packages/ui/src/NewComponent.tsx`
+2. Export from index: Add `export * from './NewComponent';` to `packages/ui/src/index.ts`
+3. Import in apps: `import { NewComponent } from '@ui';`
+
+### When creating new utilities in @db:
+1. Create utility file: `packages/db/src/newUtility.ts`
+2. Export from index: Add `export * from './newUtility';` to `packages/db/src/index.ts`
+3. Import in apps: `import { newUtility } from '@db';`
+
+## Pre-Deployment Checklist
+
+Before pushing code that will be deployed:
+1. Run `pnpm build` at root to ensure all packages build
+2. Check all imports follow the pattern `from '@package'` not `from '@package/subpath'`
+3. Verify `transpilePackages` in next.config.js includes all workspace packages
+4. Ensure tsconfig paths are properly configured for all workspace packages
+5. Run `pnpm typecheck` to catch any resolution issues
+
+## Quick Fixes for Common Errors
+
+### "Module not found: Can't resolve '@ui'"
+1. Check `transpilePackages` in next.config.js
+2. Verify tsconfig.json has proper path mappings
+3. Ensure package.json has correct main/types fields
+
+### "Cannot find module '@ui/Component'"
+1. Change import to `import { Component } from '@ui'`
+2. Ensure Component is exported from packages/ui/src/index.ts
+
+### Build fails on Vercel but works locally
+1. Check for case sensitivity in imports (Linux vs macOS/Windows)
+2. Verify all workspace packages are committed
+3. Ensure pnpm-lock.yaml is up to date and committed
+4. Check that no imports use absolute local paths
+
+## AI Assistant Instructions
+
+When generating code for this monorepo:
+1. Always use root-level imports from packages (@ui, @db)
+2. Never suggest subpath imports like @ui/Button
+3. When creating new components, always update the package's index.ts
+4. Ensure TypeScript paths are configured for any new packages
+5. Add new packages to transpilePackages in next.config.js
+6. Use workspace:* protocol for internal dependencies
+7. Maintain consistent import patterns across all files
