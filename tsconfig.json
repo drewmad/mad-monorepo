@@ -28,6 +28,12 @@
       ],
       "@mad/db/*": [
         "packages/db/src/*"
+      ],
+      "@db": [
+        "packages/db/src/index.ts"
+      ],
+      "@db/*": [
+        "packages/db/src/*"
       ]
     }
   },
