@@ -1,13 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
-import { createProject, createClient } from '@mad/db';
+process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost';
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'anon-key';
 
-vi.mock('@mad/db/src/client', () => ({
-  supabaseClient: {
-    from: () => ({
-      insert: () => ({ select: () => ({ single: () => ({ data: {}, error: null }) }) })
-    })
-  }
-}));
+import { createProject, createClient, supabaseClient } from '@db';
+
+vi.spyOn(supabaseClient, 'from').mockReturnValue({
+  insert: () => ({ select: () => ({ single: () => ({ data: {}, error: null }) }) })
+} as unknown as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
 describe('DB helper', () => {
   it('validates input via zod', async () => {
@@ -18,7 +17,7 @@ describe('DB helper', () => {
   });
 });
 
-describe('@mad/db package', () => {
+describe('@db package', () => {
   it('should export createClient function', () => {
     expect(typeof createClient).toBe('function');
   });
@@ -38,3 +37,4 @@ describe('@mad/db package', () => {
     expect(project.name).toBe('Test Project');
   });
 }); 
+
