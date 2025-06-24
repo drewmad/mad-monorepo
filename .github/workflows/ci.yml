@@ -10,11 +10,59 @@ env:
   TURBO_TELEMETRY_DISABLED: 1
 
 jobs:
+  # Quick fail job - runs basic checks first
+  quick-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: "pnpm"
+
+      - name: Check lockfile exists
+        run: |
+          if [ ! -f "pnpm-lock.yaml" ]; then
+            echo "❌ pnpm-lock.yaml is missing!"
+            echo "Run 'pnpm install' and commit the lockfile"
+            exit 1
+          fi
+          echo "✅ pnpm-lock.yaml exists"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint & Type check (parallel)
+        run: |
+          pnpm lint &
+          lint_pid=$!
+          pnpm typecheck &
+          type_pid=$!
+          
+          wait $lint_pid
+          lint_exit=$?
+          wait $type_pid
+          type_exit=$?
+          
+          if [ $lint_exit -ne 0 ] || [ $type_exit -ne 0 ]; then
+            exit 1
+          fi
+
+  # Full validation only if quick-check passes
   validate:
+    needs: quick-check
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x]  # Only test on latest LTS
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,23 +78,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
 
-      - name: Check lockfile exists
-        run: |
-          if [ ! -f "pnpm-lock.yaml" ]; then
-            echo "❌ pnpm-lock.yaml is missing!"
-            echo "Run 'pnpm install' and commit the lockfile"
-            exit 1
-          fi
-          echo "✅ pnpm-lock.yaml exists"
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Type checking
-        run: pnpm typecheck
-
-      - name: Lint
-        run: pnpm lint
 
       - name: Build
         run: pnpm build
@@ -70,4 +103,33 @@ jobs:
             echo "❌ pnpm-lock.yaml has uncommitted changes"
             echo "Please run 'pnpm install' and commit the changes"
             exit 1
-          fi 
+          fi
+
+  # Optional: Test on Node 18 only if needed
+  validate-legacy:
+    needs: quick-check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test
+        run: CI_E2E=false pnpm test
