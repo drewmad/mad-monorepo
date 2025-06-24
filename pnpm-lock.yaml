@@ -213,6 +213,9 @@ importers:
         specifier: ^18.3.7
         version: 18.3.7(@types/react@18.3.23)
 
+  packages/sidecar-submenu:
+    devDependencies: {}
+
 packages:
 
   /@adobe/css-tools@4.4.3:
