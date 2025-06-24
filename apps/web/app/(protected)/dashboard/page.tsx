@@ -1,11 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, KpiCard, Button, Badge, Tabs, TabsList, TabsTrigger, TabsContent, Modal, Input, Textarea, Select, Toast } from '@ui';
+import { Card, KpiCard, Button, Badge, Modal, Input, Textarea, Select, Toast } from '@ui';
 import { ProjectsGrid } from '@/components/projects';
-import { TaskTable } from '@/components/tasks';
-import { TaskSuggestions } from '@/components/ai/TaskSuggestions';
-import { SmartAnalytics } from '@/components/ai/SmartAnalytics';
 import { Plus, Download, Calendar, Users } from 'lucide-react';
 import type { Database } from '@mad/db';
 import { getProjects, createProject, getProjectStats } from '@/actions/projects';
@@ -201,29 +198,6 @@ export default function DashboardPage() {
     }
   ];
 
-  const handleTaskCreate = (task: Partial<{
-    id: string;
-    name: string;
-    description: string;
-    priority: 'low' | 'medium' | 'high' | 'urgent';
-    estimated_hours: number;
-    assignee: string;
-  }>) => {
-    console.log('Creating new task:', task);
-    showNotification('Task created successfully!');
-  };
-
-  const handleSubtaskGenerate = (parentTaskId: string, subtasks: Partial<{
-    id: string;
-    name: string;
-    description: string;
-    priority: 'low' | 'medium' | 'high' | 'urgent';
-    estimated_hours: number;
-    assignee: string;
-  }>[]) => {
-    console.log('Generating subtasks for:', parentTaskId, subtasks);
-    showNotification(`${subtasks.length} subtasks generated!`);
-  };
 
   const showNotification = (message: string) => {
     setToastMessage(message);
@@ -507,18 +481,9 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Main Content Tabs */}
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="ai-insights">AI Insights</TabsTrigger>
-          <TabsTrigger value="projects">Projects</TabsTrigger>
-          <TabsTrigger value="tasks">Tasks</TabsTrigger>
-        </TabsList>
-
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Overview */}
+      <div className="space-y-6 mt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Recent Projects */}
             <div className="lg:col-span-2">
               <Card className="p-6">
@@ -581,73 +546,7 @@ export default function DashboardPage() {
               </Card>
             </div>
           </div>
-        </TabsContent>
-
-        {/* AI Insights Tab */}
-        <TabsContent value="ai-insights" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Task Suggestions */}
-            <div>
-              <TaskSuggestions
-                projectId="dashboard"
-                projectName="All Projects"
-                projectDescription="AI-powered task suggestions for all your projects"
-                onTaskCreate={handleTaskCreate}
-                onSubtaskGenerate={handleSubtaskGenerate}
-              />
-            </div>
-
-            {/* Smart Analytics */}
-            <div>
-              <SmartAnalytics />
-            </div>
-          </div>
-        </TabsContent>
-
-        {/* Projects Tab */}
-        <TabsContent value="projects" className="space-y-6">
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">All Projects</h2>
-              <div className="flex items-center space-x-3">
-                <select className="text-sm border border-gray-300 rounded-md px-3 py-2 bg-white">
-                  <option>All Status</option>
-                  <option>Planning</option>
-                  <option>In Progress</option>
-                  <option>Completed</option>
-                </select>
-                <Button variant="primary" onClick={() => setShowCreateProject(true)}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Project
-                </Button>
-              </div>
-            </div>
-            <ProjectsGrid projects={projects} />
-          </Card>
-        </TabsContent>
-
-        {/* Tasks Tab */}
-        <TabsContent value="tasks" className="space-y-6">
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">Recent Tasks</h2>
-              <div className="flex items-center space-x-3">
-                <select className="text-sm border border-gray-300 rounded-md px-3 py-2 bg-white">
-                  <option>All Tasks</option>
-                  <option>My Tasks</option>
-                  <option>Overdue</option>
-                  <option>Completed</option>
-                </select>
-                <Button variant="primary" onClick={() => setShowCreateTask(true)}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Task
-                </Button>
-              </div>
-            </div>
-            <TaskTable tasks={tasks} />
-          </Card>
-        </TabsContent>
-      </Tabs>
+        </div>
 
       {/* Quick Actions Footer */}
       <Card className="p-4">

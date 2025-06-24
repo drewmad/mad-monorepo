@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Avatar, Badge, Input, Modal, Select, Toast } from '@ui';
+import { Card, Button, Avatar, Badge, Input, Modal, Select, Toast } from '@ui';
 import { Search, Plus, Mail, Phone, Building, Calendar, Users, MessageCircle, Settings } from 'lucide-react';
 import { inviteTeamMember } from '@/actions/workspace';
 import { createDirectMessage } from '@/actions/messages';
@@ -412,26 +412,21 @@ export function DirectoryTabs({ workspaceId, currentUserId, members, employees, 
     ];
 
     return (
-        <div>
-            <Tabs defaultValue="members" className="w-full">
-                <TabsList className="mb-6">
-                    <TabsTrigger value="members">Members ({members.length})</TabsTrigger>
-                    <TabsTrigger value="employees">Employees ({employees.length})</TabsTrigger>
-                    <TabsTrigger value="companies">Companies ({companies.length})</TabsTrigger>
-                </TabsList>
+        <div className="space-y-12">
+            <section id="members" className="space-y-6">
+                <h2 className="text-xl font-semibold mb-4">Members ({members.length})</h2>
+                {tabs[0].content}
+            </section>
 
-                <TabsContent value="members">
-                    {tabs[0].content}
-                </TabsContent>
+            <section id="employees" className="space-y-6">
+                <h2 className="text-xl font-semibold mb-4">Employees ({employees.length})</h2>
+                {tabs[1].content}
+            </section>
 
-                <TabsContent value="employees">
-                    {tabs[1].content}
-                </TabsContent>
-
-                <TabsContent value="companies">
-                    {tabs[2].content}
-                </TabsContent>
-            </Tabs>
+            <section id="companies" className="space-y-6">
+                <h2 className="text-xl font-semibold mb-4">Companies ({companies.length})</h2>
+                {tabs[2].content}
+            </section>
 
             {/* Add Member Modal */}
             <Modal

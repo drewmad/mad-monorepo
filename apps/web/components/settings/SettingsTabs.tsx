@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTheme } from 'next-themes';
-import { Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Input, Select, Toggle, Badge, Modal, Toast } from '@ui';
+import { Card, Button, Input, Select, Toggle, Badge, Modal, Toast } from '@ui';
 import { Shield, CreditCard, AlertTriangle, Settings, Users, Key, Clock, Bell } from 'lucide-react';
 
 export function SettingsTabs() {
@@ -576,51 +576,46 @@ export function SettingsTabs() {
     ];
 
     return (
-        <div>
-            <Tabs defaultValue="general" className="w-full">
-                <TabsList className="mb-6">
-                    <TabsTrigger value="general" className="flex items-center gap-2">
-                        <Settings className="h-4 w-4" />
-                        General
-                    </TabsTrigger>
-                    <TabsTrigger value="roles" className="flex items-center gap-2">
-                        <Users className="h-4 w-4" />
-                        Roles & Permissions
-                    </TabsTrigger>
-                    <TabsTrigger value="security" className="flex items-center gap-2">
-                        <Shield className="h-4 w-4" />
-                        Security
-                    </TabsTrigger>
-                    <TabsTrigger value="billing" className="flex items-center gap-2">
-                        <CreditCard className="h-4 w-4" />
-                        Billing & Subscription
-                    </TabsTrigger>
-                    <TabsTrigger value="danger" className="flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4" />
-                        Danger Zone
-                    </TabsTrigger>
-                </TabsList>
+        <div className="space-y-12">
+            <section id="general" className="space-y-6">
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    General
+                </h2>
+                {tabs[0].content}
+            </section>
 
-                <TabsContent value="general">
-                    {tabs[0].content}
-                </TabsContent>
+            <section id="roles" className="space-y-6">
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <Users className="h-4 w-4" />
+                    Roles & Permissions
+                </h2>
+                {tabs[1].content}
+            </section>
 
-                <TabsContent value="roles">
-                    {tabs[1].content}
-                </TabsContent>
+            <section id="security" className="space-y-6">
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <Shield className="h-4 w-4" />
+                    Security
+                </h2>
+                {tabs[2].content}
+            </section>
 
-                <TabsContent value="security">
-                    {tabs[2].content}
-                </TabsContent>
+            <section id="billing" className="space-y-6">
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <CreditCard className="h-4 w-4" />
+                    Billing & Subscription
+                </h2>
+                {tabs[3].content}
+            </section>
 
-                <TabsContent value="billing">
-                    {tabs[3].content}
-                </TabsContent>
-
-                <TabsContent value="danger">
-                    {tabs[4].content}
-                </TabsContent>
-            </Tabs>
+            <section id="danger" className="space-y-6">
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" />
+                    Danger Zone
+                </h2>
+                {tabs[4].content}
+            </section>
 
             {/* Delete Workspace Modal */}
             <Modal
