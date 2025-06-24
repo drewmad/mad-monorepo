@@ -228,7 +228,6 @@ The dashboard automatically:
 
 - **Real-time stats**: Project counts, task completion rates, etc.
 - **Dynamic project lists**: Shows actual projects from database
-- **Working quick actions**: Create projects, tasks, and events that persist
 - **Export functionality**: Downloads real data instead of mock data
 
 ## Error Handling
