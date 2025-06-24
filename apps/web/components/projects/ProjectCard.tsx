@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { Card, Badge, Progress, Avatar } from '@ui';
 import { useModal } from '@/contexts/AppContext';
+import { deleteProject } from '@/actions/projects';
+import { useRouter } from 'next/navigation';
 
 interface Project {
   id: string;
@@ -38,6 +40,7 @@ export function ProjectCard({
   completedTasks = 0
 }: ProjectCardProps) {
   const { openModal } = useModal();
+  const router = useRouter();
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -79,9 +82,9 @@ export function ProjectCard({
       title: 'Delete Project',
       message: `Are you sure you want to delete "${project.name}"? This action cannot be undone.`,
       confirmText: 'Delete',
-      onConfirm: () => {
-        // TODO: Implement project deletion
-        console.log('Deleting project:', project.id);
+      onConfirm: async () => {
+        await deleteProject(project.id);
+        router.refresh();
       }
     });
   };
