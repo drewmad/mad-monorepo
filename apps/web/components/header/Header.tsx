@@ -6,6 +6,9 @@ import { useTheme } from 'next-themes';
 import { supabaseBrowser } from '@/lib/supabase-browser';
 import { useRouter } from 'next/navigation';
 import { Dropdown, DropdownItem, Badge, Input } from '@ui';
+import { searchUsers } from '@/actions/workspace';
+import { searchMessages } from '@/actions/messages';
+import { useWorkspaces } from '@/contexts/AppContext';
 
 interface HeaderProps {
   user: {
@@ -18,9 +21,16 @@ interface HeaderProps {
 export default function Header({ user }: HeaderProps) {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
+  const { currentWorkspace } = useWorkspaces();
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearch, setShowSearch] = useState(false);
-  const [notifications] = useState([
+  const [searchResults, setSearchResults] = useState<{
+    id: string;
+    type: 'user' | 'message';
+    title: string;
+    subtitle?: string;
+  }[]>([]);
+  const [notifications, setNotifications] = useState([
     { id: '1', title: 'New task assigned', message: 'You have been assigned to "Design Review"', time: '5m ago', read: false },
     { id: '2', title: 'Project updated', message: 'Project Alpha has been updated', time: '1h ago', read: false },
     { id: '3', title: 'Message received', message: 'New message in #general', time: '2h ago', read: true },
@@ -65,24 +75,41 @@ export default function Header({ user }: HeaderProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      console.log('Searching for:', searchQuery);
-      // TODO: Implement actual search functionality
-      setShowSearch(false);
-      setSearchQuery('');
-    }
+    if (!searchQuery.trim() || !currentWorkspace?.id) return;
+
+    const [{ users }, { messages }] = await Promise.all([
+      searchUsers(currentWorkspace.id, searchQuery),
+      searchMessages(currentWorkspace.id, searchQuery)
+    ]);
+
+    const results = [
+      ...(users || []).map((u) => ({
+        id: u.id,
+        type: 'user' as const,
+        title: u.name,
+        subtitle: u.email
+      })),
+      ...(messages || []).map((m) => ({
+        id: m.id,
+        type: 'message' as const,
+        title: m.text,
+        subtitle: m.channel?.name
+      }))
+    ];
+
+    setSearchResults(results);
   };
 
   const markNotificationAsRead = (notificationId: string) => {
-    console.log('Marking notification as read:', notificationId);
-    // TODO: Implement mark as read functionality
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
+    );
   };
 
   const markAllNotificationsAsRead = () => {
-    console.log('Marking all notifications as read');
-    // TODO: Implement mark all as read functionality
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
   return (
@@ -102,23 +129,19 @@ export default function Header({ user }: HeaderProps) {
                 autoFocus
               />
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              {searchQuery && (
+              {searchQuery && searchResults.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto z-50">
                   <div className="p-3">
                     <div className="text-sm text-gray-500 mb-2">Search results for &ldquo;{searchQuery}&rdquo;</div>
                     <div className="space-y-2">
-                      <div className="p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer">
-                        <div className="font-medium text-gray-900 dark:text-gray-100">Project Alpha</div>
-                        <div className="text-sm text-gray-500">Active project in Engineering</div>
-                      </div>
-                      <div className="p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer">
-                        <div className="font-medium text-gray-900 dark:text-gray-100">Design Review Task</div>
-                        <div className="text-sm text-gray-500">Task in Project Alpha</div>
-                      </div>
-                      <div className="p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer">
-                        <div className="font-medium text-gray-900 dark:text-gray-100">#general</div>
-                        <div className="text-sm text-gray-500">Channel in workspace</div>
-                      </div>
+                      {searchResults.map((result) => (
+                        <div key={result.id} className="p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer">
+                          <div className="font-medium text-gray-900 dark:text-gray-100">{result.title}</div>
+                          {result.subtitle && (
+                            <div className="text-sm text-gray-500">{result.subtitle}</div>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
