@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Input, Avatar, Badge, Dropdown, DropdownItem, IconButton } from '@ui';
+import { SectionMenu } from './SectionMenu';
 import { createMessage, getMessages, createChannel } from '@/actions/messages';
 import type { Database } from '@mad/db';
 
@@ -215,8 +216,18 @@ export function MessagesInterface({
                     {/* Channels */}
                     {groupedChannels.channels && (
                         <div className="p-3">
-                            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                                Channels
+                            <div
+                                className="flex items-center justify-between mb-2 group"
+                                tabIndex={0}
+                            >
+                                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    Channels
+                                </div>
+                                <SectionMenu
+                                    onCreate={() => setShowChannelCreate(true)}
+                                    onManage={() => console.log('Manage channels')}
+                                    className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
+                                />
                             </div>
                             <div className="space-y-1">
                                 {groupedChannels.channels.map((channel) => (
@@ -246,8 +257,18 @@ export function MessagesInterface({
                     {/* Project Channels */}
                     {groupedChannels.project && (
                         <div className="p-3">
-                            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                                Projects
+                            <div
+                                className="flex items-center justify-between mb-2 group"
+                                tabIndex={0}
+                            >
+                                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    Projects
+                                </div>
+                                <SectionMenu
+                                    onCreate={() => setShowChannelCreate(true)}
+                                    onManage={() => console.log('Manage channels')}
+                                    className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
+                                />
                             </div>
                             <div className="space-y-1">
                                 {groupedChannels.project.map((channel) => (
@@ -277,8 +298,18 @@ export function MessagesInterface({
                     {/* Direct Messages */}
                     {groupedChannels.direct && (
                         <div className="p-3">
-                            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                                Direct Messages
+                            <div
+                                className="flex items-center justify-between mb-2 group"
+                                tabIndex={0}
+                            >
+                                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    Direct Messages
+                                </div>
+                                <SectionMenu
+                                    onCreate={() => setShowChannelCreate(true)}
+                                    onManage={() => console.log('Manage channels')}
+                                    className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
+                                />
                             </div>
                             <div className="space-y-1">
                                 {groupedChannels.direct.map((channel) => (

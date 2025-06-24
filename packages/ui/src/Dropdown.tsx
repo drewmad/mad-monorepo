@@ -8,13 +8,18 @@ interface DropdownProps {
     children: React.ReactNode;
     align?: 'left' | 'right';
     className?: string;
+    /**
+     * When true, the dropdown opens on hover or focus instead of click.
+     */
+    openOnHover?: boolean;
 }
 
 export const Dropdown = ({
     trigger,
     children,
     align = 'left',
-    className
+    className,
+    openOnHover = false
 }: DropdownProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -30,11 +35,34 @@ export const Dropdown = ({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    const openMenu = () => setIsOpen(true);
+    const closeMenu = () => setIsOpen(false);
+    const toggleMenu = () => setIsOpen((prev) => !prev);
+
+    const triggerProps = openOnHover
+        ? {
+              onMouseEnter: openMenu,
+              onFocus: openMenu,
+              onBlur: (e: React.FocusEvent) => {
+                  if (
+                      dropdownRef.current &&
+                      e.relatedTarget &&
+                      dropdownRef.current.contains(e.relatedTarget as Node)
+                  ) {
+                      return;
+                  }
+                  closeMenu();
+              }
+          }
+        : { onClick: toggleMenu };
+
+    const containerProps = openOnHover
+        ? { onMouseLeave: closeMenu }
+        : {};
+
     return (
-        <div className="relative inline-block" ref={dropdownRef}>
-            <div onClick={() => setIsOpen(!isOpen)}>
-                {trigger}
-            </div>
+        <div className="relative inline-block" ref={dropdownRef} {...containerProps}>
+            <div {...triggerProps}>{trigger}</div>
 
             {isOpen && (
                 <div
