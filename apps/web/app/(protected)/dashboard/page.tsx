@@ -6,7 +6,7 @@ import { ProjectsGrid } from '@/components/projects';
 import { TaskTable } from '@/components/tasks';
 import { TaskSuggestions } from '@/components/ai/TaskSuggestions';
 import { SmartAnalytics } from '@/components/ai/SmartAnalytics';
-import { Plus, Download, Calendar, Users } from 'lucide-react';
+import { Plus, Download } from 'lucide-react';
 import type { Database } from '@mad/db';
 import { getProjects, createProject, getProjectStats } from '@/actions/projects';
 import { getTasks, createTask, getTaskStats } from '@/actions/tasks';
@@ -648,32 +648,6 @@ export default function DashboardPage() {
           </Card>
         </TabsContent>
       </Tabs>
-
-      {/* Quick Actions Footer */}
-      <Card className="p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-medium text-gray-700">Quick Actions:</span>
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" onClick={() => setShowCreateTask(true)}>
-                <Plus className="w-4 h-4 mr-1" />
-                Add Task
-              </Button>
-              <Button variant="ghost" onClick={() => setShowScheduleMeeting(true)}>
-                <Calendar className="w-4 h-4 mr-1" />
-                Schedule Meeting
-              </Button>
-              <Button variant="ghost" onClick={() => setShowInviteMember(true)}>
-                <Users className="w-4 h-4 mr-1" />
-                Invite Member
-              </Button>
-            </div>
-          </div>
-          <div className="text-xs text-gray-500">
-            Last updated: {new Date().toLocaleTimeString()}
-          </div>
-        </div>
-      </Card>
 
       {/* Create Project Modal */}
       <Modal
