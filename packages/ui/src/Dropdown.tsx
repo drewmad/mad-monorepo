@@ -8,21 +8,32 @@ interface DropdownProps {
     children: React.ReactNode;
     align?: 'left' | 'right';
     className?: string;
+    isOpen?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }
 
 export const Dropdown = ({
     trigger,
     children,
     align = 'left',
-    className
+    className,
+    isOpen: controlledOpen,
+    onOpenChange
 }: DropdownProps) => {
-    const [isOpen, setIsOpen] = useState(false);
+    const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+    const isControlled = controlledOpen !== undefined;
+    const open = isControlled ? controlledOpen : uncontrolledOpen;
+    const setOpen = (v: boolean) => {
+        if (!isControlled) setUncontrolledOpen(v);
+        onOpenChange?.(v);
+    };
+
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
+                setOpen(false);
             }
         };
 
@@ -32,11 +43,11 @@ export const Dropdown = ({
 
     return (
         <div className="relative inline-block" ref={dropdownRef}>
-            <div onClick={() => setIsOpen(!isOpen)}>
+            <div onClick={() => setOpen(!open)}>
                 {trigger}
             </div>
 
-            {isOpen && (
+            {open && (
                 <div
                     className={clsx(
                         'absolute z-50 mt-2 w-48 rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5',

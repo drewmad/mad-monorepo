@@ -4,13 +4,30 @@ import { Folder, Users, Calendar, MessageSquare, Settings } from 'lucide-react';
 import { WorkspaceSwitcher } from '@/components/workspace/WorkspaceSwitcher';
 import Link from 'next/link';
 import clsx from 'clsx';
+import { SidebarMenuItem } from './SidebarMenuItem';
 
-const nav = [
-  { href: '/dashboard' as const, label: 'Projects', icon: Folder },
-  { href: '/directory' as const, label: 'Directory', icon: Users },
-  { href: '/calendar' as const, label: 'Calendar', icon: Calendar },
-  { href: '/messages' as const, label: 'Messages', icon: MessageSquare }
-] as const;
+import type { LucideIcon } from 'lucide-react';
+
+interface NavItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  subItems?: { label: string; href: string }[];
+}
+const nav: NavItem[] = [
+  {
+    href: '/dashboard',
+    label: 'Projects',
+    icon: Folder,
+    subItems: [
+      { label: 'Active Projects', href: '/dashboard/active' },
+      { label: 'Archived Projects', href: '/dashboard/archived' }
+    ]
+  },
+  { href: '/directory', label: 'Directory', icon: Users },
+  { href: '/calendar', label: 'Calendar', icon: Calendar },
+  { href: '/messages', label: 'Messages', icon: MessageSquare }
+];
 
 export default function Sidebar() {
   const { expanded, setExpanded } = useSidebar();
@@ -39,21 +56,25 @@ export default function Sidebar() {
         <ul className="space-y-1 px-3">
           {nav.map(item => (
             <li key={item.href}>
-              <Link
-                href={item.href}
-                className={clsx(
-                  "group flex items-center rounded-lg p-3 text-sm font-medium transition-all duration-200",
-                  "hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-gray-700",
-                  "text-gray-700 dark:text-gray-300"
-                )}
-              >
-                <item.icon className="h-5 w-5 flex-shrink-0" />
-                {expanded && (
-                  <span className="ml-3 transition-opacity duration-200">
-                    {item.label}
-                  </span>
-                )}
-              </Link>
+              {item.subItems ? (
+                <SidebarMenuItem {...item} subItems={item.subItems} expanded={expanded} />
+              ) : (
+                <Link
+                  href={item.href}
+                  className={clsx(
+                    'group flex items-center rounded-lg p-3 text-sm font-medium transition-all duration-200',
+                    'hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-gray-700',
+                    'text-gray-700 dark:text-gray-300'
+                  )}
+                >
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
+                  {expanded && (
+                    <span className="ml-3 transition-opacity duration-200">
+                      {item.label}
+                    </span>
+                  )}
+                </Link>
+              )}
             </li>
           ))}
         </ul>
