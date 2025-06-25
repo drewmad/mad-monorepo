@@ -13,4 +13,4 @@ export const Primary: StoryObj<typeof Button> = {
 
 export const Secondary: StoryObj<typeof Button> = {
   args: { children: 'Secondary', variant: 'secondary' }
-}; 
+};
