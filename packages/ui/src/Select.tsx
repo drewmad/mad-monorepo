@@ -22,4 +22,4 @@ export const Select = ({ label, className, options, ...props }: Props) => (
             ))}
         </select>
     </div>
-); 
+);

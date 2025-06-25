@@ -16,4 +16,4 @@ export const Default: StoryObj<typeof Card> = {
       </CardContent>
     </Card>
   )
-}; 
+};

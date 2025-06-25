@@ -169,4 +169,4 @@ export function useToast() {
         warning: (message: string, title?: string) => addToast({ message, title, type: 'warning' }),
         info: (message: string, title?: string) => addToast({ message, title, type: 'info' }),
     };
-} 
+}

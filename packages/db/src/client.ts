@@ -7,4 +7,4 @@ export const supabaseClient = createClient<Database>(
   {
     auth: { persistSession: false }
   }
-); 
+);

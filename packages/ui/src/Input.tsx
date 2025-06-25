@@ -15,4 +15,4 @@ export const Input = ({ label, className, ...props }: Props) => (
       )}
     />
   </div>
-); 
+);

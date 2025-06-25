@@ -30,4 +30,4 @@ export const IconButton = forwardRef<
         {...props}
     />
 ));
-IconButton.displayName = 'IconButton'; 
+IconButton.displayName = 'IconButton';
