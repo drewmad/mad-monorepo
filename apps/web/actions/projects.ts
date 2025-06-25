@@ -75,7 +75,7 @@ export async function createProject(data: Omit<ProjectInsert, 'id' | 'created_at
       return { project: null, error: error.message };
     }
     
-    revalidatePath('/dashboard');
+    revalidatePath('/dashboards/workspace');
     revalidatePath('/projects');
     
     return { project, error: null };
@@ -104,7 +104,7 @@ export async function updateProject(id: string, data: ProjectUpdate) {
       return { project: null, error: error.message };
     }
     
-    revalidatePath('/dashboard');
+    revalidatePath('/dashboards/workspace');
     revalidatePath('/projects');
     revalidatePath(`/projects/${id}`);
     
@@ -129,7 +129,7 @@ export async function deleteProject(id: string) {
       return { error: error.message };
     }
     
-    revalidatePath('/dashboard');
+    revalidatePath('/dashboards/workspace');
     revalidatePath('/projects');
     
     return { error: null };
