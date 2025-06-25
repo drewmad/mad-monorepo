@@ -11,7 +11,7 @@ export default async function FilesPage() {
   const files = messages.flatMap(m => (Array.isArray(m.attachments) ? m.attachments : []));
 
   return (
-    <main className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
+    <section className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
       <h1 className="text-3xl font-bold mb-4">Shared Files</h1>
       {files.length === 0 ? (
         <p>No files shared yet.</p>
@@ -24,6 +24,6 @@ export default async function FilesPage() {
           ))}
         </ul>
       )}
-    </main>
+    </section>
   );
 }

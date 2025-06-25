@@ -15,7 +15,7 @@ export default async function SearchMessagesPage({ searchParams }: SearchPagePro
   const { messages } = query ? await searchMessages(workspaceId, query) : { messages: [] };
 
   return (
-    <main className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
+    <section className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
       <h1 className="text-3xl font-bold mb-4">Search Messages</h1>
       <form className="mb-6">
         <input
@@ -40,6 +40,6 @@ export default async function SearchMessagesPage({ searchParams }: SearchPagePro
           ))}
         </ul>
       )}
-    </main>
+    </section>
   );
 }
