@@ -12,4 +12,5 @@ export * from './IconButton';
 export * from './Dropdown';
 export * from './Modal';
 export * from './Tabs';
-export * from './Toast'; 
+export * from './Toast';
+export * from './components/layout/SubNav/SubNav';

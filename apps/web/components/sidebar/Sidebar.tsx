@@ -1,6 +1,7 @@
 'use client';
 import { useSidebar } from './context';
 import { Folder, Users, Calendar, MessageSquare, Settings } from 'lucide-react';
+import { SubNav } from '@ui';
 import { WorkspaceSwitcher } from '@/components/workspace/WorkspaceSwitcher';
 import Link from 'next/link';
 import clsx from 'clsx';
@@ -35,29 +36,17 @@ export default function Sidebar() {
       {expanded && <WorkspaceSwitcher />}
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-4">
-        <ul className="space-y-1 px-3">
-          {nav.map(item => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className={clsx(
-                  "group flex items-center rounded-lg p-3 text-sm font-medium transition-all duration-200",
-                  "hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-gray-700",
-                  "text-gray-700 dark:text-gray-300"
-                )}
-              >
-                <item.icon className="h-5 w-5 flex-shrink-0" />
-                {expanded && (
-                  <span className="ml-3 transition-opacity duration-200">
-                    {item.label}
-                  </span>
-                )}
-              </Link>
-            </li>
-          ))}
-        </ul>
-
+      <nav className="flex-1 overflow-y-auto py-4 px-3">
+        <SubNav
+          items={nav.map(n => ({
+            href: n.href,
+            label: n.label,
+            icon: <n.icon className="h-5 w-5" />
+          }))}
+          orientation="vertical"
+          collapsed={!expanded}
+          className="w-full"
+        />
       </nav>
 
       {/* Footer */}

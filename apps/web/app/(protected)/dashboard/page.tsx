@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, KpiCard, Button, Badge, Tabs, TabsList, TabsTrigger, TabsContent, Modal, Input, Textarea, Select, Toast } from '@ui';
+import { Card, KpiCard, Button, Badge, Modal, Input, Textarea, Select, Toast, SubNav } from '@ui';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { ProjectsGrid } from '@/components/projects';
 import { TaskTable } from '@/components/tasks';
 import { TaskSuggestions } from '@/components/ai/TaskSuggestions';
@@ -120,6 +121,16 @@ export default function DashboardPage() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const view = (searchParams.get('view') ?? 'overview') as
+    'overview' | 'ai-insights' | 'projects' | 'tasks';
+  const navItems = [
+    { value: 'overview', label: 'Overview' },
+    { value: 'ai-insights', label: 'AI Insights' },
+    { value: 'projects', label: 'Projects' },
+    { value: 'tasks', label: 'Tasks' }
+  ] as const;
   
   // Real data state
   const [projects, setProjects] = useState<Project[]>([]);
@@ -507,17 +518,16 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Main Content Tabs */}
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="ai-insights">AI Insights</TabsTrigger>
-          <TabsTrigger value="projects">Projects</TabsTrigger>
-          <TabsTrigger value="tasks">Tasks</TabsTrigger>
-        </TabsList>
+      <SubNav
+        items={navItems.map(n => ({
+          href: `${pathname}?view=${n.value}`,
+          label: n.label
+        }))}
+        className="mb-6"
+      />
 
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
+      {view === 'overview' && (
+        <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Recent Projects */}
             <div className="lg:col-span-2">
@@ -581,10 +591,11 @@ export default function DashboardPage() {
               </Card>
             </div>
           </div>
-        </TabsContent>
+        </div>
+      )}
 
-        {/* AI Insights Tab */}
-        <TabsContent value="ai-insights" className="space-y-6">
+      {view === 'ai-insights' && (
+        <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Task Suggestions */}
             <div>
@@ -602,10 +613,11 @@ export default function DashboardPage() {
               <SmartAnalytics />
             </div>
           </div>
-        </TabsContent>
+        </div>
+      )}
 
-        {/* Projects Tab */}
-        <TabsContent value="projects" className="space-y-6">
+      {view === 'projects' && (
+        <div className="space-y-6">
           <Card className="p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-gray-900">All Projects</h2>
@@ -624,10 +636,11 @@ export default function DashboardPage() {
             </div>
             <ProjectsGrid projects={projects} />
           </Card>
-        </TabsContent>
+        </div>
+      )}
 
-        {/* Tasks Tab */}
-        <TabsContent value="tasks" className="space-y-6">
+      {view === 'tasks' && (
+        <div className="space-y-6">
           <Card className="p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-gray-900">Recent Tasks</h2>
@@ -646,8 +659,8 @@ export default function DashboardPage() {
             </div>
             <TaskTable tasks={tasks} />
           </Card>
-        </TabsContent>
-      </Tabs>
+        </div>
+      )}
 
       {/* Create Project Modal */}
       <Modal
