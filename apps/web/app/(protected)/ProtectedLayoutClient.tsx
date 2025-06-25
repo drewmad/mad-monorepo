@@ -2,6 +2,7 @@
 
 import Sidebar from '@/components/sidebar/Sidebar';
 import Header from '@/components/header/Header';
+import BottomNav from '@/components/BottomNav';
 import { useEffect } from 'react';
 import { useApp } from '@/contexts/AppContext';
 
@@ -71,6 +72,7 @@ export default function ProtectedLayoutClient({
         <Header user={user} />
         <main className="flex-1 p-6 md:p-8">{children}</main>
       </div>
+      <BottomNav />
     </div>
   );
 }

@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Button, Input, Avatar, Badge, Dropdown, DropdownItem, IconButton } from '@ui';
 import { SectionMenu } from './SectionMenu';
 import { createMessage, getMessages, createChannel } from '@/actions/messages';
+import { usePresence } from '@/hooks/usePresence';
+import PresenceIndicator from '@/components/PresenceIndicator';
 import type { Database } from '@mad/db';
 
 interface Channel {
@@ -68,12 +70,17 @@ export function MessagesInterface({
         description: '',
         type: 'public' as 'public' | 'private' | 'direct' | 'project'
     });
+    const { presence, updateStatus } = usePresence(`/api/ws/messages/${workspaceId}`, currentUserId);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Auto scroll to bottom when new messages arrive
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
+
+    useEffect(() => {
+        updateStatus(messageText.trim() ? 'typing' : 'online');
+    }, [messageText, updateStatus]);
 
     const handleSendMessage = () => {
         if (!messageText.trim() || !currentChannel) return;
@@ -95,6 +102,7 @@ export function MessagesInterface({
                 setMessages(prev => [...prev, message]);
                 setMessageText('');
                 setReplyToMessage(null);
+                updateStatus('online');
             }
         });
     };
@@ -136,6 +144,7 @@ export function MessagesInterface({
     };
 
     const handleChannelSelect = async (channel: Channel) => {
+        updateStatus('online');
         setCurrentChannel(channel);
         
         // Load messages for the selected channel
@@ -488,6 +497,7 @@ export function MessagesInterface({
 
                         {/* Message Input */}
                         <div className="p-4 border-t border-gray-200 bg-white">
+                            <PresenceIndicator presence={presence} />
                             <div className="flex items-end space-x-3">
                                 <div className="flex-1">
                                     <Input

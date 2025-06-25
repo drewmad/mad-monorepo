@@ -1,10 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, Button, Badge, Input, Modal, Select, Dropdown, DropdownItem, IconButton, Textarea, Toast } from '@ui';
-import { useModal } from '@/contexts/AppContext';
+import { useModal, useUser } from '@/contexts/AppContext';
 import { deleteTask } from '@/actions/tasks';
 import { useRouter } from 'next/navigation';
+import { usePresence } from '@/hooks/usePresence';
+import { useCollaborativeState } from '@/hooks/useCollaborativeState';
+import PresenceIndicator from '@/components/PresenceIndicator';
 
 interface Task {
     id: string;
@@ -66,6 +69,32 @@ export function TaskSectionManager({
         due_date: ''
     });
     const [newSection, setNewSection] = useState('');
+
+    const user = useUser();
+    const { presence, updateStatus } = usePresence(
+        editingTask ? `/api/ws/tasks/${editingTask.id}` : `/api/ws/tasks`,
+        user?.id || 'anonymous'
+    );
+
+    const [collabTask, setCollabTask] = useCollaborativeState(
+        editingTask ? `/api/ws/tasks/${editingTask.id}/state` : `/api/ws/tasks/state`,
+        newTask
+    );
+    useEffect(() => {
+        setNewTask(collabTask);
+    }, [collabTask]);
+
+    useEffect(() => {
+        setCollabTask(newTask);
+    }, [newTask]);
+
+    useEffect(() => {
+        if (showEditTask && editingTask) {
+            updateStatus('editing');
+        } else {
+            updateStatus('online');
+        }
+    }, [showEditTask, editingTask, updateStatus]);
 
     // Group tasks by section
     const sections = tasks.reduce((acc, task) => {
@@ -559,10 +588,12 @@ export function TaskSectionManager({
                         estimated_hours: '',
                         due_date: ''
                     });
+                    updateStatus('online');
                 }}
                 title="Edit Task"
                 size="lg"
             >
+                <PresenceIndicator presence={presence} />
                 <div className="space-y-4">
                     <Input
                         label="Task Name"
