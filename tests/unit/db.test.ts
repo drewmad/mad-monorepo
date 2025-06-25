@@ -1,13 +1,16 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createProject, createClient } from '@mad/db';
 
-vi.mock('@mad/db/src/client', () => ({
-  supabaseClient: {
+vi.mock('@mad/db', async () => {
+  const actual = await vi.importActual<typeof import('@mad/db')>('@mad/db');
+  const client = {
     from: () => ({
       insert: () => ({ select: () => ({ single: () => ({ data: {}, error: null }) }) })
     })
-  }
-}));
+  } as typeof actual.supabaseClient;
+  actual.setSupabaseClient(client);
+  return { ...actual, supabaseClient: client };
+});
 
 describe('DB helper', () => {
   it('validates input via zod', async () => {
