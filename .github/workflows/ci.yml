@@ -138,7 +138,7 @@ jobs:
         run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: Build package
-        run: pnpm build --filter=${{ matrix.package }} --cache-dir=.turbo
+        run: ./scripts/ci-build.sh ${{ matrix.package }}
         env:
           # Add placeholder env vars for build
           NEXT_PUBLIC_SUPABASE_URL: 'https://placeholder.supabase.co'
@@ -255,11 +255,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --prefer-offline
 
-      - name: Build UI package first
-        run: pnpm build --filter=@ui
-
       - name: Build Storybook
-        run: pnpm build --filter=@mad/docs
+        run: ./scripts/fix-storybook-build.sh
         env:
           STORYBOOK_DISABLE_TELEMETRY: 1
 
