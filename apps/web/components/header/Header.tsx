@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Search, Bell, Sun, Moon, ChevronDown, LogOut, Settings, User, Command } from 'lucide-react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
-import { supabaseBrowser } from '@/lib/supabase-browser';
+import { signOut } from '@/actions/auth';
 import { useRouter } from 'next/navigation';
 import { Dropdown, DropdownItem, Badge, Input } from '@ui';
 import { searchUsers } from '@/actions/workspace';
@@ -38,11 +38,10 @@ export default function Header({ user }: HeaderProps) {
   ]);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  const supabase = supabaseBrowser();
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  const signOut = async () => {
-    await supabase.auth.signOut();
+  const handleSignOut = async () => {
+    await signOut();
     router.refresh();
   };
 
@@ -273,7 +272,7 @@ export default function Header({ user }: HeaderProps) {
             Settings
           </DropdownItem>
           <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-          <DropdownItem onClick={signOut} className="text-red-600 dark:text-red-400">
+          <DropdownItem onClick={handleSignOut} className="text-red-600 dark:text-red-400">
             <LogOut className="h-4 w-4 mr-2" />
             Sign out
           </DropdownItem>

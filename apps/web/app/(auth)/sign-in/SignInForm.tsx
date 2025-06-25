@@ -1,5 +1,5 @@
 'use client';
-import { supabaseBrowser } from '@/lib/supabase-browser';
+import { signIn } from '@/actions/auth';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Button, Card } from '@ui';
@@ -13,7 +13,6 @@ export default function SignInForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const supabase = supabaseBrowser();
 
   // Handle URL error parameters
   useEffect(() => {
@@ -48,19 +47,14 @@ export default function SignInForm() {
     setLoading(true);
 
     try {
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+      const { error } = await signIn(email, password);
 
-      if (authError) {
-        setError(authError.message);
+      if (error) {
+        setError(error);
         return;
       }
 
-      if (data?.user) {
-        router.push('/workspace-selection');
-      }
+      router.push('/workspace-selection');
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
       console.error('Sign-in error:', err);
