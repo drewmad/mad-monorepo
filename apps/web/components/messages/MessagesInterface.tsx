@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useTransition } from 'react';
+import { useState, useRef, useEffect, useTransition, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Input, Avatar, Badge, Dropdown, DropdownItem, IconButton } from '@ui';
 import { SectionMenu } from './SectionMenu';
@@ -38,6 +38,8 @@ interface Message {
         name: string;
         avatar_url?: string | null;
     };
+    read_by?: string[];
+    replies?: Database['public']['Tables']['messages']['Row'][];
 }
 
 interface MessagesInterfaceProps {
@@ -46,6 +48,7 @@ interface MessagesInterfaceProps {
     initialChannels: Channel[];
     initialMessages: Message[];
     initialCurrentChannel: Channel | null;
+    view?: 'channels' | 'direct' | 'threads';
 }
 
 export function MessagesInterface({
@@ -53,7 +56,8 @@ export function MessagesInterface({
     currentUserId,
     initialChannels,
     initialMessages,
-    initialCurrentChannel
+    initialCurrentChannel,
+    view = 'channels'
 }: MessagesInterfaceProps) {
     const router = useRouter();
     const [, startTransition] = useTransition();
@@ -69,14 +73,39 @@ export function MessagesInterface({
         type: 'public' as 'public' | 'private' | 'direct' | 'project'
     });
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
+    const typingTimeout = useRef<NodeJS.Timeout | null>(null);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [readReceipts, setReadReceipts] = useState<Record<string, string[]>>({});
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const displayedMessages = useMemo(() => {
+        let result = messages;
+        if (view === 'threads') {
+            result = result.filter(m => Array.isArray(m.replies) && m.replies.length > 0);
+        }
+        if (searchQuery.trim()) {
+            result = result.filter(m => m.text.toLowerCase().includes(searchQuery.toLowerCase()));
+        }
+        return result;
+    }, [messages, view, searchQuery]);
 
     // Auto scroll to bottom when new messages arrive
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+        setReadReceipts(prev => {
+            const updated = { ...prev };
+            messages.forEach(m => {
+                if (!updated[m.id]) updated[m.id] = [currentUserId];
+            });
+            return updated;
+        });
+    }, [messages, currentUserId]);
 
     const handleSendMessage = () => {
-        if (!messageText.trim() || !currentChannel) return;
+        if (!messageText.trim() && selectedFiles.length === 0) return;
+        if (!currentChannel) return;
 
         startTransition(async () => {
             const { message, error } = await createMessage({
@@ -86,6 +115,7 @@ export function MessagesInterface({
                 text: messageText,
                 timestamp: new Date().toISOString(),
                 parent_id: replyToMessage?.id || null,
+                attachments: selectedFiles.map(f => ({ name: f.name })) as unknown as Database['public']['Tables']['messages']['Row']['attachments'],
             });
 
             if (error) {
@@ -93,8 +123,10 @@ export function MessagesInterface({
             } else if (message) {
                 // Add the new message to the local state
                 setMessages(prev => [...prev, message]);
+                setReadReceipts(prev => ({ ...prev, [message.id]: [currentUserId] }));
                 setMessageText('');
                 setReplyToMessage(null);
+                setSelectedFiles([]);
             }
         });
     };
@@ -104,6 +136,13 @@ export function MessagesInterface({
             e.preventDefault();
             handleSendMessage();
         }
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setMessageText(e.target.value);
+        if (typingTimeout.current) clearTimeout(typingTimeout.current);
+        setIsTyping(true);
+        typingTimeout.current = setTimeout(() => setIsTyping(false), 1000);
     };
 
     const formatTime = (timestamp: string) => {
@@ -386,7 +425,14 @@ export function MessagesInterface({
 
                         {/* Messages */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                            {messages.length === 0 ? (
+                            <div className="mb-4">
+                                <Input
+                                    placeholder="Search messages"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+                            {displayedMessages.length === 0 ? (
                                 <div className="text-center py-12 text-gray-500">
                                     <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -395,7 +441,7 @@ export function MessagesInterface({
                                     <p className="text-sm text-gray-400 mt-1">Start the conversation!</p>
                                 </div>
                             ) : (
-                                messages.map((message) => (
+                                displayedMessages.map((message) => (
                                     <div key={message.id} className="flex space-x-3 group">
                                         <Avatar
                                             src={message.user?.avatar_url}
@@ -422,6 +468,15 @@ export function MessagesInterface({
                                                 <p className="text-gray-800 whitespace-pre-wrap">{message.text}</p>
                                                 {message.edited_at && (
                                                     <span className="text-xs text-gray-400 ml-1">(edited)</span>
+                                                )}
+                                                {message.attachments && Array.isArray(message.attachments) && (
+                                                    <ul className="mt-2 space-y-1">
+                                                        {(message.attachments as { name: string }[]).map((att, idx) => (
+                                                            <li key={idx} className="text-sm text-indigo-600 underline">
+                                                                {att.name || 'Attachment'}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
                                                 )}
                                             </div>
 
@@ -452,6 +507,27 @@ export function MessagesInterface({
                                                             <span>{emoji}</span>
                                                             <span>{Array.isArray(users) ? users.length : 0}</span>
                                                         </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            {readReceipts[message.id] && (
+                                                <div className="mt-1 text-xs text-gray-400">
+                                                    Read by {readReceipts[message.id].length}
+                                                </div>
+                                            )}
+                                            {Array.isArray(message.replies) && message.replies.length > 0 && (
+                                                <div className="mt-2 ml-4 space-y-2 border-l border-gray-200 pl-3">
+                                                    {message.replies.map((reply: Message) => (
+                                                        <div key={reply.id} className="flex space-x-2">
+                                                            <Avatar src={reply.user?.avatar_url} initials={reply.user?.name?.charAt(0) || 'U'} size="xs" />
+                                                            <div>
+                                                                <div className="flex items-center space-x-2">
+                                                                    <span className="text-sm font-medium text-gray-900">{reply.user?.name}</span>
+                                                                    <span className="text-xs text-gray-500">{formatTime(reply.timestamp)}</span>
+                                                                </div>
+                                                                <p className="text-sm text-gray-800 whitespace-pre-wrap">{reply.text}</p>
+                                                            </div>
+                                                        </div>
                                                     ))}
                                                 </div>
                                             )}
@@ -488,14 +564,23 @@ export function MessagesInterface({
 
                         {/* Message Input */}
                         <div className="p-4 border-t border-gray-200 bg-white">
+                            {isTyping && (
+                                <div className="text-xs text-gray-500 mb-2">Typing...</div>
+                            )}
                             <div className="flex items-end space-x-3">
                                 <div className="flex-1">
                                     <Input
                                         placeholder={`Message ${currentChannel.name}`}
                                         value={messageText}
-                                        onChange={(e) => setMessageText(e.target.value)}
+                                        onChange={handleInputChange}
                                         onKeyPress={handleKeyPress}
                                         className="resize-none"
+                                    />
+                                    <input
+                                        multiple
+                                        type="file"
+                                        onChange={(e) => setSelectedFiles(Array.from(e.target.files || []))}
+                                        className="mt-2"
                                     />
                                 </div>
                                 <Button

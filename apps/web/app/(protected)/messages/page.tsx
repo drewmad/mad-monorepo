@@ -21,7 +21,7 @@ type Message = Database['public']['Tables']['messages']['Row'] & {
 };
 
 interface MessagesPageProps {
-  searchParams: { channel?: string };
+  searchParams: { channel?: string; view?: string };
 }
 
 export default async function MessagesPage({ searchParams }: MessagesPageProps) {
@@ -36,16 +36,22 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
   const { channels, error: channelsError } = await getChannels(workspaceId, userId);
   
   // Find the default or selected channel
+  const view = (searchParams.view ?? 'channels') as 'channels' | 'direct' | 'threads';
   let currentChannel: Channel | null = null;
   let messages: Message[] = [];
 
-  if (channels.length > 0) {
+  let channelList = channels;
+  if (view === 'direct') {
+    channelList = channels.filter(ch => ch.type === 'direct');
+  }
+
+  if (channelList.length > 0) {
     if (searchParams.channel) {
       // Find the specific channel requested
-      currentChannel = channels.find(ch => ch.id === searchParams.channel) || channels[0];
+      currentChannel = channelList.find(ch => ch.id === searchParams.channel) || channelList[0];
     } else {
       // Default to first channel (usually general)
-      currentChannel = channels[0];
+      currentChannel = channelList[0];
     }
 
     if (currentChannel) {
@@ -109,7 +115,7 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
   ];
 
   // Use real data if available, otherwise fallback to mock data
-  const finalChannels = channels.length > 0 ? channels : mockChannels;
+  const finalChannels = channelList.length > 0 ? channelList : mockChannels;
   const finalMessages = messages.length > 0 ? messages : mockMessages;
   const finalCurrentChannel = currentChannel || mockChannels[0];
 
@@ -132,6 +138,7 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
         initialChannels={finalChannels}
         initialMessages={finalMessages}
         initialCurrentChannel={finalCurrentChannel}
+        view={view}
       />
     </main>
   );
