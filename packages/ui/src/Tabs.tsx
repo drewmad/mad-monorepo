@@ -102,4 +102,4 @@ export const TabsContent = ({ value, children, className }: TabsContentProps) =>
             {children}
         </div>
     );
-}; 
+};

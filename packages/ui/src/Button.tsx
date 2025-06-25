@@ -31,4 +31,4 @@ export const Button = forwardRef<
     {...props}
   />
 ));
-Button.displayName = 'Button'; 
+Button.displayName = 'Button';

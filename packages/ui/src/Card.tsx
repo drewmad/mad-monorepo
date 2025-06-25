@@ -49,4 +49,4 @@ export const CardTitle = ({
       className
     )}
   />
-); 
+);
