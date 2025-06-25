@@ -162,7 +162,7 @@ export default function Sidebar() {
         </div>
 
         {/* Navigation Items */}
-        <div className="flex-1 overflow-y-auto py-6">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden py-6">
           {navigation.map((item) => {
             const Icon = item.icon;
             const isActive = selectedMain === item.id;
@@ -258,7 +258,7 @@ export default function Sidebar() {
         </div>
 
         {/* Sub Navigation Items */}
-        <div className="flex-1 flex flex-col p-4 overflow-y-auto">
+        <div className="flex-1 flex flex-col p-4 overflow-y-auto overflow-x-hidden">
           {currentNavItem && (
             <>
               <div className="mb-4">
