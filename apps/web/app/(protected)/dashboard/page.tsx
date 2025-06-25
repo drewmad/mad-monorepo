@@ -7,6 +7,8 @@ import { ProjectsGrid } from '@/components/projects';
 import { TaskTable } from '@/components/tasks';
 import { TaskSuggestions } from '@/components/ai/TaskSuggestions';
 import { SmartAnalytics } from '@/components/ai/SmartAnalytics';
+import { ActivityFeed } from '@/components/activity';
+import { AnalyticsWidgets } from '@/components/analytics';
 import { Plus, Download } from 'lucide-react';
 import type { Database } from '@mad/db';
 import { getProjects, createProject, getProjectStats } from '@/actions/projects';
@@ -123,7 +125,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const view = (searchParams.get('view') ?? 'overview') as
-    'overview' | 'ai-insights' | 'projects' | 'tasks';
+    'overview' | 'activity' | 'analytics' | 'ai-insights' | 'projects' | 'tasks';
   
   // Real data state
   const [projects, setProjects] = useState<Project[]>([]);
@@ -576,6 +578,49 @@ export default function DashboardPage() {
               </Card>
             </div>
           </div>
+        </div>
+      )}
+
+      {view === 'activity' && (
+        <div className="space-y-6">
+          <ActivityFeed items={recentActivity} />
+        </div>
+      )}
+
+      {view === 'analytics' && (
+        <div className="space-y-6">
+          <AnalyticsWidgets
+            widgets={[
+              {
+                id: 'projects',
+                title: 'Active Projects',
+                value: kpis.projects,
+                change: `${projects.filter(p => p.status === 'active').length} active`,
+                icon: '📁'
+              },
+              {
+                id: 'tasks',
+                title: 'Total Tasks',
+                value: kpis.tasks,
+                change: `${tasks.filter(t => t.status === 'in_progress').length} in progress`,
+                icon: '📋'
+              },
+              {
+                id: 'completed',
+                title: 'Completed Tasks',
+                value: kpis.completedTasks,
+                change: `${Math.round((kpis.completedTasks / Math.max(kpis.tasks, 1)) * 100)}% completion rate`,
+                icon: '✅'
+              },
+              {
+                id: 'team',
+                title: 'Team Members',
+                value: kpis.teamMembers,
+                change: 'Active contributors',
+                icon: '👥'
+              }
+            ]}
+          />
         </div>
       )}
 
