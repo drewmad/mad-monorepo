@@ -81,6 +81,19 @@
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.5);
   }
 
+  /* Background gradients */
+  .bg-app-light {
+    @apply bg-gradient-to-br from-gray-50 to-white;
+  }
+
+  .dark .bg-app-light {
+    @apply from-gray-900 to-gray-950;
+  }
+
+  .glass .bg-app-light {
+    @apply from-white/20 to-white/5 backdrop-blur-2xl;
+  }
+
   /* Custom scrollbar styles */
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;

@@ -33,12 +33,14 @@ export default async function ProtectedLayout({
   const currentWorkspace = workspaces[0] || null;
 
   return (
-    <ProtectedLayoutClient
-      user={user}
-      initialWorkspaces={workspaces}
-      initialCurrentWorkspace={currentWorkspace}
-    >
-      {children}
-    </ProtectedLayoutClient>
+    <div className="min-h-screen bg-app-light">
+      <ProtectedLayoutClient
+        user={user}
+        initialWorkspaces={workspaces}
+        initialCurrentWorkspace={currentWorkspace}
+      >
+        {children}
+      </ProtectedLayoutClient>
+    </div>
   );
 }

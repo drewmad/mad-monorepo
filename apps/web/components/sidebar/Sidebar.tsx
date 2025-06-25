@@ -190,7 +190,7 @@ export default function Sidebar() {
                   href={item.href}
                   onClick={() => setSelectedMain(item.id)}
                   className={clsx(
-                    'w-full h-14 flex items-center justify-center rounded-xl group relative transition-all duration-300',
+                    'w-full h-14 flex items-center justify-center rounded-xl group relative transition-all duration-300 transition-shadow hover:shadow-md',
                     isActive
                       ? clsx(
                           'text-indigo-600 bg-gray-100/80 dark:text-indigo-400 dark:bg-gray-800/50',
@@ -289,7 +289,7 @@ export default function Sidebar() {
                       key={subItem.id}
                       href={subItem.href}
                       className={clsx(
-                        'flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group relative',
+                        'flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 transition-shadow group relative',
                         isSubActive
                           ? clsx(
                               'bg-gray-200/80 text-gray-900 dark:bg-gray-800 dark:text-gray-100',
