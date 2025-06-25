@@ -20,14 +20,8 @@
       "@ui": [
         "packages/ui/src/index.ts"
       ],
-      "@ui/*": [
-        "packages/ui/src/*"
-      ],
       "@mad/db": [
         "packages/db/src/index.ts"
-      ],
-      "@mad/db/*": [
-        "packages/db/src/*"
       ]
     }
   },
