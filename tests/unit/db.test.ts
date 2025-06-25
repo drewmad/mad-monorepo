@@ -24,8 +24,9 @@ describe('@mad/db package', () => {
   });
 
   it('should export Project type', () => {
-    // @ts-expect-error: This test intentionally checks that the Project type is exported from @db and can be assigned, even though this is not a runtime value.
-    const project: import('@db').Project = {
+    // @ts-expect-error: This test intentionally checks that the Project type is
+    // exported from @mad/db and can be assigned, even though this is not a runtime value.
+    const project: import('@mad/db').Project = {
       id: 'test-id',
       workspace_id: 'workspace-id',
       name: 'Test Project',
