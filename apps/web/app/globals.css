@@ -1,168 +1,42 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* brand overrides */
-html,
-body {
-  @apply bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-50;
-}
-
-#__next {
-  @apply flex min-h-screen flex-col;
-}
-
-/* Glass Theme Styles */
-.glass {
-  /* Glass theme background with gradient */
-  background: linear-gradient(135deg,
-      rgba(255, 255, 255, 0.1),
-      rgba(255, 255, 255, 0.05));
-
-  /* Blur backdrop effect */
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-
-  /* Subtle border */
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Glass theme body styles */
-.glass html,
-.glass body {
-  background: linear-gradient(135deg,
-      #667eea 0%,
-      #764ba2 25%,
-      #f093fb 50%,
-      #f5576c 75%,
-      #4facfe 100%);
-  background-size: 400% 400%;
-  animation: glassGradient 15s ease infinite;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-/* Glass gradient animation */
-@keyframes glassGradient {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-/* Glass cards and panels */
-.glass .bg-white {
-  background: rgba(255, 255, 255, 0.1) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-}
-
-.glass .bg-gray-50 {
-  background: rgba(255, 255, 255, 0.05) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.glass .bg-gray-100 {
-  background: rgba(255, 255, 255, 0.1) !important;
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-/* Glass text colors */
-.glass .text-gray-900 {
-  color: rgba(255, 255, 255, 0.9) !important;
-}
-
-.glass .text-gray-600 {
-  color: rgba(255, 255, 255, 0.7) !important;
-}
-
-.glass .text-gray-500 {
-  color: rgba(255, 255, 255, 0.6) !important;
-}
-
-.glass .text-gray-400 {
-  color: rgba(255, 255, 255, 0.5) !important;
-}
-
-/* Glass buttons */
-.glass .bg-indigo-600 {
-  background: rgba(99, 102, 241, 0.7) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  box-shadow: 0 4px 16px 0 rgba(99, 102, 241, 0.4);
-}
-
-.glass .bg-indigo-600:hover {
-  background: rgba(99, 102, 241, 0.8) !important;
-  box-shadow: 0 6px 20px 0 rgba(99, 102, 241, 0.6);
-}
-
-/* Glass modals */
-.glass .bg-black {
-  background: rgba(0, 0, 0, 0.3) !important;
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-}
-
-/* Glass borders */
-.glass .border-gray-200 {
-  border-color: rgba(255, 255, 255, 0.2) !important;
-}
-
-.glass .border-gray-300 {
-  border-color: rgba(255, 255, 255, 0.3) !important;
-}
-
-/* Glass sidebar and navigation */
-.glass .bg-gray-800 {
-  background: rgba(0, 0, 0, 0.2) !important;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Glass inputs */
-.glass input,
-.glass textarea,
-.glass select {
-  background: rgba(255, 255, 255, 0.1) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  color: rgba(255, 255, 255, 0.9) !important;
-}
-
-.glass input::placeholder,
-.glass textarea::placeholder {
-  color: rgba(255, 255, 255, 0.5) !important;
-}
-
-/* Glass focus states */
-.glass input:focus,
-.glass textarea:focus,
-.glass select:focus {
-  border-color: rgba(99, 102, 241, 0.6) !important;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
-}
-
-/* Glass hover effects */
-.glass .hover\:bg-gray-100:hover {
-  background: rgba(255, 255, 255, 0.15) !important;
-}
-
-.glass .hover\:bg-gray-50:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
-}
+const trigger = (
+        <div className={clsx(
+            "flex items-center space-x-3 px-3 py-2 rounded-lg cursor-pointer transition-all duration-300",
+            "hover:bg-gray-100 dark:hover:bg-gray-700",
+            "glass:hover:bg-white/10 glass:hover:shadow-[0_8px_16px_0_rgba(255,255,255,0.1)]"
+        )}>
+            <Avatar
+                src={currentWorkspace?.logo_url}
+                initials={currentWorkspace?.name.charAt(0) || 'W'}
+                size="sm"
+                className="glass:ring-2 glass:ring-white/20"
+            />
+            <div className="flex-1 min-w-0">
+                <div className={clsx(
+                    "text-sm font-medium truncate",
+                    "text-gray-900 dark:text-gray-100",
+                    "glass:text-white glass:drop-shadow-md"
+                )}>
+                    {currentWorkspace?.name || 'Select Workspace'}
+                </div>
+                <div className={clsx(
+                    "text-xs",
+                    "text-gray-500 dark:text-gray-400",
+                    "glass:text-white/60"
+                )}>
+                    {workspaces.length} workspace{workspaces.length !== 1 ? 's' : ''}
+                </div>
+            </div>
+            <svg
+                className={clsx(
+                    "w-4 h-4",
+                    "text-gray-500 dark:text-gray-400",
+                    "glass:text-white/60"
+                )}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+        </div>
+    );
