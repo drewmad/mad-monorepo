@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, Button, Avatar, Badge, Modal, Input, ToastContainer, useToast } from '@ui';
 import { createWorkspace, joinWorkspaceByCode, acceptInvitation } from '@/actions/workspace';
+import { useApp } from '@/contexts/AppContext';
 
 interface Workspace {
   id: string;
@@ -56,9 +57,14 @@ export function WorkspaceSelection({ userId, initialWorkspaces, initialInvitatio
     }
   };
 
+  const { dispatch } = useApp();
+
   const handleWorkspaceSelect = (workspace: Workspace) => {
-    // Set current workspace in local storage for session persistence
-    localStorage.setItem('currentWorkspace', JSON.stringify(workspace));
+    dispatch({ type: 'SET_WORKSPACES', payload: workspaces });
+    dispatch({ type: 'SET_CURRENT_WORKSPACE', payload: workspace });
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('currentWorkspace', JSON.stringify(workspace));
+    }
     router.push('/dashboard');
   };
 

@@ -1,6 +1,17 @@
 import { getSession } from '@/lib/user';
 import { redirect } from 'next/navigation';
 import ProtectedLayoutClient from './ProtectedLayoutClient';
+import { getWorkspaces } from '@/actions/workspace';
+
+type Workspace = {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url: string | null;
+  created_at: string;
+  updated_at: string;
+  userRole?: string;
+};
 
 export default async function ProtectedLayout({
   children
@@ -9,7 +20,25 @@ export default async function ProtectedLayout({
 }) {
   const session = await getSession();
   if (!session) redirect('/sign-in');
-  const user = session.user.user_metadata as { name: string; avatar_url?: string };
+  const user = {
+    id: session.user.id,
+    email: session.user.email || '',
+    name: (session.user.user_metadata as { name?: string }).name || '',
+    avatar_url: (session.user.user_metadata as { avatar_url?: string }).avatar_url || undefined,
+  };
 
-  return <ProtectedLayoutClient user={user}>{children}</ProtectedLayoutClient>;
-} 
+  const userId = session.user.id;
+  const { workspaces: rawWorkspaces } = await getWorkspaces(userId);
+  const workspaces = rawWorkspaces as Workspace[];
+  const currentWorkspace = workspaces[0] || null;
+
+  return (
+    <ProtectedLayoutClient
+      user={user}
+      initialWorkspaces={workspaces}
+      initialCurrentWorkspace={currentWorkspace}
+    >
+      {children}
+    </ProtectedLayoutClient>
+  );
+}
