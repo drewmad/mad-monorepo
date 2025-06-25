@@ -34,14 +34,14 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
 
   if (!workspaceId) {
     return (
-      <main className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
+      <section className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
         <p className="text-gray-600">No workspace selected.</p>
-      </main>
+      </section>
     );
   }
 
   return (
-    <main className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
+    <section className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Messages</h1>
@@ -56,7 +56,7 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
           searchParams={searchParams}
         />
       </Suspense>
-    </main>
+    </section>
   );
 }
 

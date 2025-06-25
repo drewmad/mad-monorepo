@@ -87,7 +87,7 @@ export default async function Directory({ searchParams }: DirectoryPageProps) {
   }
 
   return (
-    <main className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
+    <section className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Directory</h1>
@@ -104,6 +104,6 @@ export default async function Directory({ searchParams }: DirectoryPageProps) {
         initialTab={view}
         showTabs={false}
       />
-    </main>
+    </section>
   );
 } 
