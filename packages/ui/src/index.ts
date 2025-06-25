@@ -13,4 +13,5 @@ export * from './Dropdown';
 export * from './Modal';
 export * from './Tabs';
 export * from './Toast';
+export * from './Table';
 export * from './components/layout/SubNav/SubNav';
