@@ -7,6 +7,8 @@ import { ProjectsGrid } from '@/components/projects';
 import { TaskTable } from '@/components/tasks';
 import { TaskSuggestions } from '@/components/ai/TaskSuggestions';
 import { SmartAnalytics } from '@/components/ai/SmartAnalytics';
+import { ActivityFeed } from '@/components/activity';
+import { AnalyticsDashboard } from '@/components/analytics';
 import { Plus, Download } from 'lucide-react';
 import type { Database } from '@mad/db';
 import { getProjects, createProject, getProjectStats } from '@/actions/projects';
@@ -123,7 +125,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
   const view = (searchParams.get('view') ?? 'overview') as
-    'overview' | 'ai-insights' | 'projects' | 'tasks';
+    'overview' | 'ai-insights' | 'projects' | 'tasks' | 'activity' | 'analytics';
   
   // Real data state
   const [projects, setProjects] = useState<Project[]>([]);
@@ -598,6 +600,18 @@ export default function DashboardPage() {
               <SmartAnalytics />
             </div>
           </div>
+        </div>
+      )}
+
+      {view === 'activity' && (
+        <div className="space-y-6">
+          <ActivityFeed activities={recentActivity} />
+        </div>
+      )}
+
+      {view === 'analytics' && (
+        <div className="space-y-6">
+          <AnalyticsDashboard />
         </div>
       )}
 
