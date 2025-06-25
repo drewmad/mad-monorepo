@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { Card, Button, Badge, Input, Modal, Select, Dropdown, DropdownItem, IconButton, Textarea, Toast } from '@ui';
 import { useModal } from '@/contexts/AppContext';
+import { deleteTask } from '@/actions/tasks';
+import { useRouter } from 'next/navigation';
 
 interface Task {
     id: string;
@@ -37,6 +39,7 @@ export function TaskSectionManager({
     onSectionCreate
 }: TaskSectionManagerProps) {
     const { openModal } = useModal();
+    const router = useRouter();
     const [showCreateTask, setShowCreateTask] = useState(false);
     const [showCreateSection, setShowCreateSection] = useState(false);
     const [showEditTask, setShowEditTask] = useState(false);
@@ -139,9 +142,9 @@ export function TaskSectionManager({
             title: 'Delete Task',
             message: `Are you sure you want to delete "${task.name}"? This action cannot be undone.`,
             confirmText: 'Delete',
-            onConfirm: () => {
-                // TODO: Implement task deletion
-                console.log('Deleting task:', task.id);
+            onConfirm: async () => {
+                await deleteTask(task.id);
+                router.refresh();
             }
         });
     };
