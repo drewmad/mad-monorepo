@@ -5,9 +5,14 @@ import { useTheme } from 'next-themes';
 import { Card, Button, Input, Select, Toggle, Badge, Modal, Toast, SubNav } from '@ui';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Shield, CreditCard, AlertTriangle, Settings, Users, Key, Clock, Bell } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { deleteWorkspace } from '@/actions/workspace';
+import { useWorkspaces } from '@/contexts/AppContext';
 
 export function SettingsTabs() {
     const { theme, setTheme } = useTheme();
+    const router = useRouter();
+    const { currentWorkspace } = useWorkspaces();
     
     const [settings, setSettings] = useState({
         workspaceName: 'My Workspace',
@@ -78,19 +83,19 @@ export function SettingsTabs() {
     };
 
     const handleDeleteWorkspace = async () => {
-        if (deleteConfirmation === 'DELETE') {
+        if (deleteConfirmation === 'DELETE' && currentWorkspace) {
             setLoading(true);
             try {
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                console.log('Deleting workspace...');
-                // TODO: Implement delete functionality
-                showNotification('Workspace deleted successfully!');
-                setShowDeleteWorkspace(false);
-                setDeleteConfirmation('');
-                // Redirect to workspace selection or sign-in
-                setTimeout(() => {
-                    window.location.href = '/workspace-selection';
-                }, 1500);
+                const { error } = await deleteWorkspace(currentWorkspace.id);
+
+                if (error) {
+                    showNotification(error, 'error');
+                } else {
+                    showNotification('Workspace deleted successfully!');
+                    setShowDeleteWorkspace(false);
+                    setDeleteConfirmation('');
+                    router.push('/workspace-selection');
+                }
             } catch (error) {
                 console.error('Failed to delete workspace:', error);
                 showNotification('Failed to delete workspace. Please try again.', 'error');
