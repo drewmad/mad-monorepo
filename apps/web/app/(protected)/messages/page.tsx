@@ -1,5 +1,6 @@
 import { getSession } from '@/lib/user';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 import { getChannels, getMessages } from '@/actions/messages';
 import { MessagesInterface } from '@/components/messages/MessagesInterface';
 import type { Database } from '@mad/db';
@@ -28,99 +29,15 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
   const session = await getSession();
   if (!session) redirect('/sign-in');
 
-  // Get current workspace ID from session or use default
-  const workspaceId = session.user?.user_metadata?.current_workspace_id || 'default-workspace';
+  const workspaceId = session.user?.user_metadata?.current_workspace_id;
   const userId = session.user?.id || '';
 
-  // Load channels for the workspace
-  const { channels, error: channelsError } = await getChannels(workspaceId, userId);
-  
-  // Find the default or selected channel
-  const view = (searchParams.view ?? 'channels') as 'channels' | 'direct' | 'threads';
-  let currentChannel: Channel | null = null;
-  let messages: Message[] = [];
-
-  let channelList = channels;
-  if (view === 'direct') {
-    channelList = channels.filter(ch => ch.type === 'direct');
-  }
-
-  if (channelList.length > 0) {
-    if (searchParams.channel) {
-      // Find the specific channel requested
-      currentChannel = channelList.find(ch => ch.id === searchParams.channel) || channelList[0];
-    } else {
-      // Default to first channel (usually general)
-      currentChannel = channelList[0];
-    }
-
-    if (currentChannel) {
-      // Load messages for the current channel
-      const { messages: channelMessages, error: messagesError } = await getMessages(currentChannel.id);
-      if (!messagesError) {
-        messages = channelMessages;
-      }
-    }
-  }
-
-  // Mock data fallback if no real data is available
-  const mockChannels: Channel[] = [
-    {
-      id: 'general',
-      workspace_id: workspaceId,
-      name: 'general',
-      description: 'General team discussions',
-      type: 'public',
-      project_id: null,
-      created_by: userId,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      unread_count: 3
-    },
-    {
-      id: 'random',
-      workspace_id: workspaceId,
-      name: 'random',
-      description: 'Random chatter and fun stuff',
-      type: 'public',
-      project_id: null,
-      created_by: userId,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      unread_count: 0
-    }
-  ];
-
-  const mockMessages: Message[] = [
-    {
-      id: 'msg1',
-      workspace_id: workspaceId,
-      channel_id: currentChannel?.id || 'general',
-      user_id: userId,
-      text: 'Welcome to the team chat! This is where we collaborate and stay connected.',
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      parent_id: null,
-      edited_at: null,
-      reactions: null,
-      attachments: null,
-      created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      updated_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      user: {
-        id: userId,
-        name: session.user?.user_metadata?.full_name || 'You',
-        avatar_url: null,
-        role: 'owner'
-      }
-    }
-  ];
-
-  // Use real data if available, otherwise fallback to mock data
-  const finalChannels = channelList.length > 0 ? channelList : mockChannels;
-  const finalMessages = messages.length > 0 ? messages : mockMessages;
-  const finalCurrentChannel = currentChannel || mockChannels[0];
-
-  if (channelsError) {
-    console.error('Error loading channels:', channelsError);
+  if (!workspaceId) {
+    return (
+      <main className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
+        <p className="text-gray-600">No workspace selected.</p>
+      </main>
+    );
   }
 
   return (
@@ -132,14 +49,68 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
         </div>
       </div>
 
-      <MessagesInterface
-        workspaceId={workspaceId}
-        currentUserId={userId}
-        initialChannels={finalChannels}
-        initialMessages={finalMessages}
-        initialCurrentChannel={finalCurrentChannel}
-        view={view}
-      />
+      <Suspense fallback={<p>Loading messages...</p>}>
+        <MessagesContent
+          workspaceId={workspaceId}
+          userId={userId}
+          searchParams={searchParams}
+        />
+      </Suspense>
     </main>
   );
-} 
+}
+
+async function MessagesContent({
+  workspaceId,
+  userId,
+  searchParams
+}: {
+  workspaceId: string;
+  userId: string;
+  searchParams: { channel?: string; view?: string };
+}) {
+  const { channels, error: channelsError } = await getChannels(workspaceId, userId);
+
+  if (channelsError) {
+    console.error('Error loading channels:', channelsError);
+    throw new Error('Failed to load channels');
+  }
+
+  if (!channels || channels.length === 0) {
+    return <p>No channels found. Create a channel to start messaging.</p>;
+  }
+
+  const view = (searchParams.view ?? 'channels') as 'channels' | 'direct' | 'threads';
+  let channelList = channels;
+  if (view === 'direct') {
+    channelList = channels.filter(ch => ch.type === 'direct');
+  }
+
+  let currentChannel: Channel | null = null;
+  if (channelList.length > 0) {
+    if (searchParams.channel) {
+      currentChannel = channelList.find(ch => ch.id === searchParams.channel) || channelList[0];
+    } else {
+      currentChannel = channelList[0];
+    }
+  }
+
+  let messages: Message[] = [];
+  if (currentChannel) {
+    const { messages: channelMessages, error: messagesError } = await getMessages(currentChannel.id);
+    if (!messagesError) {
+      messages = channelMessages;
+    }
+  }
+
+  return (
+    <MessagesInterface
+      workspaceId={workspaceId}
+      currentUserId={userId}
+      initialChannels={channelList}
+      initialMessages={messages}
+      initialCurrentChannel={currentChannel}
+      view={view}
+    />
+  );
+}
