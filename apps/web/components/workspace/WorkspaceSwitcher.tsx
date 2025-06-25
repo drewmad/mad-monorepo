@@ -1,15 +1,28 @@
 'use client';
 
 
-import { useWorkspaces } from '@/contexts/AppContext';
+import { useWorkspaces, useApp, useUser } from '@/contexts/AppContext';
 import { Dropdown, DropdownItem, Avatar } from '@ui';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
+import { createWorkspace } from '@/actions/workspace';
 
 export function WorkspaceSwitcher() {
     const { workspaces, currentWorkspace } = useWorkspaces();
+    const { dispatch } = useApp();
+    const user = useUser();
+    const router = useRouter();
+    const [, startTransition] = useTransition();
 
     const handleWorkspaceChange = (workspaceId: string) => {
-        // TODO: Implement workspace switching logic
-        console.log('Switching to workspace:', workspaceId);
+        const workspace = workspaces.find(w => w.id === workspaceId);
+        if (!workspace) return;
+
+        dispatch({ type: 'SET_CURRENT_WORKSPACE', payload: workspace });
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('currentWorkspace', JSON.stringify(workspace));
+        }
+        router.push('/dashboard');
     };
 
     const trigger = (
@@ -68,8 +81,35 @@ export function WorkspaceSwitcher() {
                     <div className="border-t border-gray-100 mt-1 pt-1">
                         <DropdownItem
                             onClick={() => {
-                                // TODO: Implement workspace creation
-                                console.log('Create new workspace');
+                                const name = prompt('Workspace name');
+                                if (!name || !user?.id) return;
+                                const slug = name
+                                    .toLowerCase()
+                                    .replace(/[^a-z0-9]+/g, '-')
+                                    .replace(/(^-|-$)/g, '');
+
+                                startTransition(async () => {
+                                    const { workspace } = await createWorkspace(
+                                        { name, slug, logo_url: null },
+                                        user.id
+                                    );
+                                    if (!workspace) return;
+                                    dispatch({
+                                        type: 'SET_WORKSPACES',
+                                        payload: [...workspaces, workspace],
+                                    });
+                                    dispatch({
+                                        type: 'SET_CURRENT_WORKSPACE',
+                                        payload: workspace,
+                                    });
+                                    if (typeof window !== 'undefined') {
+                                        localStorage.setItem(
+                                            'currentWorkspace',
+                                            JSON.stringify(workspace)
+                                        );
+                                    }
+                                    router.push('/dashboard');
+                                });
                             }}
                             className="flex items-center space-x-3 px-3 py-2 text-indigo-600"
                         >
