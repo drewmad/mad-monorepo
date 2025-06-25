@@ -1,5 +1,5 @@
 'use client';
-import { supabaseBrowser } from '@/lib/supabase-browser';
+import { signUp } from '@/actions/auth';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { Button, Card, Badge } from '@ui';
@@ -40,7 +40,6 @@ export default function SignUp() {
   ]);
 
   const router = useRouter();
-  const supabase = supabaseBrowser();
 
   // Calculate password strength
   useEffect(() => {
@@ -105,22 +104,15 @@ export default function SignUp() {
     setLoading(true);
 
     try {
-      const { data, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { name },
-          emailRedirectTo: `${window.location.origin}/auth/callback`
-        }
-      });
+      const { user, error: authError } = await signUp(email, password, name);
 
       if (authError) {
-        setError(authError.message);
+        setError(authError);
         return;
       }
 
-      if (data?.user) {
-        if (data.user.email_confirmed_at) {
+      if (user) {
+        if (user.email_confirmed_at) {
           router.push('/workspace-selection');
         } else {
           setSuccess(true);
