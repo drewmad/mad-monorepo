@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Avatar, Badge, Input, Modal, Select, Toast } from '@ui';
+import { Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Avatar, Badge, Input, Modal, Select, Toast, EmptyState } from '@ui';
 import { Search, Plus, Mail, Phone, Building, Calendar, Users, MessageCircle, Settings } from 'lucide-react';
 import { inviteTeamMember } from '@/actions/workspace';
 import { createDirectMessage } from '@/actions/messages';
@@ -210,7 +210,21 @@ export function DirectoryTabs({ workspaceId, currentUserId, members, employees, 
 
                     {/* Members Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredMembers.map((member) => (
+                        {filteredMembers.length === 0 ? (
+                            <EmptyState
+                                className="col-span-full"
+                                message={searchQuery ? 'No members match your search.' : 'No members found.'}
+                                cta={
+                                    searchQuery ? undefined : (
+                                        <Button variant="primary" onClick={() => setShowAddMember(true)}>
+                                            <Plus className="h-4 w-4 mr-2" />
+                                            Add Member
+                                        </Button>
+                                    )
+                                }
+                            />
+                        ) : (
+                            filteredMembers.map((member) => (
                             <Card key={member.id} className="p-6">
                                 <div className="flex items-center space-x-4">
                                     <Avatar
@@ -259,7 +273,8 @@ export function DirectoryTabs({ workspaceId, currentUserId, members, employees, 
                                     </Button>
                                 </div>
                             </Card>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </div>
             )
@@ -289,7 +304,21 @@ export function DirectoryTabs({ workspaceId, currentUserId, members, employees, 
 
                     {/* Employees Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredEmployees.map((employee) => (
+                        {filteredEmployees.length === 0 ? (
+                            <EmptyState
+                                className="col-span-full"
+                                message={searchQuery ? 'No employees match your search.' : 'No employees found.'}
+                                cta={
+                                    searchQuery ? undefined : (
+                                        <Button variant="primary" onClick={() => setShowAddEmployee(true)}>
+                                            <Plus className="h-4 w-4 mr-2" />
+                                            Add Employee
+                                        </Button>
+                                    )
+                                }
+                            />
+                        ) : (
+                            filteredEmployees.map((employee) => (
                             <Card key={employee.id} className="p-6">
                                 <div className="flex items-center space-x-4">
                                     <Avatar
@@ -333,7 +362,8 @@ export function DirectoryTabs({ workspaceId, currentUserId, members, employees, 
                                     </Button>
                                 </div>
                             </Card>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </div>
             )
@@ -363,7 +393,21 @@ export function DirectoryTabs({ workspaceId, currentUserId, members, employees, 
 
                     {/* Companies Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredCompanies.map((company) => (
+                        {filteredCompanies.length === 0 ? (
+                            <EmptyState
+                                className="col-span-full"
+                                message={searchQuery ? 'No companies match your search.' : 'No companies found.'}
+                                cta={
+                                    searchQuery ? undefined : (
+                                        <Button variant="primary" onClick={() => setShowAddCompany(true)}>
+                                            <Plus className="h-4 w-4 mr-2" />
+                                            Add Company
+                                        </Button>
+                                    )
+                                }
+                            />
+                        ) : (
+                            filteredCompanies.map((company) => (
                             <Card key={company.id} className="p-6">
                                 <div className="flex items-center space-x-4">
                                     <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
@@ -406,7 +450,8 @@ export function DirectoryTabs({ workspaceId, currentUserId, members, employees, 
                                     </Button>
                                 </div>
                             </Card>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </div>
             )
