@@ -13,5 +13,6 @@ export * from './Dropdown';
 export * from './Modal';
 export * from './Tabs';
 export * from './Toast';
+export * from './EmptyState';
 export * from './components/layout/SubNav/SubNav';
 export * from './PresenceIndicator';
