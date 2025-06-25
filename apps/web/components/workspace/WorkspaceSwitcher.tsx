@@ -21,6 +21,7 @@ export function WorkspaceSwitcher() {
         dispatch({ type: 'SET_CURRENT_WORKSPACE', payload: workspace });
         if (typeof window !== 'undefined') {
             localStorage.setItem('currentWorkspace', JSON.stringify(workspace));
+            document.cookie = `currentWorkspaceId=${workspace.id}; path=/`;
         }
         router.push('/dashboard');
     };
@@ -161,6 +162,7 @@ export function WorkspaceSwitcher() {
                                             'currentWorkspace',
                                             JSON.stringify(workspace)
                                         );
+                                        document.cookie = `currentWorkspaceId=${workspace.id}; path=/`;
                                     }
                                     router.push('/dashboard');
                                 });
