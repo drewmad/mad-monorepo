@@ -2,10 +2,11 @@
 
 import { useState, useRef, useEffect, useTransition, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Input, Avatar, Badge, Dropdown, DropdownItem, IconButton } from '@ui';
+import { Button, Input, Avatar, Badge, Dropdown, DropdownItem, IconButton, PresenceIndicator } from '@ui';
 import { SectionMenu } from './SectionMenu';
 import { createMessage, getMessages, createChannel } from '@/actions/messages';
 import type { Database } from '@mad/db';
+import { usePresence, useCollaborativeEditing } from '@/hooks';
 
 interface Channel {
     id: string;
@@ -78,6 +79,8 @@ export function MessagesInterface({
     const typingTimeout = useRef<NodeJS.Timeout | null>(null);
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [readReceipts, setReadReceipts] = useState<Record<string, string[]>>({});
+    const { presence, sendPresence } = usePresence(currentChannel?.id || '');
+    const { broadcastUpdate } = useCollaborativeEditing(currentChannel?.id || '', () => {});
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const displayedMessages = useMemo(() => {
@@ -90,6 +93,14 @@ export function MessagesInterface({
         }
         return result;
     }, [messages, view, searchQuery]);
+
+    useEffect(() => {
+        if (!currentChannel) return;
+        sendPresence(currentUserId, true);
+        return () => {
+            sendPresence(currentUserId, false);
+        };
+    }, [currentChannel, currentUserId, sendPresence]);
 
     // Auto scroll to bottom when new messages arrive
     useEffect(() => {
@@ -140,6 +151,7 @@ export function MessagesInterface({
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setMessageText(e.target.value);
+        broadcastUpdate(e.target.value, currentUserId);
         if (typingTimeout.current) clearTimeout(typingTimeout.current);
         setIsTyping(true);
         typingTimeout.current = setTimeout(() => setIsTyping(false), 1000);
@@ -392,6 +404,10 @@ export function MessagesInterface({
                                             <p className="text-sm text-gray-500">{currentChannel.description}</p>
                                         )}
                                     </div>
+                                    <span className="flex items-center space-x-1 text-sm text-gray-500">
+                                        <PresenceIndicator online={Object.values(presence).filter(Boolean).length > 0} />
+                                        <span>{Object.values(presence).filter(Boolean).length}</span>
+                                    </span>
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <IconButton variant="ghost" size="sm">

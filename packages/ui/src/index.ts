@@ -14,3 +14,4 @@ export * from './Modal';
 export * from './Tabs';
 export * from './Toast';
 export * from './components/layout/SubNav/SubNav';
+export * from './PresenceIndicator';
