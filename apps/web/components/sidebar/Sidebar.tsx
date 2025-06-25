@@ -131,10 +131,26 @@ export default function Sidebar() {
   return (
     <>
       {/* Main Navigation Rail - Icons Only */}
-      <nav className="fixed left-0 top-0 z-30 w-20 h-screen bg-gray-950 flex flex-col border-r border-gray-800">
+      <nav className={clsx(
+        "fixed left-0 top-0 z-30 w-20 h-screen flex flex-col",
+        "bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl",
+        "border-r border-gray-200/50 dark:border-gray-800/50",
+        "glass:bg-white/10 glass:backdrop-blur-2xl glass:border-white/20"
+      )}>
         {/* Logo */}
-        <div className="h-16 flex items-center justify-center border-b border-gray-800">
-          <Link href="/dashboard" className="text-2xl font-bold text-indigo-500">
+        <div className={clsx(
+          "h-16 flex items-center justify-center",
+          "border-b border-gray-200/50 dark:border-gray-800/50",
+          "glass:border-white/20"
+        )}>
+          <Link 
+            href="/dashboard" 
+            className={clsx(
+              "text-2xl font-bold transition-all duration-300",
+              "text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300",
+              "glass:text-white glass:hover:text-white/90 glass:drop-shadow-2xl"
+            )}
+          >
             S
           </Link>
         </div>
@@ -148,31 +164,53 @@ export default function Sidebar() {
             return (
               <div key={item.id} className="relative px-3 mb-2">
                 {/* Active Indicator */}
-                  {isActive && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-10 bg-indigo-500 rounded-r-full" />
-                  )}
+                {isActive && (
+                  <div className={clsx(
+                    "absolute left-0 top-1/2 -translate-y-1/2 w-1 h-10 rounded-r-full",
+                    "bg-indigo-500 dark:bg-indigo-400",
+                    "glass:bg-white/80 glass:shadow-[0_0_20px_rgba(255,255,255,0.5)]"
+                  )} />
+                )}
                 
                 <Link
                   href={item.href}
                   onClick={() => setSelectedMain(item.id)}
                   className={clsx(
-                    'w-full h-14 flex items-center justify-center rounded-xl group relative',
+                    'w-full h-14 flex items-center justify-center rounded-xl group relative transition-all duration-300',
                     isActive
-                      ? 'text-indigo-400 bg-gray-800/50'
-                      : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'
+                      ? clsx(
+                          'text-indigo-600 bg-gray-100/80 dark:text-indigo-400 dark:bg-gray-800/50',
+                          'glass:text-white glass:bg-white/20 glass:shadow-[0_8px_32px_0_rgba(255,255,255,0.1)]'
+                        )
+                      : clsx(
+                          'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200',
+                          'hover:bg-gray-100/60 dark:hover:bg-gray-800/50',
+                          'glass:text-white/70 glass:hover:text-white glass:hover:bg-white/10'
+                        )
                   )}
                   aria-label={item.label}
                   aria-current={isActive ? 'page' : undefined}
                 >
                   <div className="relative">
-                    <Icon className="w-6 h-6" />
+                    <Icon className={clsx(
+                      "w-6 h-6 transition-all duration-300",
+                      isActive && "glass:filter glass:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+                    )} />
                     {/* Badge */}
                     {item.badge && (
                       <div className={clsx(
                         'absolute -top-1 -right-1',
                         item.badge.type === 'count' 
-                          ? 'min-w-[20px] h-5 px-1 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center'
-                          : 'w-2 h-2 bg-green-500 rounded-full'
+                          ? clsx(
+                              'min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center',
+                              'bg-red-500 text-white text-xs font-bold',
+                              'glass:bg-white/90 glass:text-red-600 glass:shadow-[0_0_10px_rgba(255,255,255,0.5)]'
+                            )
+                          : clsx(
+                              'w-2 h-2 rounded-full',
+                              'bg-green-500',
+                              'glass:bg-white glass:shadow-[0_0_10px_rgba(255,255,255,0.8)]'
+                            )
                       )}>
                         {item.badge.type === 'count' && item.badge.value}
                       </div>
@@ -180,7 +218,14 @@ export default function Sidebar() {
                   </div>
                   
                   {/* Tooltip */}
-                  <span className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                  <span className={clsx(
+                    "absolute left-full ml-2 px-3 py-2 rounded-lg",
+                    "bg-gray-900 text-white dark:bg-gray-800",
+                    "glass:bg-black/80 glass:backdrop-blur-xl glass:border glass:border-white/20",
+                    "text-sm opacity-0 group-hover:opacity-100",
+                    "transition-all duration-200 whitespace-nowrap pointer-events-none z-10",
+                    "shadow-xl"
+                  )}>
                     {item.label}
                   </span>
                 </Link>
@@ -188,13 +233,21 @@ export default function Sidebar() {
             );
           })}
         </div>
-
       </nav>
 
       {/* Sub Navigation Panel */}
-      <div className="fixed left-20 top-0 z-20 w-72 h-screen bg-gray-900 border-r border-gray-800 overflow-hidden flex flex-col">
+      <div className={clsx(
+        "fixed left-20 top-0 z-20 w-72 h-screen overflow-hidden flex flex-col",
+        "bg-gray-50/95 dark:bg-gray-900/95 backdrop-blur-xl",
+        "border-r border-gray-200/50 dark:border-gray-800/50",
+        "glass:bg-white/5 glass:backdrop-blur-2xl glass:border-white/10"
+      )}>
         {/* Workspace Switcher */}
-        <div className="h-16 border-b border-gray-800 flex items-center px-4">
+        <div className={clsx(
+          "h-16 flex items-center px-4",
+          "border-b border-gray-200/50 dark:border-gray-800/50",
+          "glass:border-white/10"
+        )}>
           <WorkspaceSwitcher />
         </div>
 
@@ -203,7 +256,11 @@ export default function Sidebar() {
           {currentNavItem && (
             <>
               <div className="mb-4">
-                <h2 className="text-xl font-semibold text-gray-200">
+                <h2 className={clsx(
+                  "text-xl font-semibold",
+                  "text-gray-900 dark:text-gray-200",
+                  "glass:text-white glass:drop-shadow-xl"
+                )}>
                   {currentNavItem.label}
                 </h2>
               </div>
@@ -221,18 +278,36 @@ export default function Sidebar() {
                       className={clsx(
                         'flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group relative',
                         isSubActive
-                          ? 'bg-gray-800 text-gray-100'
-                          : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
+                          ? clsx(
+                              'bg-gray-200/80 text-gray-900 dark:bg-gray-800 dark:text-gray-100',
+                              'glass:bg-white/20 glass:text-white glass:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2)]'
+                            )
+                          : clsx(
+                              'text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200',
+                              'hover:bg-gray-200/50 dark:hover:bg-gray-800/50',
+                              'glass:text-white/60 glass:hover:text-white glass:hover:bg-white/10'
+                            )
                       )}
                     >
-                      {SubIcon && <SubIcon className="w-5 h-5" />}
-                      <span className="flex-1 text-sm">{subItem.label}</span>
+                      {SubIcon && <SubIcon className={clsx(
+                        "w-5 h-5",
+                        isSubActive && "glass:filter glass:drop-shadow-[0_0_4px_rgba(255,255,255,0.6)]"
+                      )} />}
+                      <span className="flex-1 text-sm font-medium">{subItem.label}</span>
                       {subItem.badge && (
                         <span className={clsx(
                           'text-xs',
                           subItem.badge.type === 'count'
-                            ? 'min-w-[20px] h-5 px-1 bg-red-500 text-white rounded-full flex items-center justify-center'
-                            : 'w-2 h-2 bg-green-500 rounded-full'
+                            ? clsx(
+                                'min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center',
+                                'bg-red-500 text-white',
+                                'glass:bg-white/80 glass:text-red-600 glass:shadow-[0_0_8px_rgba(255,255,255,0.4)]'
+                              )
+                            : clsx(
+                                'w-2 h-2 rounded-full',
+                                'bg-green-500',
+                                'glass:bg-white glass:shadow-[0_0_8px_rgba(255,255,255,0.6)]'
+                              )
                         )}>
                           {subItem.badge.type === 'count' && subItem.badge.value}
                         </span>
