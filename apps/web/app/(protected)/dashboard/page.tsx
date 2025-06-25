@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, KpiCard, Button, Badge, Modal, Input, Textarea, Select, Toast, SubNav } from '@ui';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { Card, KpiCard, Button, Badge, Modal, Input, Textarea, Select, Toast } from '@ui';
+import { useSearchParams } from 'next/navigation';
 import { ProjectsGrid } from '@/components/projects';
 import { TaskTable } from '@/components/tasks';
 import { TaskSuggestions } from '@/components/ai/TaskSuggestions';
@@ -121,16 +121,9 @@ export default function DashboardPage() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const view = (searchParams.get('view') ?? 'overview') as
     'overview' | 'ai-insights' | 'projects' | 'tasks';
-  const navItems = [
-    { value: 'overview', label: 'Overview' },
-    { value: 'ai-insights', label: 'AI Insights' },
-    { value: 'projects', label: 'Projects' },
-    { value: 'tasks', label: 'Tasks' }
-  ] as const;
   
   // Real data state
   const [projects, setProjects] = useState<Project[]>([]);
@@ -517,14 +510,6 @@ export default function DashboardPage() {
           icon="👥"
         />
       </div>
-
-      <SubNav
-        items={navItems.map(n => ({
-          href: `${pathname}?view=${n.value}`,
-          label: n.label
-        }))}
-        className="mb-6"
-      />
 
       {view === 'overview' && (
         <div className="space-y-6">
