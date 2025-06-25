@@ -1,7 +1,6 @@
 'use client';
 
 import { ThemeProvider } from 'next-themes';
-import { SidebarProvider } from '@/components/sidebar/context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SupabaseProvider } from '@/lib/supabase-provider';
 import { AppProvider } from '@/contexts/AppContext';
@@ -20,10 +19,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <SupabaseProvider>
         <QueryClientProvider client={queryClient}>
           <AppProvider>
-            <SidebarProvider>
-              {children}
-              <ModalManager />
-            </SidebarProvider>
+            {children}
+            <ModalManager />
           </AppProvider>
         </QueryClientProvider>
       </SupabaseProvider>
