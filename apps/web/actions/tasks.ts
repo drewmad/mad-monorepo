@@ -89,7 +89,7 @@ export async function createTask(data: Omit<TaskInsert, 'id' | 'created_at' | 'u
       return { task: null, error: error.message };
     }
     
-    revalidatePath('/dashboard');
+    revalidatePath('/dashboards/workspace');
     revalidatePath('/projects');
     if (data.project_id) {
       revalidatePath(`/projects/${data.project_id}`);
@@ -125,7 +125,7 @@ export async function updateTask(id: string, data: TaskUpdate) {
       return { task: null, error: error.message };
     }
     
-    revalidatePath('/dashboard');
+    revalidatePath('/dashboards/workspace');
     revalidatePath('/projects');
     if (task.project_id) {
       revalidatePath(`/projects/${task.project_id}`);
@@ -159,7 +159,7 @@ export async function deleteTask(id: string) {
       return { error: error.message };
     }
     
-    revalidatePath('/dashboard');
+    revalidatePath('/dashboards/workspace');
     revalidatePath('/projects');
     if (taskInfo?.project_id) {
       revalidatePath(`/projects/${taskInfo.project_id}`);
@@ -241,7 +241,7 @@ export async function createSubtasks(parentTaskId: string, subtasks: Array<Omit<
       .eq('id', parentTaskId)
       .single();
     
-    revalidatePath('/dashboard');
+    revalidatePath('/dashboards/workspace');
     revalidatePath('/projects');
     if (parentTask?.project_id) {
       revalidatePath(`/projects/${parentTask.project_id}`);

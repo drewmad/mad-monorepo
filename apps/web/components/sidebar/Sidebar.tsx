@@ -1,12 +1,13 @@
 'use client';
 import { useSidebar } from './context';
-import { Folder, Users, Calendar, MessageSquare, Settings } from 'lucide-react';
+import { LayoutDashboard, Folder, Users, Calendar, MessageSquare, Settings } from 'lucide-react';
 import { WorkspaceSwitcher } from '@/components/workspace/WorkspaceSwitcher';
 import Link from 'next/link';
 import clsx from 'clsx';
 
 const nav = [
-  { href: '/dashboard' as const, label: 'Projects', icon: Folder },
+  { href: '/dashboards/workspace' as const, label: 'Workspace', icon: LayoutDashboard },
+  { href: '/dashboards/projects' as const, label: 'Projects', icon: Folder },
   { href: '/directory' as const, label: 'Directory', icon: Users },
   { href: '/calendar' as const, label: 'Calendar', icon: Calendar },
   { href: '/messages' as const, label: 'Messages', icon: MessageSquare }
@@ -26,7 +27,7 @@ export default function Sidebar() {
     >
       {/* Header */}
       <div className="flex h-16 items-center border-b px-4">
-        <Link href="/dashboard" className="text-xl font-bold text-indigo-600">
+        <Link href="/dashboards/workspace" className="text-xl font-bold text-indigo-600">
           {expanded ? 'Stratus' : 'S'}
         </Link>
       </div>

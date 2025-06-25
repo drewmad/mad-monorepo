@@ -11,8 +11,8 @@ export default async function RootPage() {
             // User is not authenticated, redirect to sign-in
             redirect('/sign-in');
         } else {
-            // User is authenticated, redirect to dashboard
-            redirect('/dashboard');
+            // User is authenticated, redirect to workspace dashboard
+            redirect('/dashboards/workspace');
         }
     } catch (error) {
         // If there's any error, redirect to sign-in as fallback
