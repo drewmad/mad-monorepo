@@ -84,7 +84,7 @@ export async function createEvent(data: Omit<EventInsert, 'id' | 'created_at' | 
     }
     
     revalidatePath('/calendar');
-    revalidatePath('/dashboard');
+    revalidatePath('/dashboards/workspace');
     
     return { event, error: null };
   } catch (error) {
@@ -113,7 +113,7 @@ export async function updateEvent(id: string, data: EventUpdate) {
     }
     
     revalidatePath('/calendar');
-    revalidatePath('/dashboard');
+    revalidatePath('/dashboards/workspace');
     
     return { event, error: null };
   } catch (error) {
@@ -137,7 +137,7 @@ export async function deleteEvent(id: string) {
     }
     
     revalidatePath('/calendar');
-    revalidatePath('/dashboard');
+    revalidatePath('/dashboards/workspace');
     
     return { error: null };
   } catch (error) {
@@ -239,7 +239,7 @@ export async function markEventAsRecorded(id: string) {
     }
     
     revalidatePath('/calendar');
-    revalidatePath('/dashboard');
+    revalidatePath('/dashboards/workspace');
     
     return { event, error: null };
   } catch (error) {

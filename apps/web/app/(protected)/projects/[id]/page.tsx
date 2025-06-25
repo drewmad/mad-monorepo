@@ -27,7 +27,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   return (
     <div className="space-y-8">
       <Link
-        href="/dashboard"
+        href="/dashboards/projects"
         className="inline-flex items-center text-sm text-indigo-600 hover:underline"
       >
         <ArrowLeft className="mr-1 h-4 w-4" /> Back

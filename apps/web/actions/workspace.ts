@@ -82,7 +82,7 @@ export async function createWorkspace(data: Omit<WorkspaceInsert, 'id'>, ownerId
     }
     
     revalidatePath('/workspace-selection');
-    revalidatePath('/dashboard');
+    revalidatePath('/dashboards/workspace');
     
     return { workspace, error: null };
   } catch (error) {
@@ -405,7 +405,7 @@ export async function joinWorkspaceByCode(identifier: string, userId: string) {
     }
     
     revalidatePath('/workspace-selection');
-    revalidatePath('/dashboard');
+    revalidatePath('/dashboards/workspace');
     
     return { workspace, error: null };
   } catch (error) {
