@@ -131,11 +131,17 @@ export default function CalendarPage() {
     console.log('Deleted event:', eventId);
   };
 
+  const handleEventUpdate = (updated: Event) => {
+    setEvents(prev => prev.map(e => (e.id === updated.id ? updated : e)));
+    console.log('Updated event:', updated);
+  };
+
   return (
     <CalendarView
       events={events}
       onEventCreate={handleEventCreate}
       onEventDelete={handleEventDelete}
+      onEventUpdate={handleEventUpdate}
     />
   );
-} 
+}
