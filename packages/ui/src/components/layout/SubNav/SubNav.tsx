@@ -3,20 +3,25 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import clsx from 'clsx';
+import { useEffect } from 'react';
+import { Badge } from '../../../Badge';
 import './SubNav.css';
 
 export interface SubNavItem {
   href: string;
   label: string;
   icon?: React.ReactNode;
+  badge?: number;
+  shortcut?: string;
 }
 
 interface SubNavProps {
   items: SubNavItem[];
   orientation?: 'horizontal' | 'vertical';
   collapsed?: boolean;
+  iconOnly?: boolean;
   className?: string;
 }
 
@@ -24,10 +29,26 @@ export const SubNav = ({
   items,
   orientation = 'horizontal',
   collapsed = false,
+  iconOnly = false,
   className
 }: SubNavProps) => {
   const pathname = usePathname();
   const params = useSearchParams();
+  const router = useRouter();
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && items.some(i => i.shortcut === e.key)) {
+        const item = items.find(i => i.shortcut === e.key);
+        if (item) {
+          e.preventDefault();
+          router.push(item.href);
+        }
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [items, router]);
   return (
     <nav
       className={clsx(
@@ -55,10 +76,15 @@ export const SubNav = ({
             )}
           >
             {item.icon && <span className="h-5 w-5 flex-shrink-0">{item.icon}</span>}
-            {orientation === 'vertical' ? (
+            {!iconOnly && (orientation === 'vertical' ? (
               !collapsed && <span className="ml-3">{item.label}</span>
             ) : (
               <span>{item.label}</span>
+            ))}
+            {item.badge !== undefined && item.badge > 0 && (
+              <Badge size="sm" variant="primary" className="ml-auto">
+                {item.badge}
+              </Badge>
             )}
           </Link>
         );
