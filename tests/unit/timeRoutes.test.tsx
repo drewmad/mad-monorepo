@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import TimesheetPage from '../../apps/web/app/(protected)/time/timesheet/page';
 import ReportsPage from '../../apps/web/app/(protected)/time/reports/page';
+import ApprovalsPage from '../../apps/web/app/(protected)/time/approvals/page';
+import InvoicingPage from '../../apps/web/app/(protected)/time/invoicing/page';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
@@ -30,5 +32,17 @@ describe('Time routes', () => {
     const Page = await ReportsPage();
     render(Page);
     expect(screen.getByText(/time reports/i)).toBeInTheDocument();
+  });
+
+  it('renders approvals page', async () => {
+    const Page = await ApprovalsPage();
+    render(Page);
+    expect(screen.getByText(/approvals/i)).toBeInTheDocument();
+  });
+
+  it('renders invoicing page', async () => {
+    const Page = await InvoicingPage();
+    render(Page);
+    expect(screen.getByText(/invoicing/i)).toBeInTheDocument();
   });
 });

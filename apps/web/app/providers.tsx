@@ -4,6 +4,7 @@ import { ThemeProvider } from 'next-themes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SupabaseProvider } from '@/lib/supabase-provider';
 import { AppProvider } from '@/contexts/AppContext';
+import { TimerProvider } from '@/contexts/TimerContext';
 import { ModalManager } from '@/components/ModalManager';
 import React from 'react';
 
@@ -19,8 +20,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <SupabaseProvider>
         <QueryClientProvider client={queryClient}>
           <AppProvider>
-            {children}
-            <ModalManager />
+            <TimerProvider>
+              {children}
+              <ModalManager />
+            </TimerProvider>
           </AppProvider>
         </QueryClientProvider>
       </SupabaseProvider>
