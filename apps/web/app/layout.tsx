@@ -1,5 +1,6 @@
 import '@/app/globals.css';
 import { Inter } from 'next/font/google';
+import { Analytics } from '@/lib/analytics';
 import { Providers } from './providers';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -18,7 +19,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );
-} 
+}
