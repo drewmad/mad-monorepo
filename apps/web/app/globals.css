@@ -50,6 +50,27 @@
 
   .glass {
     /* Glass theme variables */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 100%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 100%;
+    --muted-foreground: 0 0% 100%;
+    --accent: 0 0% 100%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 100%;
+    --input: 0 0% 100%;
+    --ring: 0 0% 100%;
+    
+    /* Glass-specific variables */
     --glass-bg: rgba(255, 255, 255, 0.1);
     --glass-border: rgba(255, 255, 255, 0.2);
     --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -61,8 +82,12 @@
   }
   
   body {
-    @apply min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 glass:from-white/10 glass:to-white/5 text-foreground;
+    @apply min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  body.glass {
+    @apply bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600;
   }
 }
 
@@ -132,4 +157,13 @@
   .focus-visible-ring {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary;
   }
+}
+
+/* Glass theme specific styles */
+.glass .glass-component {
+  @apply bg-white/10 backdrop-blur-2xl border border-white/20;
+}
+
+.glass .text-glass {
+  @apply text-white drop-shadow-2xl;
 }
