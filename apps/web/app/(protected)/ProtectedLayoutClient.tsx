@@ -65,7 +65,7 @@ export default function ProtectedLayoutClient({
     }
   }, [dispatch, user, initialWorkspaces, initialCurrentWorkspace]);
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 glass:from-white/10 glass:to-white/5">
+    <div className="flex min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
       <Sidebar />
       <div className="flex-1 flex flex-col ml-[368px]"> {/* 80px + 288px */}
         <Header user={user} />
