@@ -1,12 +1,9 @@
-import { getSession } from '@/lib/user';
-import { redirect } from 'next/navigation';
+import { requireAuth } from '@/lib/user';
 import { getProjects } from '@/actions/projects';
 import { ProjectsPageClient } from '@/components/projects';
 
 export default async function ProjectsPage() {
-  const session = await getSession();
-  if (!session) redirect('/sign-in');
-
+  const session = await requireAuth();
   const userId = session.user.id;
   const { projects } = await getProjects();
 

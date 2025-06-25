@@ -1,13 +1,8 @@
-import { getSession } from '@/lib/user';
-import { redirect } from 'next/navigation';
-
 interface ActivityPageProps {
   params: { id: string };
 }
 
 export default async function ActivityPage({ params }: ActivityPageProps) {
-  const session = await getSession();
-  if (!session) redirect('/sign-in');
   const { id } = params;
 
   return (

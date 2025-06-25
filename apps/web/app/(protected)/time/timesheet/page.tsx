@@ -1,11 +1,8 @@
-import { getSession } from '@/lib/user';
-import { redirect } from 'next/navigation';
+import { requireAuth } from '@/lib/user';
 import { getTimesheetEntries } from '@/actions/time';
 
 export default async function TimesheetPage() {
-  const session = await getSession();
-  if (!session) redirect('/sign-in');
-
+  const session = await requireAuth();
   const workspaceId = session.user?.user_metadata?.current_workspace_id || '';
   const { entries } = await getTimesheetEntries(workspaceId);
 

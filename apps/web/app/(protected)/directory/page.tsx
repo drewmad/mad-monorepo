@@ -1,5 +1,4 @@
-import { getSession } from '@/lib/user';
-import { redirect } from 'next/navigation';
+import { requireAuth } from '@/lib/user';
 import { DirectoryTabs } from '@/components/directory/DirectoryTabs';
 import { getTeamMembers } from '@/actions/workspace';
 import { X } from 'lucide-react';
@@ -9,8 +8,7 @@ interface DirectoryPageProps {
 }
 
 export default async function Directory({ searchParams }: DirectoryPageProps) {
-  const session = await getSession();
-  if (!session) redirect('/sign-in');
+  const session = await requireAuth();
 
   const view = (searchParams.view ?? 'members') as 'members' | 'employees' | 'companies';
 

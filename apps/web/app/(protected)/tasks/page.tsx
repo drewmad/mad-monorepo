@@ -1,13 +1,10 @@
-import { getSession } from '@/lib/user';
-import { redirect } from 'next/navigation';
+import { requireAuth } from '@/lib/user';
 import { Card } from '@ui';
 import { TaskTable } from '@/components/tasks';
 import { getTasks } from '@/actions/tasks';
 
 export default async function TasksPage() {
-  const session = await getSession();
-  if (!session) redirect('/sign-in');
-
+  const session = await requireAuth();
   const workspaceId = session.user?.user_metadata?.current_workspace_id || '';
   const { tasks } = await getTasks(undefined, workspaceId);
 

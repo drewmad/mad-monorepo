@@ -1,5 +1,4 @@
-import { getSession } from '@/lib/user';
-import { redirect } from 'next/navigation';
+import { requireAuth } from '@/lib/user';
 import ProtectedLayoutClient from './ProtectedLayoutClient';
 import { getWorkspaces } from '@/actions/workspace';
 import { cookies } from 'next/headers';
@@ -19,8 +18,7 @@ export default async function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getSession();
-  if (!session) redirect('/sign-in');
+  const session = await requireAuth();
   const user = {
     id: session.user.id,
     email: session.user.email || '',
