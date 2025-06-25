@@ -41,7 +41,7 @@ class SubmenuProvider implements vscode.TreeDataProvider<SubmenuItem> {
     return element;
   }
 
-  getChildren(element?: SubmenuItem): Thenable<SubmenuItem[]> {
+  getChildren(element?: SubmenuItem): vscode.Thenable<SubmenuItem[]> {
     if (!element) {
       return Promise.resolve(this.rootItems);
     }
