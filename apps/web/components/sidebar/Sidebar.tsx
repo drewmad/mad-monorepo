@@ -11,9 +11,8 @@ import {
   CheckCircle, 
   Clock, 
   MessageSquare, 
-  Calendar, 
-  Users, 
-  Settings 
+  Calendar,
+  Users
 } from 'lucide-react';
 
 export interface SidebarItem {
@@ -149,24 +148,24 @@ export default function Sidebar() {
             return (
               <div key={item.id} className="relative px-3 mb-2">
                 {/* Active Indicator */}
-                {isActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-10 bg-blue-500 rounded-r-full" />
-                )}
+                  {isActive && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-10 bg-indigo-500 rounded-r-full" />
+                  )}
                 
                 <Link
                   href={item.href}
                   onClick={() => setSelectedMain(item.id)}
                   className={clsx(
-                    'w-full h-14 flex items-center justify-center rounded-xl transition-all duration-150 group relative',
-                    isActive 
-                      ? 'text-blue-400 bg-gray-800/50' 
+                    'w-full h-14 flex items-center justify-center rounded-xl group relative',
+                    isActive
+                      ? 'text-indigo-400 bg-gray-800/50'
                       : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'
                   )}
                   aria-label={item.label}
                   aria-current={isActive ? 'page' : undefined}
                 >
                   <div className="relative">
-                    <Icon className="w-6 h-6 transition-transform group-hover:scale-110" />
+                    <Icon className="w-6 h-6" />
                     {/* Badge */}
                     {item.badge && (
                       <div className={clsx(
@@ -190,21 +189,6 @@ export default function Sidebar() {
           })}
         </div>
 
-        {/* Settings */}
-        <div className="p-3 border-t border-gray-800">
-          <Link
-            href="/settings"
-            className={clsx(
-              'w-full h-14 flex items-center justify-center rounded-xl transition-all duration-150 group',
-              pathname.startsWith('/settings')
-                ? 'text-blue-400 bg-gray-800/50' 
-                : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800/50'
-            )}
-            aria-label="Settings"
-          >
-            <Settings className="w-6 h-6 transition-transform group-hover:scale-110" />
-          </Link>
-        </div>
       </nav>
 
       {/* Sub Navigation Panel */}
