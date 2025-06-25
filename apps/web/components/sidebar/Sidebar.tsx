@@ -1,7 +1,7 @@
 // apps/web/components/sidebar/Sidebar.tsx
 'use client';
 import { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import clsx from 'clsx';
 import { WorkspaceSwitcher } from '@/components/workspace/WorkspaceSwitcher';
@@ -118,6 +118,7 @@ const navigation: SidebarItem[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [selectedMain, setSelectedMain] = useState(() => {
     const currentItem = navigation.find(item => 
       pathname.startsWith(item.href.split('?')[0])
@@ -127,6 +128,9 @@ export default function Sidebar() {
 
   const currentNavItem = navigation.find(item => item.id === selectedMain);
   const subNavItems = currentNavItem?.subItems || [];
+
+  // Build full URL with search params for comparison
+  const fullPathWithSearch = pathname + (searchParams.toString() ? '?' + searchParams.toString() : '');
 
   return (
     <>
@@ -268,8 +272,7 @@ export default function Sidebar() {
               <div className="flex-1 space-y-1">
                 {subNavItems.map((subItem) => {
                   const SubIcon = subItem.icon;
-                  const isSubActive = pathname === subItem.href || 
-                    (pathname + location.search) === subItem.href;
+                  const isSubActive = pathname === subItem.href || fullPathWithSearch === subItem.href;
                   
                   return (
                     <Link
