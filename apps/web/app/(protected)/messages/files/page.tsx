@@ -1,11 +1,8 @@
-import { getSession } from '@/lib/user';
-import { redirect } from 'next/navigation';
+import { requireAuth } from '@/lib/user';
 import { getRecentMessages } from '@/actions/messages';
 
 export default async function FilesPage() {
-  const session = await getSession();
-  if (!session) redirect('/sign-in');
-
+  const session = await requireAuth();
   const workspaceId = session.user?.user_metadata?.current_workspace_id || 'default-workspace';
   const { messages } = await getRecentMessages(workspaceId, 50);
   const files = messages.flatMap(m => (Array.isArray(m.attachments) ? m.attachments : []));

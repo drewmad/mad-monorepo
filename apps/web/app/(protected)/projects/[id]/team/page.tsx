@@ -1,13 +1,8 @@
-import { getSession } from '@/lib/user';
-import { redirect } from 'next/navigation';
-
 interface TeamPageProps {
   params: { id: string };
 }
 
 export default async function TeamPage({ params }: TeamPageProps) {
-  const session = await getSession();
-  if (!session) redirect('/sign-in');
   const { id } = params;
 
   return (

@@ -1,5 +1,4 @@
-import { getSession } from '@/lib/user';
-import { redirect } from 'next/navigation';
+import { requireAuth } from '@/lib/user';
 import { searchMessages } from '@/actions/messages';
 
 interface SearchPageProps {
@@ -7,9 +6,7 @@ interface SearchPageProps {
 }
 
 export default async function SearchMessagesPage({ searchParams }: SearchPageProps) {
-  const session = await getSession();
-  if (!session) redirect('/sign-in');
-
+  const session = await requireAuth();
   const workspaceId = session.user?.user_metadata?.current_workspace_id || 'default-workspace';
   const query = searchParams.q ?? '';
   const { messages } = query ? await searchMessages(workspaceId, query) : { messages: [] };

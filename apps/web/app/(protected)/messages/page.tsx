@@ -1,5 +1,4 @@
-import { getSession } from '@/lib/user';
-import { redirect } from 'next/navigation';
+import { requireAuth } from '@/lib/user';
 import { Suspense } from 'react';
 import { getChannels, getMessages } from '@/actions/messages';
 import { MessagesInterface } from '@/components/messages/MessagesInterface';
@@ -26,9 +25,7 @@ interface MessagesPageProps {
 }
 
 export default async function MessagesPage({ searchParams }: MessagesPageProps) {
-  const session = await getSession();
-  if (!session) redirect('/sign-in');
-
+  const session = await requireAuth();
   const workspaceId = session.user?.user_metadata?.current_workspace_id;
   const userId = session.user?.id || '';
 
