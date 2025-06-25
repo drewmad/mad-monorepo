@@ -46,9 +46,9 @@ interface Message {
 interface MessagesInterfaceProps {
     workspaceId: string;
     currentUserId: string;
-    initialChannels: Channel[];
-    initialMessages: Message[];
-    initialCurrentChannel: Channel | null;
+    initialChannels?: Channel[];
+    initialMessages?: Message[];
+    initialCurrentChannel?: Channel | null;
     view?: 'channels' | 'direct' | 'threads';
 }
 
@@ -62,9 +62,9 @@ export function MessagesInterface({
 }: MessagesInterfaceProps) {
     const router = useRouter();
     const [, startTransition] = useTransition();
-    const [channels, setChannels] = useState<Channel[]>(initialChannels);
-    const [messages, setMessages] = useState<Message[]>(initialMessages);
-    const [currentChannel, setCurrentChannel] = useState<Channel | null>(initialCurrentChannel);
+    const [channels, setChannels] = useState<Channel[]>(initialChannels ?? []);
+    const [messages, setMessages] = useState<Message[]>(initialMessages ?? []);
+    const [currentChannel, setCurrentChannel] = useState<Channel | null>(initialCurrentChannel ?? null);
     const [messageText, setMessageText] = useState('');
     const [replyToMessage, setReplyToMessage] = useState<Message | null>(null);
     const [showChannelCreate, setShowChannelCreate] = useState(false);
@@ -82,8 +82,8 @@ export function MessagesInterface({
     const { presence, sendPresence } = usePresence(currentChannel?.id || '');
     const { broadcastUpdate } = useCollaborativeEditing(currentChannel?.id || '', () => {});
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const displayedMessages = useMemo(() => {
+        if (!currentChannel) return [];
         let result = messages;
         if (view === 'threads') {
             result = result.filter(m => Array.isArray(m.replies) && m.replies.length > 0);
@@ -92,7 +92,7 @@ export function MessagesInterface({
             result = result.filter(m => m.text.toLowerCase().includes(searchQuery.toLowerCase()));
         }
         return result;
-    }, [messages, view, searchQuery]);
+    }, [messages, view, searchQuery, currentChannel]);
 
     useEffect(() => {
         if (!currentChannel) return;
