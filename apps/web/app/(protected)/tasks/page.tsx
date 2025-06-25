@@ -12,7 +12,7 @@ export default async function TasksPage() {
   const { tasks } = await getTasks(undefined, workspaceId);
 
   return (
-    <main className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
+    <section className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Tasks</h1>
         <p className="text-gray-600 mt-1">View and manage tasks</p>
@@ -20,6 +20,6 @@ export default async function TasksPage() {
       <Card className="p-6">
         <TaskTable tasks={tasks} />
       </Card>
-    </main>
+    </section>
   );
 }
