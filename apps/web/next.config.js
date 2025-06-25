@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@ui', '@db'],
+  transpilePackages: ['@ui', '@mad/db'],
   experimental: {
     typedRoutes: true
   },
