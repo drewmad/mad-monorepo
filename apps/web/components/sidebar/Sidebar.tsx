@@ -145,22 +145,27 @@ export default function Sidebar() {
   return (
     <>
       {/* Main Navigation Rail - Icons Only */}
-      <nav className={clsx(
-        "fixed left-0 top-0 z-30 w-20 h-screen flex flex-col",
-        "bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl",
-        "border-r border-gray-200/50 dark:border-gray-800/50",
-        "glass:bg-white/10 glass:backdrop-blur-2xl glass:border-white/20"
-      )}>
+      <nav
+        className={clsx(
+          "fixed left-0 top-0 z-30 w-20 h-screen flex flex-col",
+          "bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl",
+          "border-r border-gray-200/50 dark:border-gray-800/50",
+          "shadow-sm dark:shadow-black/30 glass:shadow-black/20",
+          "glass:bg-white/10 glass:backdrop-blur-2xl glass:border-white/20",
+          "transition-shadow"
+        )}
+      >
         {/* Logo */}
         <div className={clsx(
           "h-16 flex items-center justify-center",
           "border-b border-gray-200/50 dark:border-gray-800/50",
           "glass:border-white/20"
         )}>
-          <Link 
-            href="/dashboard" 
+          <Link
+            href="/dashboard"
             className={clsx(
-              "text-2xl font-bold transition-all duration-300",
+              "text-2xl font-bold",
+              "transition-colors duration-300",
               "text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300",
               "glass:text-white glass:hover:text-white/90 glass:drop-shadow-2xl"
             )}
@@ -176,40 +181,47 @@ export default function Sidebar() {
             const isActive = selectedMain === item.id;
             
             return (
-              <div key={item.id} className="relative px-3 mb-2">
+              <div key={item.id} className="relative px-3 mb-2 last:mb-0">
                 {/* Active Indicator */}
                 {isActive && (
-                  <div className={clsx(
-                    "absolute left-0 top-1/2 -translate-y-1/2 w-1 h-10 rounded-r-full",
-                    "bg-indigo-500 dark:bg-indigo-400",
-                    "glass:bg-white/80 glass:shadow-[0_0_20px_rgba(255,255,255,0.5)]"
-                  )} />
+                  <div
+                    className={clsx(
+                      "absolute left-0 top-1/2 -translate-y-1/2 w-1 h-10 rounded-r-full",
+                      "bg-indigo-500 dark:bg-indigo-400",
+                      "shadow-md shadow-indigo-500/20 dark:shadow-indigo-400/20",
+                      "glass:bg-white/80 glass:shadow-[0_0_20px_rgba(255,255,255,0.5)]",
+                      "transition-colors transition-shadow duration-300"
+                    )}
+                  />
                 )}
                 
                 <Link
                   href={item.href}
                   onClick={() => setSelectedMain(item.id)}
                   className={clsx(
-                    'w-full h-14 flex items-center justify-center rounded-xl group relative transition-all duration-300',
+                    'w-full h-14 flex items-center justify-center rounded-xl group relative transition-colors transition-shadow duration-300',
                     isActive
                       ? clsx(
-                          'text-indigo-600 bg-gray-100/80 dark:text-indigo-400 dark:bg-gray-800/50',
+                          'text-indigo-600 bg-gray-100/80 dark:text-indigo-400 dark:bg-gray-800/50 shadow-md shadow-indigo-500/10 dark:shadow-indigo-400/10',
                           'glass:text-white glass:bg-white/20 glass:shadow-[0_8px_32px_0_rgba(255,255,255,0.1)]'
                         )
                       : clsx(
                           'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200',
-                          'hover:bg-gray-100/60 dark:hover:bg-gray-800/50',
-                          'glass:text-white/70 glass:hover:text-white glass:hover:bg-white/10'
+                          'hover:bg-gray-100/60 dark:hover:bg-gray-800/50 hover:shadow-sm dark:hover:shadow-black/20',
+                          'glass:text-white/70 glass:hover:text-white glass:hover:bg-white/10 glass:hover:shadow-[0_4px_16px_rgba(255,255,255,0.1)]'
                         )
                   )}
                   aria-label={item.label}
                   aria-current={isActive ? 'page' : undefined}
                 >
                   <div className="relative">
-                    <Icon className={clsx(
-                      "w-6 h-6 transition-all duration-300",
-                      isActive && "glass:filter glass:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
-                    )} />
+                    <Icon
+                      className={clsx(
+                        "w-6 h-6 transition-colors transition-shadow duration-300",
+                        isActive &&
+                          "glass:filter glass:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+                      )}
+                    />
                     {/* Badge */}
                     {item.badge && (
                       <div className={clsx(
@@ -232,14 +244,16 @@ export default function Sidebar() {
                   </div>
                   
                   {/* Tooltip */}
-                  <span className={clsx(
-                    "absolute left-full ml-2 px-3 py-2 rounded-lg",
-                    "bg-gray-900 text-white dark:bg-gray-800",
-                    "glass:bg-black/80 glass:backdrop-blur-xl glass:border glass:border-white/20",
-                    "text-sm opacity-0 group-hover:opacity-100",
-                    "transition-all duration-200 whitespace-nowrap pointer-events-none z-10",
-                    "shadow-xl"
-                  )}>
+                  <span
+                    className={clsx(
+                      "absolute left-full ml-2 px-3 py-2 rounded-lg",
+                      "bg-gray-900 text-white dark:bg-gray-800",
+                      "glass:bg-black/80 glass:backdrop-blur-xl glass:border glass:border-white/20",
+                      "text-sm opacity-0 group-hover:opacity-100",
+                      "transition-colors transition-shadow duration-200 whitespace-nowrap pointer-events-none z-10",
+                      "shadow-xl"
+                    )}
+                  >
                     {item.label}
                   </span>
                 </Link>
@@ -250,12 +264,16 @@ export default function Sidebar() {
       </nav>
 
       {/* Sub Navigation Panel */}
-      <div className={clsx(
-        "fixed left-20 top-0 z-20 w-72 h-screen overflow-hidden flex flex-col",
-        "bg-gray-50/95 dark:bg-gray-900/95 backdrop-blur-xl",
-        "border-r border-gray-200/50 dark:border-gray-800/50",
-        "glass:bg-white/5 glass:backdrop-blur-2xl glass:border-white/10"
-      )}>
+      <div
+        className={clsx(
+          "fixed left-20 top-0 z-20 w-72 h-screen overflow-hidden flex flex-col",
+          "bg-gray-50/95 dark:bg-gray-900/95 backdrop-blur-xl",
+          "border-r border-gray-200/50 dark:border-gray-800/50",
+          "shadow-sm dark:shadow-black/20 glass:shadow-black/10",
+          "glass:bg-white/5 glass:backdrop-blur-2xl glass:border-white/10",
+          "transition-shadow"
+        )}
+      >
         {/* Workspace Switcher */}
         <div className={clsx(
           "h-16 flex items-center px-4",
@@ -289,16 +307,16 @@ export default function Sidebar() {
                       key={subItem.id}
                       href={subItem.href}
                       className={clsx(
-                        'flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group relative',
+                        'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors transition-shadow duration-200 group relative',
                         isSubActive
                           ? clsx(
-                              'bg-gray-200/80 text-gray-900 dark:bg-gray-800 dark:text-gray-100',
+                              'bg-gray-200/80 text-gray-900 dark:bg-gray-800 dark:text-gray-100 shadow-sm dark:shadow-black/10',
                               'glass:bg-white/20 glass:text-white glass:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2)]'
                             )
                           : clsx(
                               'text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200',
-                              'hover:bg-gray-200/50 dark:hover:bg-gray-800/50',
-                              'glass:text-white/60 glass:hover:text-white glass:hover:bg-white/10'
+                              'hover:bg-gray-200/50 dark:hover:bg-gray-800/50 hover:shadow-sm dark:hover:shadow-black/20',
+                              'glass:text-white/60 glass:hover:text-white glass:hover:bg-white/10 glass:hover:shadow-[0_2px_12px_rgba(255,255,255,0.1)]'
                             )
                       )}
                     >
