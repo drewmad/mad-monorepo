@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { CalendarView } from '@/components/calendar/CalendarView';
 
 // Define proper interfaces
@@ -16,6 +17,10 @@ interface Event {
   meeting_url: string | null;
   recorded: boolean;
   recording_url: string | null;
+  category?: string | null;
+  recurrence?: 'none' | 'daily' | 'weekly' | 'monthly' | null;
+  sync_google?: boolean;
+  sync_outlook?: boolean;
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -29,6 +34,10 @@ interface EventData {
   duration: number | null;
   location: string | null;
   meeting_url: string | null;
+  category?: string | null;
+  recurrence?: 'none' | 'daily' | 'weekly' | 'monthly' | null;
+  sync_google?: boolean;
+  sync_outlook?: boolean;
   recorded: boolean;
   recording_url: string | null;
 }
@@ -98,11 +107,13 @@ const mockEvents: Event[] = [
     created_by: 'user3',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-  }
+  },
 ];
 
 export default function CalendarPage() {
   const [events, setEvents] = useState<Event[]>(mockEvents);
+  const searchParams = useSearchParams();
+  const view = (searchParams.get('view') ?? 'month') as 'month' | 'week' | 'agenda';
 
   const handleEventCreate = (eventData: Partial<EventData>) => {
     const newEvent: Event = {
@@ -115,6 +126,10 @@ export default function CalendarPage() {
       duration: eventData.duration || null,
       location: eventData.location || null,
       meeting_url: eventData.meeting_url || null,
+      category: eventData.category || null,
+      recurrence: eventData.recurrence || 'none',
+      sync_google: eventData.sync_google || false,
+      sync_outlook: eventData.sync_outlook || false,
       recorded: false,
       recording_url: null,
       created_by: 'current_user',
@@ -136,6 +151,7 @@ export default function CalendarPage() {
       events={events}
       onEventCreate={handleEventCreate}
       onEventDelete={handleEventDelete}
+      initialView={view}
     />
   );
-} 
+}
