@@ -14,17 +14,17 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# 1. Fix @db package exports and types
-echo -e "${BLUE}1. Fixing @db package exports...${NC}"
+# 1. Fix @mad/db package exports and types
+echo -e "${BLUE}1. Fixing @mad/db package exports...${NC}"
 
-# Update @db index.ts to properly export types
+# Update @mad/db index.ts to properly export types
 cat > packages/db/src/index.ts << 'EOF'
 export * from './client';
 export * from './project';
 export { type Database } from '../types';
 EOF
 
-echo -e "${GREEN}✅ Fixed @db exports${NC}"
+echo -e "${GREEN}✅ Fixed @mad/db exports${NC}"
 
 # 2. Install missing type dependencies
 echo -e "${BLUE}2. Installing missing type dependencies...${NC}"
@@ -51,7 +51,7 @@ if [ -f "apps/web/lib/supabase-server.ts" ]; then
     cat > apps/web/lib/supabase-server.ts << 'EOF'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import type { Database } from '@db'
+import type { Database } from '@mad/db'
 
 export const createClient = () => {
   const cookieStore = cookies()
@@ -101,9 +101,9 @@ find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -v dist | xar
 # Fix @ui subpath imports
 find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -v dist | xargs sed -i '' "s/from '@ui\/[^']*'/from '@ui'/g"
 
-# Fix @db subpath imports (except types)
-find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -v dist | xargs sed -i '' "s/from '@db\/client'/from '@db'/g"
-find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -v dist | xargs sed -i '' "s/from '@db\/project'/from '@db'/g"
+# Fix @mad/db subpath imports (except types)
+find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -v dist | xargs sed -i '' "s/from '@mad\/db\/client'/from '@mad\/db'/g"
+find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -v dist | xargs sed -i '' "s/from '@mad\/db\/project'/from '@mad\/db'/g"
 
 echo -e "${GREEN}✅ Fixed import statements${NC}"
 
@@ -121,7 +121,7 @@ echo -e "${GREEN}✅ Fixed component prop types${NC}"
 # 6. Build packages in correct order
 echo -e "${BLUE}6. Building packages...${NC}"
 
-# Build @db package first (it's needed by others)
+# Build @mad/db package first (it's needed by others)
 cd packages/db
 pnpm build
 cd ../..

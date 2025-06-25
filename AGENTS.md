@@ -1,6 +1,7 @@
 # AI Agent Guidelines - Mad Engineering Monorepo
 
 ## 🎯 Core Directive
+
 You are working on a **pnpm workspace monorepo** using **Next.js 14**, **Supabase**, and **TypeScript**. Prioritize code quality, type safety, and monorepo best practices.
 
 ## 🏗️ Architecture Overview
@@ -19,34 +20,38 @@ mad-monorepo/
 ## 📋 Critical Rules
 
 ### 1. **Import Discipline** (MOST IMPORTANT)
+
 ```typescript
 // ✅ CORRECT - Always import from package root
 import { Button, Card, Input } from '@ui';
-import { createClient, Project } from '@db';
+import { createClient, Project } from '@mad/db';
 
 // ❌ WRONG - Never use subpath imports
 import { Button } from '@ui/Button';
-import { createClient } from '@db/client';
+import { createClient } from '@mad/db/client';
 ```
 
 ### 2. **Package Resolution**
+
 - `@ui` → `packages/ui/src/index.ts` (transpiled by Next.js)
-- `@db` → `packages/db/src/index.ts` (requires build)
+- `@mad/db` → `packages/db/src/index.ts` (requires build)
 - Always export new components from package index files
 
 ### 3. **Type Safety**
+
 ```typescript
 // Always use type imports for types
-import type { Database } from '@db';
+import type { Database } from '@mad/db';
 import type { FC, ReactNode } from 'react';
 
 // Never import runtime values as types
-import { Database } from '@db'; // ❌ Wrong if Database is a type
+import { Database } from '@mad/db'; // ❌ Wrong if Database is a type
 ```
 
 ## 🛠️ Development Workflow
 
 ### Before Making Changes
+
 1. **Validate current state**: `pnpm validate:all`
 2. **Check for existing components**: Look in `packages/ui/src/`
 3. **Understand the data model**: Check `packages/db/types.ts`
@@ -54,6 +59,7 @@ import { Database } from '@db'; // ❌ Wrong if Database is a type
 ### When Adding Features
 
 #### New UI Component
+
 ```bash
 1. Create: packages/ui/src/NewComponent.tsx
 2. Export: Add to packages/ui/src/index.ts
@@ -62,14 +68,16 @@ import { Database } from '@db'; // ❌ Wrong if Database is a type
 ```
 
 #### New Database Function
+
 ```bash
 1. Create: packages/db/src/newFeature.ts
 2. Export: Add to packages/db/src/index.ts
 3. Build: cd packages/db && pnpm build
-4. Import: import { newFeature } from '@db';
+4. Import: import { newFeature } from '@mad/db';
 ```
 
 #### New Page/Route
+
 ```bash
 1. Create: apps/web/app/(protected)/new-page/page.tsx
 2. Auth check: const session = await getSession();
@@ -80,13 +88,15 @@ import { Database } from '@db'; // ❌ Wrong if Database is a type
 ### Error Recovery
 
 #### "Module not found: Can't resolve '@ui'"
+
 ```bash
 # Check transpilePackages in next.config.js
 # Verify component is exported from packages/ui/src/index.ts
 # Restart dev server
 ```
 
-#### "Cannot find module '@db'"
+#### "Cannot find module '@mad/db'"
+
 ```bash
 cd packages/db && pnpm build
 # Check if types.ts exports Database type
@@ -94,6 +104,7 @@ cd packages/db && pnpm build
 ```
 
 #### TypeScript errors
+
 ```bash
 pnpm typecheck                    # See all errors
 rm -rf .next *.tsbuildinfo       # Clear cache
@@ -103,6 +114,7 @@ pnpm install && pnpm build       # Rebuild
 ## 🎨 UI/UX Patterns
 
 ### Component Structure
+
 ```typescript
 // packages/ui/src/Component.tsx
 import clsx from 'clsx';
@@ -131,6 +143,7 @@ Component.displayName = 'Component';
 ```
 
 ### Server Components (Default)
+
 ```typescript
 // app/(protected)/page.tsx
 import { getSession } from '@/lib/user';
@@ -139,13 +152,14 @@ import { listProjects } from '@/actions/projects';
 export default async function Page() {
   const session = await getSession();
   if (!session) redirect('/sign-in');
-  
+
   const data = await listProjects();
   return <ClientComponent data={data} />;
 }
 ```
 
 ### Client Components
+
 ```typescript
 'use client';
 import { useState } from 'react';
@@ -160,6 +174,7 @@ export function ClientComponent({ data }) {
 ## 🗄️ Database Patterns
 
 ### Supabase Client Usage
+
 ```typescript
 // Server-side (recommended)
 import { createClient } from '@/lib/supabase-server';
@@ -174,8 +189,9 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 ```
 
 ### Type-Safe Queries
+
 ```typescript
-import type { Database } from '@db';
+import type { Database } from '@mad/db';
 
 type Project = Database['public']['Tables']['projects']['Row'];
 
@@ -188,6 +204,7 @@ const { data, error } = await supabase
 ## 🚀 Deployment Checklist
 
 Before deploying:
+
 ```bash
 pnpm validate:deploy              # Run all checks
 git status                        # No uncommitted changes
@@ -195,6 +212,7 @@ cat apps/web/.env.local          # Verify env vars
 ```
 
 Required environment variables:
+
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
@@ -202,18 +220,21 @@ Required environment variables:
 ## 🐛 Common Patterns & Solutions
 
 ### Adding Gemini UI Features
+
 1. **Check if component exists** in `@ui`
 2. **Create if missing** with proper exports
 3. **Use consistent styling** (Tailwind + clsx)
 4. **Follow existing patterns** in codebase
 
 ### State Management
+
 - **Server state**: Server components + actions
 - **Client state**: useState, useContext
 - **Global state**: Context providers in app/providers.tsx
 - **URL state**: searchParams, useRouter
 
 ### Authentication Flow
+
 ```typescript
 // 1. Check session
 const session = await getSession();

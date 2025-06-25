@@ -31,8 +31,8 @@ cd apps/docs
 pnpm add -D storybook@^8.6.14
 cd ../..
 
-# 4. Fix the @db package exports properly
-echo -e "${BLUE}4. Fixing @db package exports...${NC}"
+# 4. Fix the @mad/db package exports properly
+echo -e "${BLUE}4. Fixing @mad/db package exports...${NC}"
 cat > packages/db/src/index.ts << 'EOF'
 // Export everything from modules
 export * from './client';
@@ -53,12 +53,12 @@ if ! grep -q "export type { Database }" packages/db/types.ts && ! grep -q "expor
 fi
 
 # 6. Build the db package
-echo -e "${BLUE}6. Building @db package...${NC}"
+echo -e "${BLUE}6. Building @mad/db package...${NC}"
 cd packages/db
 pnpm build
 cd ../..
 
-# 7. Fix all @db imports to use proper type imports
+# 7. Fix all @mad/db imports to use proper type imports
 echo -e "${BLUE}7. Fixing Database imports...${NC}"
 find apps/web/lib -name "*.ts" -o -name "*.tsx" | while read file; do
     # Change import { Database } to import type { Database }

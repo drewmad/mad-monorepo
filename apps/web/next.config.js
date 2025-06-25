@@ -1,16 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@ui', '@db'],
+  transpilePackages: ['@ui', '@mad/db'],
   experimental: {
-    typedRoutes: true
+    typedRoutes: true,
   },
   reactStrictMode: true,
   eslint: {
-    dirs: ['app', 'components', 'lib']
+    dirs: ['app', 'components', 'lib'],
   },
   images: {
-    domains: ['avatars.githubusercontent.com', 'images.unsplash.com', 'i.pravatar.cc']
-  }
+    domains: ['avatars.githubusercontent.com', 'images.unsplash.com', 'i.pravatar.cc'],
+  },
 };
 
 module.exports = nextConfig;

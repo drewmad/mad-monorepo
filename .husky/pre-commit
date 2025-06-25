@@ -20,10 +20,10 @@ if [ -n "$STAGED_FILES" ]; then
       IMPORT_ERRORS=$((IMPORT_ERRORS + 1))
     fi
     
-    # Check for @db subpath imports (excluding types)
-    if grep -E "from ['\"]@db/" "$file" 2>/dev/null | grep -v "from ['\"]@db/types"; then
-      echo "❌ Error: Found @db subpath import in $file"
-      echo "   Change to: import { function } from '@db';"
+    # Check for @mad/db subpath imports (excluding types)
+    if grep -E "from ['\"]@mad/db/" "$file" 2>/dev/null | grep -v "from ['\"]@mad/db/types"; then
+      echo "❌ Error: Found @mad/db subpath import in $file"
+      echo "   Change to: import { function } from '@mad/db';"
       IMPORT_ERRORS=$((IMPORT_ERRORS + 1))
     fi
     
@@ -39,7 +39,7 @@ if [ -n "$STAGED_FILES" ]; then
     echo ""
     echo "💡 To fix automatically, run:"
     echo "   sed -i '' \"s/from '@ui\\/[^']*'/from '@ui'/g\" $STAGED_FILES"
-    echo "   sed -i '' \"s/from '@db\\/[^']*'/from '@db'/g\" $STAGED_FILES"
+    echo "   sed -i '' \"s/from '@mad\/db\\/[^']*'/from '@mad\/db'/g\" $STAGED_FILES"
     exit 1
   fi
 fi
