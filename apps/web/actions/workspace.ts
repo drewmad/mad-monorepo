@@ -477,4 +477,28 @@ export async function createInvitationCode(workspaceId: string) {
     console.error('Error in createInvitationCode:', error);
     return { code: null, error: 'Failed to create invitation code' };
   }
-} 
+}
+
+export async function deleteWorkspace(id: string) {
+  const supabase = createClient();
+
+  try {
+    const { error } = await supabase
+      .from('workspaces')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting workspace:', error);
+      return { error: error.message };
+    }
+
+    revalidatePath('/workspace-selection');
+    revalidatePath('/dashboard');
+
+    return { error: null };
+  } catch (error) {
+    console.error('Error in deleteWorkspace:', error);
+    return { error: 'Failed to delete workspace' };
+  }
+}

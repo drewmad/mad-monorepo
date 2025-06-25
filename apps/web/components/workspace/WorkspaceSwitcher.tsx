@@ -1,15 +1,26 @@
 'use client';
 
 
-import { useWorkspaces } from '@/contexts/AppContext';
+import { useWorkspaces, useApp } from '@/contexts/AppContext';
 import { Dropdown, DropdownItem, Avatar } from '@ui';
+import { useRouter } from 'next/navigation';
 
 export function WorkspaceSwitcher() {
     const { workspaces, currentWorkspace } = useWorkspaces();
+    const { dispatch } = useApp();
+    const router = useRouter();
 
     const handleWorkspaceChange = (workspaceId: string) => {
-        // TODO: Implement workspace switching logic
-        console.log('Switching to workspace:', workspaceId);
+        const workspace = workspaces.find(w => w.id === workspaceId);
+        if (!workspace) return;
+
+        dispatch({ type: 'SET_CURRENT_WORKSPACE', payload: workspace });
+
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('currentWorkspace', JSON.stringify(workspace));
+        }
+
+        router.push('/dashboard');
     };
 
     const trigger = (
@@ -68,7 +79,6 @@ export function WorkspaceSwitcher() {
                     <div className="border-t border-gray-100 mt-1 pt-1">
                         <DropdownItem
                             onClick={() => {
-                                // TODO: Implement workspace creation
                                 console.log('Create new workspace');
                             }}
                             className="flex items-center space-x-3 px-3 py-2 text-indigo-600"
