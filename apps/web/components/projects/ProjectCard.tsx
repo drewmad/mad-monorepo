@@ -5,6 +5,7 @@ import { Card, Badge, Progress, Avatar } from '@ui';
 import { useModal } from '@/contexts/AppContext';
 import { deleteProject } from '@/actions/projects';
 import { useRouter } from 'next/navigation';
+import type { ProjectMember } from '@mad/db';
 
 interface Project {
   id: string;
@@ -17,13 +18,6 @@ interface Project {
   workspace_id: string;
   created_at: string;
   updated_at: string;
-}
-
-interface ProjectMember {
-  id: string;
-  name: string;
-  avatar_url?: string;
-  role: 'lead' | 'member' | 'viewer';
 }
 
 interface ProjectCardProps {
