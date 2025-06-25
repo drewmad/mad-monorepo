@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createProject, createClient } from '@mad/db';
 
-vi.mock('@mad/db/src/client', () => ({
+vi.mock('@mad/db', () => ({
   supabaseClient: {
     from: () => ({
       insert: () => ({ select: () => ({ single: () => ({ data: {}, error: null }) }) })
