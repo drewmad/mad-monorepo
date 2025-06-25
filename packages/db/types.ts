@@ -273,6 +273,29 @@ export interface Database {
         };
         Update: Partial<Database['public']['Tables']['transactions']['Row']>;
       };
+      time_entries: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          user_id: string;
+          description: string | null;
+          start_time: string;
+          end_time: string;
+          duration_minutes: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          user_id: string;
+          description?: string | null;
+          start_time: string;
+          end_time: string;
+          duration_minutes: number;
+        };
+        Update: Partial<Database['public']['Tables']['time_entries']['Row']>;
+      };
       workspace_roles: {
         Row: {
           id: string;

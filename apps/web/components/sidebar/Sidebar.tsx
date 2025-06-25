@@ -79,7 +79,8 @@ const navigation: SidebarItem[] = [
     subItems: [
       { id: 'timer', href: '/time', label: 'Timer', icon: Clock },
       { id: 'timesheet', href: '/time/timesheet', label: 'Timesheet' },
-      { id: 'reports', href: '/time/reports', label: 'Reports' }
+      { id: 'reports', href: '/time/reports', label: 'Reports' },
+      { id: 'approvals', href: '/time/approvals', label: 'Approvals' }
     ]
   },
   { 
