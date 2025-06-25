@@ -91,7 +91,9 @@ const navigation: SidebarItem[] = [
     subItems: [
       { id: 'channels', href: '/messages', label: 'Channels', icon: MessageSquare },
       { id: 'direct', href: '/messages?view=direct', label: 'Direct Messages' },
-      { id: 'threads', href: '/messages?view=threads', label: 'Threads' }
+      { id: 'threads', href: '/messages?view=threads', label: 'Threads' },
+      { id: 'files', href: '/messages/files', label: 'Files' },
+      { id: 'search', href: '/messages/search', label: 'Search' }
     ]
   },
   { 
