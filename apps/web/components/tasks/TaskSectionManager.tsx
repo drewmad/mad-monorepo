@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Card, Button, Badge, Input, Modal, Select, Dropdown, DropdownItem, IconButton, Textarea, Toast } from '@ui';
 import { useModal } from '@/contexts/AppContext';
+import { deleteTask } from '@/actions/tasks';
 
 interface Task {
     id: string;
@@ -139,9 +140,13 @@ export function TaskSectionManager({
             title: 'Delete Task',
             message: `Are you sure you want to delete "${task.name}"? This action cannot be undone.`,
             confirmText: 'Delete',
-            onConfirm: () => {
-                // TODO: Implement task deletion
-                console.log('Deleting task:', task.id);
+            onConfirm: async () => {
+                const { error } = await deleteTask(task.id);
+                if (error) {
+                    showNotification('Failed to delete task.');
+                } else {
+                    showNotification(`Task "${task.name}" deleted successfully!`);
+                }
             }
         });
     };

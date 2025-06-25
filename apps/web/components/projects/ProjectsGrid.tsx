@@ -33,7 +33,7 @@ export function ProjectsGrid({ projects = [] }: ProjectsGridProps) {
           }}
           taskCount={project.tasks?.length ?? 0}
           completedTasks={project.tasks?.filter(t => t.status === 'completed').length ?? 0}
-          members={[]} // TODO: Add project members when available
+          members={[]}
         />
       ))}
     </div>
