@@ -61,7 +61,7 @@
   }
   
   body {
-    @apply bg-background text-foreground;
+    @apply min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 glass:from-white/10 glass:to-white/5 text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }

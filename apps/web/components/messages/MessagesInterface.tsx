@@ -82,6 +82,14 @@ export function MessagesInterface({
     const { presence, sendPresence } = usePresence(currentChannel?.id || '');
     const { broadcastUpdate } = useCollaborativeEditing(currentChannel?.id || '', () => {});
 
+    if (channels.length === 0) {
+        return (
+            <div className="flex-1 flex items-center justify-center text-gray-500 p-4">
+                <p>No channels available.</p>
+            </div>
+        );
+    }
+
     const displayedMessages = useMemo(() => {
         if (!currentChannel) return [];
         let result = messages;
