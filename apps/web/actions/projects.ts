@@ -7,13 +7,31 @@ import type { Database } from '@mad/db';
 type ProjectInsert = Database['public']['Tables']['projects']['Insert'];
 type ProjectUpdate = Database['public']['Tables']['projects']['Update'];
 
+type RawProject = Database['public']['Tables']['projects']['Row'] & {
+  members?: {
+    role: 'lead' | 'member' | 'viewer';
+    member: {
+      id: string;
+      name: string;
+      avatar_url: string | null;
+    };
+  }[];
+};
+
 export async function getProjects(workspaceId?: string) {
   const supabase = createClient();
   
   try {
     let query = supabase
       .from('projects')
-      .select('*')
+      .select(
+        `*,
+        members:project_members(
+          role,
+          member:team_members(id, name, avatar_url)
+        )
+      `
+      )
       .order('created_at', { ascending: false });
     
     if (workspaceId) {
@@ -27,7 +45,20 @@ export async function getProjects(workspaceId?: string) {
       return { projects: [], error: error.message };
     }
     
-    return { projects: data || [], error: null };
+    const projects = (data || []).map(project => {
+      const p = project as RawProject;
+      return {
+        ...p,
+        members: p.members?.map(m => ({
+          id: m.member.id,
+          name: m.member.name,
+          avatar_url: m.member.avatar_url,
+          role: m.role
+        })) || []
+      };
+    });
+
+    return { projects, error: null };
   } catch (error) {
     console.error('Error in getProjects:', error);
     return { projects: [], error: 'Failed to fetch projects' };

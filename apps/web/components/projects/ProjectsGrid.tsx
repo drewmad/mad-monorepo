@@ -1,8 +1,8 @@
 import { ProjectCard } from './ProjectCard';
-import type { Project } from '@mad/db';
+import type { Project, ProjectMember } from '@mad/db';
 
 interface ProjectsGridProps {
-  projects?: Project[];
+  projects?: (Project & { members?: ProjectMember[] })[];
 }
 
 export function ProjectsGrid({ projects = [] }: ProjectsGridProps) {
@@ -33,7 +33,7 @@ export function ProjectsGrid({ projects = [] }: ProjectsGridProps) {
           }}
           taskCount={project.tasks?.length ?? 0}
           completedTasks={project.tasks?.filter(t => t.status === 'completed').length ?? 0}
-          members={[]} // TODO: Add project members when available
+          members={project.members ?? []}
         />
       ))}
     </div>
