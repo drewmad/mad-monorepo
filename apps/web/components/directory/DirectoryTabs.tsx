@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Avatar, Badge, Input, Modal, Select, Toast } from '@ui';
+import { Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Avatar, Badge, Input, Modal, Select, Toast, EmptyState } from '@ui';
 import { Search, Plus, Mail, Phone, Building, Calendar, Users, MessageCircle, Settings } from 'lucide-react';
 import { inviteTeamMember } from '@/actions/workspace';
 import { createDirectMessage } from '@/actions/messages';
@@ -209,9 +209,10 @@ export function DirectoryTabs({ workspaceId, currentUserId, members, employees, 
                     </div>
 
                     {/* Members Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredMembers.map((member) => (
-                            <Card key={member.id} className="p-6">
+                    {filteredMembers.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredMembers.map((member) => (
+                                <Card key={member.id} className="p-6">
                                 <div className="flex items-center space-x-4">
                                     <Avatar
                                         src={member.avatar_url}
@@ -258,9 +259,26 @@ export function DirectoryTabs({ workspaceId, currentUserId, members, employees, 
                                         Edit
                                     </Button>
                                 </div>
-                            </Card>
-                        ))}
-                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    ) : (
+                        <EmptyState
+                            message={
+                                searchQuery
+                                    ? `No members found for "${searchQuery}"`
+                                    : 'No members yet'
+                            }
+                            action={
+                                !searchQuery && (
+                                    <Button onClick={() => setShowAddMember(true)} variant="primary">
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Add Member
+                                    </Button>
+                                )
+                            }
+                        />
+                    )}
                 </div>
             )
         },
@@ -288,9 +306,10 @@ export function DirectoryTabs({ workspaceId, currentUserId, members, employees, 
                     </div>
 
                     {/* Employees Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredEmployees.map((employee) => (
-                            <Card key={employee.id} className="p-6">
+                    {filteredEmployees.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredEmployees.map((employee) => (
+                                <Card key={employee.id} className="p-6">
                                 <div className="flex items-center space-x-4">
                                     <Avatar
                                         initials={employee.name.split(' ').map(n => n[0]).join('')}
@@ -332,9 +351,26 @@ export function DirectoryTabs({ workspaceId, currentUserId, members, employees, 
                                         Edit
                                     </Button>
                                 </div>
-                            </Card>
-                        ))}
-                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    ) : (
+                        <EmptyState
+                            message={
+                                searchQuery
+                                    ? `No employees found for "${searchQuery}"`
+                                    : 'No employees yet'
+                            }
+                            action={
+                                !searchQuery && (
+                                    <Button onClick={() => setShowAddEmployee(true)} variant="primary">
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Add Employee
+                                    </Button>
+                                )
+                            }
+                        />
+                    )}
                 </div>
             )
         },
@@ -362,9 +398,10 @@ export function DirectoryTabs({ workspaceId, currentUserId, members, employees, 
                     </div>
 
                     {/* Companies Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredCompanies.map((company) => (
-                            <Card key={company.id} className="p-6">
+                    {filteredCompanies.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredCompanies.map((company) => (
+                                <Card key={company.id} className="p-6">
                                 <div className="flex items-center space-x-4">
                                     <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
                                         <Building className="h-6 w-6 text-gray-600" />
@@ -405,9 +442,26 @@ export function DirectoryTabs({ workspaceId, currentUserId, members, employees, 
                                         Edit
                                     </Button>
                                 </div>
-                            </Card>
-                        ))}
-                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    ) : (
+                        <EmptyState
+                            message={
+                                searchQuery
+                                    ? `No companies found for "${searchQuery}"`
+                                    : 'No companies yet'
+                            }
+                            action={
+                                !searchQuery && (
+                                    <Button onClick={() => setShowAddCompany(true)} variant="primary">
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Add Company
+                                    </Button>
+                                )
+                            }
+                        />
+                    )}
                 </div>
             )
         }
