@@ -13,6 +13,15 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
+# Helper for portable in-place sed
+sedi() {
+  if [[ "$(uname)" == "Darwin" ]]; then
+    sed -i '' "$@"
+  else
+    sed -i "$@"
+  fi
+}
+
 # 1. Fix missing React types in packages/ui
 echo -e "${BLUE}1. Installing React types in packages/ui...${NC}"
 cd packages/ui
@@ -62,9 +71,9 @@ cd ../..
 echo -e "${BLUE}7. Fixing Database imports...${NC}"
 find apps/web/lib -name "*.ts" -o -name "*.tsx" | while read file; do
     # Change import { Database } to import type { Database }
-    sed -i '' "s/import { Database }/import type { Database }/g" "$file" 2>/dev/null || true
+    sedi "s/import { Database }/import type { Database }/g" "$file" 2>/dev/null || true
     # Change import { type Database } to import type { Database }
-    sed -i '' "s/import { type Database }/import type { Database }/g" "$file" 2>/dev/null || true
+    sedi "s/import { type Database }/import type { Database }/g" "$file" 2>/dev/null || true
 done
 
 # 8. Clear all TypeScript caches

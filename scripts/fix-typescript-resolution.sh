@@ -12,6 +12,15 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
+# Helper for portable in-place sed
+sedi() {
+  if [[ "$(uname)" == "Darwin" ]]; then
+    sed -i '' "$@"
+  else
+    sed -i "$@"
+  fi
+}
+
 # 1. Update the root tsconfig.json to include path mappings
 echo -e "${BLUE}1. Updating root tsconfig.json...${NC}"
 cat > tsconfig.json << 'EOF'
@@ -215,7 +224,7 @@ EOF
 
 # 5. Fix actions/projects.ts import
 echo -e "${BLUE}5. Fixing actions/projects.ts...${NC}"
-sed -i '' "s/import { createClient } from '@\/lib\/supabase-server';/import { supabaseServer } from '@\/lib\/supabase-server';/" apps/web/actions/projects.ts
+sedi "s/import { createClient } from '@\/lib\/supabase-server';/import { supabaseServer } from '@\/lib\/supabase-server';/" apps/web/actions/projects.ts
 
 # 6. Clear TypeScript cache
 echo -e "${BLUE}6. Clearing TypeScript cache...${NC}"
