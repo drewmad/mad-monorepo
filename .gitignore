@@ -165,7 +165,6 @@ public
 .env.test.local
 .env.production.local
 .notes
-TODO.md
 
 # Turbo
 .turbo
