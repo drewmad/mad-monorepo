@@ -9,40 +9,63 @@ A production‑ready Turbo‐repo powered stack:
 - **Vitest + Playwright tests**
 - **Turbo + PNPM + Vercel**
 
-## Usage
+## Quick Start
 
-1. **Clone & install**
+1. **Clone & setup**
    ```bash
    git clone https://github.com/your-org/mad-monorepo.git
    cd mad-monorepo
-   pnpm install
+   ./scripts/setup/setup.sh        # automated setup
    ```
 
-2. **Supabase local dev**
-
+2. **Development**
    ```bash
    supabase start
-   ./scripts/seed-local.sh          # runs migrations + seeds
-   pnpm dev                         # Turbo: web, api, docs
+   ./scripts/db/seed-local.sh       # database setup
+   pnpm dev                         # start development
    ```
 
-3. **Refresh KPI materialized view**
-
+3. **Validation & Deployment**
    ```bash
-   supabase db query < scripts/refresh-mv.sql
+   ./scripts/validate.sh --deploy   # pre-deployment checks
+   vercel --prod                    # deploy to production
    ```
 
-4. **Testing**
+## 📚 Documentation
 
-   ```bash
-   pnpm test              # unit + e2e (if CI_E2E not false)
-   CI_E2E=false pnpm test # skip e2e
-   ```
+Comprehensive documentation is available in the [`docs/`](./docs/) directory:
 
-5. **Deploy**
+- **[Setup Guide](./docs/setup/environment.md)** - Environment configuration
+- **[AI Agents](./docs/development/ai-agents.md)** - Working with AI assistants
+- **[Deployment](./docs/deployment/checklist.md)** - Deployment procedures
+- **[Supabase Integration](./docs/integrations/supabase.md)** - Database setup
+- **[Scripts](./scripts/README.md)** - Automation scripts
 
-   ```bash
-   vercel link
-   vercel env pull .env
-   vercel --prod
-   ``` 
+## 🛠️ Scripts
+
+The [`scripts/`](./scripts/) directory contains organized automation tools:
+
+```bash
+# TypeScript fixes
+./scripts/fix-typescript.sh --comprehensive
+
+# Validation
+./scripts/validate.sh --all
+./scripts/validate.sh --deploy
+
+# Database operations
+./scripts/db/seed-local.sh
+./scripts/db/test-supabase.ts
+
+# Setup
+./scripts/setup/setup.sh
+```
+
+## 🧪 Testing
+
+```bash
+pnpm test              # unit + e2e tests
+CI_E2E=false pnpm test # skip e2e tests
+pnpm typecheck         # TypeScript validation
+pnpm lint              # code linting
+``` 
