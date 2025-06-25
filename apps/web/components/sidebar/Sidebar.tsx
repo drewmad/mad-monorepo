@@ -1,19 +1,28 @@
 'use client';
 import { useSidebar } from './context';
 import { Folder, Users, Calendar, MessageSquare, Settings } from 'lucide-react';
-import { SubNav } from '@ui';
+import React from 'react';
+import { SubNav, type SubNavItem } from '@ui';
 import { WorkspaceSwitcher } from '@/components/workspace/WorkspaceSwitcher';
 import Link from 'next/link';
 import clsx from 'clsx';
 
-const nav = [
-  { href: '/dashboard' as const, label: 'Projects', icon: Folder },
-  { href: '/directory' as const, label: 'Directory', icon: Users },
-  { href: '/calendar' as const, label: 'Calendar', icon: Calendar },
-  { href: '/messages' as const, label: 'Messages', icon: MessageSquare }
-] as const;
+export interface SidebarItem extends Omit<SubNavItem, 'icon'> {
+  icon: React.ComponentType<{ className?: string }>;
+}
 
-export default function Sidebar() {
+const defaultNav: SidebarItem[] = [
+  { href: '/dashboard', label: 'Projects', icon: Folder, shortcut: '1' },
+  { href: '/directory', label: 'Directory', icon: Users, shortcut: '2' },
+  { href: '/calendar', label: 'Calendar', icon: Calendar, shortcut: '3' },
+  { href: '/messages', label: 'Messages', icon: MessageSquare, shortcut: '4' }
+];
+
+export interface SidebarProps {
+  items?: SidebarItem[];
+}
+
+export default function Sidebar({ items = defaultNav }: SidebarProps) {
   const { expanded, setExpanded } = useSidebar();
 
   return (
@@ -38,13 +47,16 @@ export default function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4 px-3">
         <SubNav
-          items={nav.map(n => ({
+          items={items.map(n => ({
             href: n.href,
             label: n.label,
-            icon: <n.icon className="h-5 w-5" />
+            icon: <n.icon className="h-5 w-5" />,
+            badge: n.badge,
+            shortcut: n.shortcut
           }))}
           orientation="vertical"
           collapsed={!expanded}
+          iconOnly={!expanded}
           className="w-full"
         />
       </nav>
