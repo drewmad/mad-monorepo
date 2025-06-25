@@ -61,7 +61,7 @@
   }
   
   body {
-    @apply min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 glass:from-white/10 glass:to-white/5 text-foreground;
+    @apply min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 glass-gradient text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
@@ -80,6 +80,10 @@
     background: rgba(255, 255, 255, 0.15);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.5);
   }
+  .glass-gradient {
+    @apply bg-gradient-to-br from-white/10 to-white/5 dark:from-gray-900/10 dark:to-gray-950/5;
+  }
+
 
   /* Custom scrollbar styles */
   .custom-scrollbar::-webkit-scrollbar {
