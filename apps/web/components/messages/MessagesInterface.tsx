@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Input, Avatar, Badge, Dropdown, DropdownItem, IconButton } from '@ui';
+import { Button, Input, Avatar, Badge, Dropdown, DropdownItem, IconButton, ToastContainer, useToast } from '@ui';
 import { SectionMenu } from './SectionMenu';
 import { createMessage, getMessages, createChannel } from '@/actions/messages';
 import type { Database } from '@mad/db';
@@ -56,6 +56,7 @@ export function MessagesInterface({
     initialCurrentChannel
 }: MessagesInterfaceProps) {
     const router = useRouter();
+    const { toasts, info, removeToast } = useToast();
     const [, startTransition] = useTransition();
     const [channels, setChannels] = useState<Channel[]>(initialChannels);
     const [messages, setMessages] = useState<Message[]>(initialMessages);
@@ -192,6 +193,7 @@ export function MessagesInterface({
     }, {} as Record<string, Channel[]>);
 
     return (
+        <>
         <div className="flex h-[calc(100vh-6rem)] bg-white rounded-lg shadow-sm border border-gray-200">
             {/* Channel Sidebar */}
             <div className="w-64 bg-gray-50 border-r border-gray-200 flex flex-col">
@@ -225,7 +227,7 @@ export function MessagesInterface({
                                 </div>
                                 <SectionMenu
                                     onCreate={() => setShowChannelCreate(true)}
-                                    onManage={() => console.log('Manage channels')}
+                                    onManage={() => info('Channel management is not implemented yet.')}
                                     className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
                                 />
                             </div>
@@ -266,7 +268,7 @@ export function MessagesInterface({
                                 </div>
                                 <SectionMenu
                                     onCreate={() => setShowChannelCreate(true)}
-                                    onManage={() => console.log('Manage channels')}
+                                    onManage={() => info('Channel management is not implemented yet.')}
                                     className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
                                 />
                             </div>
@@ -307,7 +309,7 @@ export function MessagesInterface({
                                 </div>
                                 <SectionMenu
                                     onCreate={() => setShowChannelCreate(true)}
-                                    onManage={() => console.log('Manage channels')}
+                                    onManage={() => info('Channel management is not implemented yet.')}
                                     className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
                                 />
                             </div>
@@ -370,13 +372,13 @@ export function MessagesInterface({
                                         }
                                         align="right"
                                     >
-                                        <DropdownItem onClick={() => console.log('Channel settings')}>
+                                        <DropdownItem onClick={() => info('Channel settings are not available yet.')}>
                                             Channel settings
                                         </DropdownItem>
-                                        <DropdownItem onClick={() => console.log('Invite members')}>
+                                        <DropdownItem onClick={() => info('Inviting members is not available yet.') }>
                                             Invite members
                                         </DropdownItem>
-                                        <DropdownItem onClick={() => console.log('View members')}>
+                                        <DropdownItem onClick={() => info('Member list is not available yet.') }>
                                             View members
                                         </DropdownItem>
                                     </Dropdown>
@@ -592,5 +594,7 @@ export function MessagesInterface({
                 </div>
             )}
         </div>
+        <ToastContainer toasts={toasts} onRemove={removeToast} />
+        </>
     );
-} 
+}

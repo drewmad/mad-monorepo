@@ -232,7 +232,6 @@ export function CalendarView({
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         // TODO: Open event details modal
-                                                        console.log('Open event:', event);
                                                     }}
                                                     className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded truncate hover:bg-indigo-200 transition-colors"
                                                 >

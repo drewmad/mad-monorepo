@@ -141,7 +141,7 @@ export function TaskSectionManager({
             confirmText: 'Delete',
             onConfirm: () => {
                 // TODO: Implement task deletion
-                console.log('Deleting task:', task.id);
+                showNotification('Task deletion is not implemented yet.');
             }
         });
     };

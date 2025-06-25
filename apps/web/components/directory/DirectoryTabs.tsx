@@ -135,7 +135,6 @@ export function DirectoryTabs({ workspaceId, currentUserId, members, employees, 
     };
 
     const handleAddEmployee = () => {
-        console.log('Adding employee:', newEmployee);
         showNotification(`${newEmployee.name} has been added as ${newEmployee.position}!`);
         setShowAddEmployee(false);
         setNewEmployee({ name: '', position: '', department: '', email: '', phone: '' });
@@ -143,7 +142,6 @@ export function DirectoryTabs({ workspaceId, currentUserId, members, employees, 
     };
 
     const handleAddCompany = () => {
-        console.log('Adding company:', newCompany);
         showNotification(`${newCompany.name} has been added as a ${newCompany.relationship}!`);
         setShowAddCompany(false);
         setNewCompany({ name: '', industry: '', contact_name: '', contact_email: '', contact_phone: '', relationship: 'client' });

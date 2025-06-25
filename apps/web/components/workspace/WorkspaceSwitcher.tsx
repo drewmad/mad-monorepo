@@ -2,14 +2,15 @@
 
 
 import { useWorkspaces } from '@/contexts/AppContext';
-import { Dropdown, DropdownItem, Avatar } from '@ui';
+import { Dropdown, DropdownItem, Avatar, ToastContainer, useToast } from '@ui';
 
 export function WorkspaceSwitcher() {
     const { workspaces, currentWorkspace } = useWorkspaces();
+    const { toasts, info, removeToast } = useToast();
 
-    const handleWorkspaceChange = (workspaceId: string) => {
+    const handleWorkspaceChange = () => {
         // TODO: Implement workspace switching logic
-        console.log('Switching to workspace:', workspaceId);
+        info('Workspace switching is not implemented yet.');
     };
 
     const trigger = (
@@ -39,13 +40,14 @@ export function WorkspaceSwitcher() {
     );
 
     return (
+        <>
         <div className="p-2 border-b border-gray-200">
             <Dropdown trigger={trigger} align="left">
                 <div className="py-1">
                     {workspaces.map((workspace) => (
                         <DropdownItem
                             key={workspace.id}
-                            onClick={() => handleWorkspaceChange(workspace.id)}
+                            onClick={handleWorkspaceChange}
                             className={`flex items-center space-x-3 px-3 py-2 ${currentWorkspace?.id === workspace.id ? 'bg-indigo-50 text-indigo-700' : ''
                                 }`}
                         >
@@ -69,7 +71,7 @@ export function WorkspaceSwitcher() {
                         <DropdownItem
                             onClick={() => {
                                 // TODO: Implement workspace creation
-                                console.log('Create new workspace');
+                                info('Workspace creation is not implemented yet.');
                             }}
                             className="flex items-center space-x-3 px-3 py-2 text-indigo-600"
                         >
@@ -84,5 +86,7 @@ export function WorkspaceSwitcher() {
                 </div>
             </Dropdown>
         </div>
+        <ToastContainer toasts={toasts} onRemove={removeToast} />
+        </>
     );
-} 
+}

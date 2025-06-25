@@ -304,7 +304,7 @@ export function SmartAnalytics({ projectId, timeframe = '30d' }: SmartAnalyticsP
                     <div className="flex items-center space-x-2">
                         <select
                             value={timeframe}
-                            onChange={(e) => console.log('Timeframe changed:', e.target.value)}
+                            onChange={(e) => showNotification(`Timeframe changed to ${e.target.value}`)}
                             className="text-sm border border-gray-300 rounded-md px-3 py-1 bg-white"
                         >
                             <option value="7d">Last 7 days</option>

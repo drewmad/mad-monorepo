@@ -45,7 +45,6 @@ export function SettingsTabs() {
         try {
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 1000));
-            console.log('Saving general settings:', settings);
             
             // In a real app, this would be an API call to save settings
             // await saveWorkspaceSettings(settings);
@@ -63,7 +62,6 @@ export function SettingsTabs() {
         setLoading(true);
         try {
             await new Promise(resolve => setTimeout(resolve, 800));
-            console.log(`Saving ${sectionName} settings:`, settings);
             showNotification(`${sectionName} settings saved successfully!`);
         } catch (error) {
             console.error(`Failed to save ${sectionName} settings:`, error);
@@ -78,7 +76,6 @@ export function SettingsTabs() {
             setLoading(true);
             try {
                 await new Promise(resolve => setTimeout(resolve, 2000));
-                console.log('Deleting workspace...');
                 // TODO: Implement delete functionality
                 showNotification('Workspace deleted successfully!');
                 setShowDeleteWorkspace(false);
