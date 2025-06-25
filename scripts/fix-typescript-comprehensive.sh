@@ -14,6 +14,15 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Helper for portable in-place sed
+sedi() {
+  if [[ "$(uname)" == "Darwin" ]]; then
+    sed -i '' "$@"
+  else
+    sed -i "$@"
+  fi
+}
+
 # 1. Fix @db package exports and types
 echo -e "${BLUE}1. Fixing @db package exports...${NC}"
 
@@ -96,14 +105,22 @@ fi
 echo -e "${BLUE}4. Fixing import statements...${NC}"
 
 # Fix Database type imports
-find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -v dist | xargs sed -i '' 's/import { Database }/import type { Database }/g'
+find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -v dist | while read -r file; do
+    sedi 's/import { Database }/import type { Database }/g' "$file"
+done
 
 # Fix @ui subpath imports
-find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -v dist | xargs sed -i '' "s/from '@ui\/[^']*'/from '@ui'/g"
+find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -v dist | while read -r file; do
+    sedi "s/from '@ui\/[^']*'/from '@ui'/g" "$file"
+done
 
 # Fix @db subpath imports (except types)
-find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -v dist | xargs sed -i '' "s/from '@db\/client'/from '@db'/g"
-find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -v dist | xargs sed -i '' "s/from '@db\/project'/from '@db'/g"
+find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -v dist | while read -r file; do
+    sedi "s/from '@db\/client'/from '@db'/g" "$file"
+done
+find . -name "*.ts" -o -name "*.tsx" | grep -v node_modules | grep -v dist | while read -r file; do
+    sedi "s/from '@db\/project'/from '@db'/g" "$file"
+done
 
 echo -e "${GREEN}✅ Fixed import statements${NC}"
 
@@ -113,7 +130,7 @@ echo -e "${BLUE}5. Fixing component prop types...${NC}"
 # Fix ProjectsGrid props if it exists
 if [ -f "apps/web/components/projects/ProjectsGrid.tsx" ]; then
     # Make sure props are properly typed with optional values
-    sed -i '' 's/projects: Project\[\]/projects?: Project[]/g' apps/web/components/projects/ProjectsGrid.tsx
+    sedi 's/projects: Project\[\]/projects?: Project[]/g' apps/web/components/projects/ProjectsGrid.tsx
 fi
 
 echo -e "${GREEN}✅ Fixed component prop types${NC}"
