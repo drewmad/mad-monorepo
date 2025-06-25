@@ -31,8 +31,8 @@ cat > tsconfig.json << 'EOF'
     "paths": {
       "@ui": ["packages/ui/src/index.ts"],
       "@ui/*": ["packages/ui/src/*"],
-      "@db": ["packages/db/src/index.ts"],
-      "@db/*": ["packages/db/src/*"]
+      "@mad/db": ["packages/db/src/index.ts"],
+      "@mad/db/*": ["packages/db/src/*"]
     }
   },
   "include": ["apps", "packages", "config"],
@@ -64,8 +64,8 @@ cat > apps/web/tsconfig.json << 'EOF'
       "@/*": ["./*"],
       "@ui": ["../../packages/ui/src/index.ts"],
       "@ui/*": ["../../packages/ui/src/*"],
-      "@db": ["../../packages/db/src/index.ts"],
-      "@db/*": ["../../packages/db/src/*"]
+      "@mad/db": ["../../packages/db/src/index.ts"],
+      "@mad/db/*": ["../../packages/db/src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

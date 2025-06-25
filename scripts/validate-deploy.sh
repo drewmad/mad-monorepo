@@ -28,13 +28,13 @@ fi
 # 2. Build validation - focus on web app and packages
 echo -e "${BLUE}2. Testing package builds...${NC}"
 
-# Build @db package
+# Build @mad/db package
 cd packages/db
 if ! pnpm build; then
-    echo -e "${RED}❌ @db package build failed${NC}"
+    echo -e "${RED}❌ @mad/db package build failed${NC}"
     ERRORS=$((ERRORS + 1))
 else
-    echo -e "${GREEN}✅ @db package build passed${NC}"
+    echo -e "${GREEN}✅ @mad/db package build passed${NC}"
 fi
 cd ../..
 
@@ -80,7 +80,7 @@ if [ $ERRORS -eq 0 ]; then
     echo -e "${GREEN}✅ Ready for deployment${NC}"
     echo ""
     echo "✅ Import validation: PASSED"
-    echo "✅ @db package build: PASSED" 
+    echo "✅ @mad/db package build: PASSED"
     echo "✅ Web app build: PASSED"
     echo "✅ Web app TypeScript: PASSED"
     echo "✅ Web app linting: PASSED"

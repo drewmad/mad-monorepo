@@ -56,11 +56,11 @@ done
 echo ""
 echo "Summary: $MISSING_COUNT files missing"
 
-# Check if dist directory exists for @db
+# Check if dist directory exists for @mad/db
 if [ -d "packages/db/dist" ]; then
-    echo -e "${GREEN}✅ @db package is built${NC}"
+    echo -e "${GREEN}✅ @mad/db package is built${NC}"
 else
-    echo -e "${YELLOW}⚠️  @db package needs to be built${NC}"
+    echo -e "${YELLOW}⚠️  @mad/db package needs to be built${NC}"
 fi
 
 # Check current directory structure

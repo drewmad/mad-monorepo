@@ -23,7 +23,7 @@
     "validate": "pnpm validate:all",
     "fix:imports": "pnpm fix:imports:ui && pnpm fix:imports:db",
     "fix:imports:ui": "find . -name '*.ts' -o -name '*.tsx' | xargs sed -i '' \"s/from '@ui\\/[^']*'/from '@ui'/g\"",
-    "fix:imports:db": "find . -name '*.ts' -o -name '*.tsx' | xargs sed -i '' \"s/from '@db\\/[^']*'/from '@db'/g\"",
+    "fix:imports:db": "find . -name '*.ts' -o -name '*.tsx' | xargs sed -i '' \"s/from '@mad\/db\\/[^']*'/from '@mad/db'/g\"",
     "prevalidate:deploy": "pnpm validate:all",
     "preinstall": "npx only-allow pnpm",
     "setup": "./scripts/setup.sh"

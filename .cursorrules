@@ -3,7 +3,7 @@
 ## Project Structure
 This is a pnpm workspace monorepo with the following structure:
 - `/apps/*` - Application packages (Next.js web app, docs)
-- `/packages/*` - Shared packages (@ui, @db)
+- `/packages/*` - Shared packages (@ui, @mad/db)
 - Root configuration files for Turbo, pnpm, and TypeScript
 
 ## Import Rules
@@ -38,8 +38,8 @@ In `apps/web/tsconfig.json`, ensure ALL workspace packages are mapped:
       "@/*": ["./*"],
       "@ui": ["../../packages/ui/src/index.ts"],
       "@ui/*": ["../../packages/ui/src/*"],
-      "@db": ["../../packages/db/src/index.ts"],
-      "@db/*": ["../../packages/db/src/*"]
+      "@mad/db": ["../../packages/db/src/index.ts"],
+      "@mad/db/*": ["../../packages/db/src/*"]
     }
   }
 }
@@ -57,8 +57,8 @@ For packages meant to be consumed by Next.js with transpilePackages:
 
 For packages that need to be built:
 ```json
-{
-  "name": "@db",
+{ 
+  "name": "@mad/db",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -73,7 +73,7 @@ For packages that need to be built:
 In `next.config.js`, list all workspace packages:
 ```javascript
 const nextConfig = {
-  transpilePackages: ['@ui', '@db'],
+  transpilePackages: ['@ui', '@mad/db'],
   // ... other config
 };
 ```
@@ -127,13 +127,13 @@ import { Button, Card } from '@ui';
 ### ❌ DON'T: Import from dist in development
 ```typescript
 // Wrong
-import { createClient } from '@db/dist/client';
+import { createClient } from '@mad/db/dist/client';
 ```
 
 ### ✅ DO: Import from source
 ```typescript
 // Correct
-import { createClient } from '@db';
+import { createClient } from '@mad/db';
 ```
 
 ## File Creation Rules
@@ -143,10 +143,10 @@ import { createClient } from '@db';
 2. Export from index: Add `export * from './NewComponent';` to `packages/ui/src/index.ts`
 3. Import in apps: `import { NewComponent } from '@ui';`
 
-### When creating new utilities in @db:
+### When creating new utilities in @mad/db:
 1. Create utility file: `packages/db/src/newUtility.ts`
 2. Export from index: Add `export * from './newUtility';` to `packages/db/src/index.ts`
-3. Import in apps: `import { newUtility } from '@db';`
+3. Import in apps: `import { newUtility } from '@mad/db';`
 
 ## Pre-Deployment Checklist
 
@@ -177,7 +177,7 @@ Before pushing code that will be deployed:
 ## AI Assistant Instructions
 
 When generating code for this monorepo:
-1. Always use root-level imports from packages (@ui, @db)
+1. Always use root-level imports from packages (@ui, @mad/db)
 2. Never suggest subpath imports like @ui/Button
 3. When creating new components, always update the package's index.ts
 4. Ensure TypeScript paths are configured for any new packages
