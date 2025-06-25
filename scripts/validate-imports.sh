@@ -25,14 +25,14 @@ else
     echo -e "${GREEN}✅ No @ui subpath imports found${NC}"
 fi
 
-# Check for subpath imports from @db
-echo "Checking for @db subpath imports..."
-if grep -r "from '@db/" apps/web --include="*.ts" --include="*.tsx" 2>/dev/null | grep -v "from '@db/types'"; then
-    echo -e "${RED}❌ Found subpath imports from @db package${NC}"
-    echo "These should be changed to: import { function } from '@db';"
+# Check for subpath imports from @mad/db
+echo "Checking for @mad/db subpath imports..."
+if grep -r "from '@mad/db/" apps/web --include="*.ts" --include="*.tsx" 2>/dev/null | grep -v "from '@mad/db/types'"; then
+    echo -e "${RED}❌ Found subpath imports from @mad/db package${NC}"
+    echo "These should be changed to: import { function } from '@mad/db';"
     ERRORS=$((ERRORS + 1))
 else
-    echo -e "${GREEN}✅ No @db subpath imports found${NC}"
+    echo -e "${GREEN}✅ No @mad/db subpath imports found${NC}"
 fi
 
 # Check for dist folder imports
@@ -63,11 +63,11 @@ else
     echo -e "${GREEN}✅ @ui found in transpilePackages${NC}"
 fi
 
-if ! grep -q "transpilePackages.*@db" apps/web/next.config.js; then
-    echo -e "${RED}❌ @db not found in transpilePackages${NC}"
+if ! grep -q "transpilePackages.*@mad/db" apps/web/next.config.js; then
+    echo -e "${RED}❌ @mad/db not found in transpilePackages${NC}"
     ERRORS=$((ERRORS + 1))
 else
-    echo -e "${GREEN}✅ @db found in transpilePackages${NC}"
+    echo -e "${GREEN}✅ @mad/db found in transpilePackages${NC}"
 fi
 
 # Check tsconfig paths

@@ -22,26 +22,26 @@ mad-monorepo/
 ```typescript
 // ✅ CORRECT - Always import from package root
 import { Button, Card, Input } from '@ui';
-import { createClient, Project } from '@db';
+import { createClient, Project } from '@mad/db';
 
 // ❌ WRONG - Never use subpath imports
 import { Button } from '@ui/Button';
-import { createClient } from '@db/client';
+import { createClient } from '@mad/db/client';
 ```
 
 ### 2. **Package Resolution**
 - `@ui` → `packages/ui/src/index.ts` (transpiled by Next.js)
-- `@db` → `packages/db/src/index.ts` (requires build)
+- `@mad/db` → `packages/db/src/index.ts` (requires build)
 - Always export new components from package index files
 
 ### 3. **Type Safety**
 ```typescript
 // Always use type imports for types
-import type { Database } from '@db';
+import type { Database } from '@mad/db';
 import type { FC, ReactNode } from 'react';
 
 // Never import runtime values as types
-import { Database } from '@db'; // ❌ Wrong if Database is a type
+import { Database } from '@mad/db'; // ❌ Wrong if Database is a type
 ```
 
 ## 🛠️ Development Workflow
@@ -66,7 +66,7 @@ import { Database } from '@db'; // ❌ Wrong if Database is a type
 1. Create: packages/db/src/newFeature.ts
 2. Export: Add to packages/db/src/index.ts
 3. Build: cd packages/db && pnpm build
-4. Import: import { newFeature } from '@db';
+4. Import: import { newFeature } from '@mad/db';
 ```
 
 #### New Page/Route
@@ -86,7 +86,7 @@ import { Database } from '@db'; // ❌ Wrong if Database is a type
 # Restart dev server
 ```
 
-#### "Cannot find module '@db'"
+#### "Cannot find module '@mad/db'"
 ```bash
 cd packages/db && pnpm build
 # Check if types.ts exports Database type
@@ -175,7 +175,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 
 ### Type-Safe Queries
 ```typescript
-import type { Database } from '@db';
+import type { Database } from '@mad/db';
 
 type Project = Database['public']['Tables']['projects']['Row'];
 
