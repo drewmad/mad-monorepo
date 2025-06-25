@@ -3,9 +3,15 @@ import { redirect } from 'next/navigation';
 import { DirectoryTabs } from '@/components/directory/DirectoryTabs';
 import { getTeamMembers } from '@/actions/workspace';
 
-export default async function Directory() {
+interface DirectoryPageProps {
+  searchParams: { view?: string };
+}
+
+export default async function Directory({ searchParams }: DirectoryPageProps) {
   const session = await getSession();
   if (!session) redirect('/sign-in');
+
+  const view = (searchParams.view ?? 'members') as 'members' | 'employees' | 'companies';
 
   // Get current workspace ID from session or cookies
   // For now, we'll use a hardcoded workspace ID - in production this would come from the session
@@ -95,6 +101,8 @@ export default async function Directory() {
         members={formattedMembers}
         employees={employees}
         companies={companies}
+        initialTab={view}
+        showTabs={false}
       />
     </main>
   );

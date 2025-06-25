@@ -5,14 +5,16 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import clsx from 'clsx';
 import { WorkspaceSwitcher } from '@/components/workspace/WorkspaceSwitcher';
-import { 
-  Home, 
-  Folder, 
-  CheckCircle, 
-  Clock, 
-  MessageSquare, 
+import {
+  Home,
+  Folder,
+  CheckCircle,
+  Clock,
+  MessageSquare,
   Calendar,
-  Users
+  Users,
+  Briefcase,
+  Building
 } from 'lucide-react';
 
 export interface SidebarItem {
@@ -103,15 +105,15 @@ const navigation: SidebarItem[] = [
       { id: 'agenda', href: '/calendar?view=agenda', label: 'Agenda' }
     ]
   },
-  { 
+  {
     id: 'directory',
-    href: '/directory',
+    href: '/directory?view=members',
     label: 'Directory',
     icon: Users,
     subItems: [
-      { id: 'people', href: '/directory', label: 'People', icon: Users },
-      { id: 'teams', href: '/directory?view=teams', label: 'Teams' },
-      { id: 'companies', href: '/directory?view=companies', label: 'Companies' }
+      { id: 'members', href: '/directory?view=members', label: 'Members', icon: Users },
+      { id: 'employees', href: '/directory?view=employees', label: 'Employees', icon: Briefcase },
+      { id: 'companies', href: '/directory?view=companies', label: 'Companies', icon: Building }
     ]
   }
 ];

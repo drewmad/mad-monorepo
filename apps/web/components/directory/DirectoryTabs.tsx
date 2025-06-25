@@ -48,9 +48,11 @@ interface DirectoryTabsProps {
     members: Member[];
     employees: Employee[];
     companies: Company[];
+    initialTab?: 'members' | 'employees' | 'companies';
+    showTabs?: boolean;
 }
 
-export function DirectoryTabs({ workspaceId, currentUserId, members, employees, companies }: DirectoryTabsProps) {
+export function DirectoryTabs({ workspaceId, currentUserId, members, employees, companies, initialTab = 'members', showTabs = true }: DirectoryTabsProps) {
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const [searchQuery, setSearchQuery] = useState('');
@@ -413,12 +415,14 @@ export function DirectoryTabs({ workspaceId, currentUserId, members, employees, 
 
     return (
         <div>
-            <Tabs defaultValue="members" className="w-full">
-                <TabsList className="mb-6">
-                    <TabsTrigger value="members">Members ({members.length})</TabsTrigger>
-                    <TabsTrigger value="employees">Employees ({employees.length})</TabsTrigger>
-                    <TabsTrigger value="companies">Companies ({companies.length})</TabsTrigger>
-                </TabsList>
+            <Tabs defaultValue={initialTab} className="w-full">
+                {showTabs && (
+                    <TabsList className="mb-6">
+                        <TabsTrigger value="members">Members ({members.length})</TabsTrigger>
+                        <TabsTrigger value="employees">Employees ({employees.length})</TabsTrigger>
+                        <TabsTrigger value="companies">Companies ({companies.length})</TabsTrigger>
+                    </TabsList>
+                )}
 
                 <TabsContent value="members">
                     {tabs[0].content}
