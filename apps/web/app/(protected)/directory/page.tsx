@@ -2,6 +2,7 @@ import { getSession } from '@/lib/user';
 import { redirect } from 'next/navigation';
 import { DirectoryTabs } from '@/components/directory/DirectoryTabs';
 import { getTeamMembers } from '@/actions/workspace';
+import { X } from 'lucide-react';
 
 interface DirectoryPageProps {
   searchParams: { view?: string };
@@ -19,6 +20,11 @@ export default async function Directory({ searchParams }: DirectoryPageProps) {
 
   // Load real team members from database
   const { members, error } = await getTeamMembers(workspaceId);
+  let errorMessage: string | null = null;
+  if (error) {
+    console.error('Error loading directory data:', error);
+    errorMessage = 'Failed to load directory data. Please try again later.';
+  }
   
   // Map team members to the expected format
   const formattedMembers = members.map(member => ({
@@ -82,9 +88,6 @@ export default async function Directory({ searchParams }: DirectoryPageProps) {
     }
   ];
 
-  if (error) {
-    console.error('Error loading directory data:', error);
-  }
 
   return (
     <main className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
@@ -94,6 +97,18 @@ export default async function Directory({ searchParams }: DirectoryPageProps) {
           <p className="text-gray-600 mt-1">Manage your workspace members, employees, and companies</p>
         </div>
       </div>
+
+      {errorMessage && (
+        <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200">
+          <div className="flex items-center space-x-2">
+            <X className="h-5 w-5 text-red-600 flex-shrink-0" />
+            <div>
+              <h3 className="text-sm font-medium text-red-800">Directory Error</h3>
+              <p className="text-sm text-red-700 mt-1">{errorMessage}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <DirectoryTabs
         workspaceId={workspaceId}
