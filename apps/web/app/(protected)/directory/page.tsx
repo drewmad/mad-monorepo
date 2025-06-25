@@ -19,7 +19,7 @@ export default async function Directory({ searchParams }: DirectoryPageProps) {
 
   // Load real team members from database
   const { members, error } = await getTeamMembers(workspaceId);
-  
+
   // Map team members to the expected format
   const formattedMembers = members.map(member => ({
     id: member.id,
@@ -31,7 +31,7 @@ export default async function Directory({ searchParams }: DirectoryPageProps) {
     department: member.role, // Using role as department for now
     joined_date: member.created_at,
     last_active: member.updated_at,
-    user_id: member.user_id
+    user_id: member.user_id,
   }));
 
   // Mock employees data - in a real app, this might come from a separate table
@@ -44,7 +44,7 @@ export default async function Directory({ searchParams }: DirectoryPageProps) {
       email: 'alex@company.com',
       phone: '+1 (555) 123-4567',
       hire_date: '2023-01-15',
-      status: 'active' as const
+      status: 'active' as const,
     },
     {
       id: 'emp2',
@@ -54,8 +54,8 @@ export default async function Directory({ searchParams }: DirectoryPageProps) {
       email: 'lisa@company.com',
       phone: '+1 (555) 987-6543',
       hire_date: '2023-02-28',
-      status: 'active' as const
-    }
+      status: 'active' as const,
+    },
   ];
 
   // Mock companies data - in a real app, this would come from a companies table
@@ -68,7 +68,7 @@ export default async function Directory({ searchParams }: DirectoryPageProps) {
       contact_email: 'john@acme.com',
       contact_phone: '+1 (555) 111-2222',
       relationship: 'Client',
-      since: '2023-01-01'
+      since: '2023-01-01',
     },
     {
       id: 'comp2',
@@ -78,8 +78,8 @@ export default async function Directory({ searchParams }: DirectoryPageProps) {
       contact_email: 'emma@beta.com',
       contact_phone: '+1 (555) 333-4444',
       relationship: 'Partner',
-      since: '2023-06-15'
-    }
+      since: '2023-06-15',
+    },
   ];
 
   if (error) {
@@ -87,11 +87,13 @@ export default async function Directory({ searchParams }: DirectoryPageProps) {
   }
 
   return (
-    <main className="flex-1 p-6 pt-24 md:p-8 md:pt-24">
-      <div className="mb-8 flex items-center justify-between">
+    <section className="pt-24">
+      <div className="mb-8 flex items-center justify-between px-6 md:px-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Directory</h1>
-          <p className="text-gray-600 mt-1">Manage your workspace members, employees, and companies</p>
+          <p className="mt-1 text-gray-600">
+            Manage your workspace members, employees, and companies
+          </p>
         </div>
       </div>
 
@@ -104,6 +106,6 @@ export default async function Directory({ searchParams }: DirectoryPageProps) {
         initialTab={view}
         showTabs={false}
       />
-    </main>
+    </section>
   );
-} 
+}
