@@ -14,7 +14,10 @@ import {
   Calendar,
   Users,
   Briefcase,
-  Building
+  Building,
+  LayoutDashboard,
+  Bell,
+  Star
 } from 'lucide-react';
 
 export interface SidebarItem {
@@ -47,16 +50,17 @@ const navigation: SidebarItem[] = [
       { id: 'analytics', href: '/dashboard?view=analytics', label: 'Analytics' }
     ]
   },
-  { 
+  {
     id: 'projects',
     href: '/projects',
     label: 'Projects',
     icon: Folder,
     badge: { type: 'count', value: 8, color: 'blue' },
     subItems: [
-      { id: 'all-projects', href: '/projects', label: 'All Projects', icon: Folder },
-      { id: 'my-projects', href: '/projects?filter=mine', label: 'My Projects' },
-      { id: 'archived', href: '/projects?filter=archived', label: 'Archived' }
+      { id: 'dashboard', href: '/projects/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { id: 'notifications', href: '/projects/notifications', label: 'Notifications', icon: Bell },
+      { id: 'favorites', href: '/projects/favorites', label: 'Favorites', icon: Star },
+      { id: 'recents', href: '/projects', label: 'Projects (Recents)', icon: Clock }
     ]
   },
   { 
