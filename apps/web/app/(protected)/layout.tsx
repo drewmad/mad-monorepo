@@ -2,6 +2,7 @@ import { getSession } from '@/lib/user';
 import { redirect } from 'next/navigation';
 import ProtectedLayoutClient from './ProtectedLayoutClient';
 import { getWorkspaces } from '@/actions/workspace';
+import { cookies } from 'next/headers';
 
 type Workspace = {
   id: string;
@@ -30,7 +31,14 @@ export default async function ProtectedLayout({
   const userId = session.user.id;
   const { workspaces: rawWorkspaces } = await getWorkspaces(userId);
   const workspaces = rawWorkspaces as Workspace[];
-  const currentWorkspace = workspaces[0] || null;
+
+  const cookieStore = cookies();
+  const storedId = cookieStore.get('currentWorkspaceId')?.value;
+  let currentWorkspace = workspaces[0] || null;
+  if (storedId) {
+    const found = workspaces.find(w => w.id === storedId);
+    if (found) currentWorkspace = found;
+  }
 
   return (
     <ProtectedLayoutClient
