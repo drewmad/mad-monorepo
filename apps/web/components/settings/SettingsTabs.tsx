@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useTheme } from 'next-themes';
-import { Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Input, Select, Toggle, Badge, Modal, Toast } from '@ui';
+import { Card, Button, Input, Select, Toggle, Badge, Modal, Toast, SubNav } from '@ui';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { Shield, CreditCard, AlertTriangle, Settings, Users, Key, Clock, Bell } from 'lucide-react';
 
 export function SettingsTabs() {
@@ -32,6 +33,9 @@ export function SettingsTabs() {
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState<'success' | 'error'>('success');
     const [loading, setLoading] = useState(false);
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const tab = (searchParams.get('tab') ?? 'general') as 'general' | 'roles' | 'security' | 'billing' | 'danger';
 
     const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
         setToastMessage(message);
@@ -575,52 +579,25 @@ export function SettingsTabs() {
         }
     ];
 
+    const navItems = tabs.map(t => ({
+        href: `${pathname}?tab=${t.id}`,
+        label: t.label,
+        icon: t.icon
+    }));
+
     return (
         <div>
-            <Tabs defaultValue="general" className="w-full">
-                <TabsList className="mb-6">
-                    <TabsTrigger value="general" className="flex items-center gap-2">
-                        <Settings className="h-4 w-4" />
-                        General
-                    </TabsTrigger>
-                    <TabsTrigger value="roles" className="flex items-center gap-2">
-                        <Users className="h-4 w-4" />
-                        Roles & Permissions
-                    </TabsTrigger>
-                    <TabsTrigger value="security" className="flex items-center gap-2">
-                        <Shield className="h-4 w-4" />
-                        Security
-                    </TabsTrigger>
-                    <TabsTrigger value="billing" className="flex items-center gap-2">
-                        <CreditCard className="h-4 w-4" />
-                        Billing & Subscription
-                    </TabsTrigger>
-                    <TabsTrigger value="danger" className="flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4" />
-                        Danger Zone
-                    </TabsTrigger>
-                </TabsList>
+            <SubNav items={navItems} className="mb-6" />
 
-                <TabsContent value="general">
-                    {tabs[0].content}
-                </TabsContent>
+            {tab === 'general' && tabs[0].content}
 
-                <TabsContent value="roles">
-                    {tabs[1].content}
-                </TabsContent>
+            {tab === 'roles' && tabs[1].content}
 
-                <TabsContent value="security">
-                    {tabs[2].content}
-                </TabsContent>
+            {tab === 'security' && tabs[2].content}
 
-                <TabsContent value="billing">
-                    {tabs[3].content}
-                </TabsContent>
+            {tab === 'billing' && tabs[3].content}
 
-                <TabsContent value="danger">
-                    {tabs[4].content}
-                </TabsContent>
-            </Tabs>
+            {tab === 'danger' && tabs[4].content}
 
             {/* Delete Workspace Modal */}
             <Modal
