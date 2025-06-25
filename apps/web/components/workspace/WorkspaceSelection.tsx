@@ -59,7 +59,7 @@ export function WorkspaceSelection({ userId, initialWorkspaces, initialInvitatio
   const handleWorkspaceSelect = (workspace: Workspace) => {
     // Set current workspace in local storage for session persistence
     localStorage.setItem('currentWorkspace', JSON.stringify(workspace));
-    router.push('/dashboard');
+    router.push('/dashboards/workspace');
   };
 
   const handleCreateWorkspace = async () => {
