@@ -86,6 +86,10 @@ async function MessagesContent({
     channelList = channels.filter(ch => ch.type === 'direct');
   }
 
+  if (!channelList || channelList.length === 0) {
+    return <p>No channels found for this view.</p>;
+  }
+
   let currentChannel: Channel | null = null;
   if (channelList.length > 0) {
     if (searchParams.channel) {
@@ -98,7 +102,9 @@ async function MessagesContent({
   let messages: Message[] = [];
   if (currentChannel) {
     const { messages: channelMessages, error: messagesError } = await getMessages(currentChannel.id);
-    if (!messagesError) {
+    if (messagesError) {
+      console.error('Error loading messages:', messagesError);
+    } else {
       messages = channelMessages;
     }
   }

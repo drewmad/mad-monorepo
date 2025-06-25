@@ -188,9 +188,9 @@ export default function Sidebar() {
                     className={clsx(
                       "absolute left-0 top-1/2 -translate-y-1/2 w-1 h-10 rounded-r-full",
                       "bg-indigo-500 dark:bg-indigo-400",
-                      "shadow-md shadow-indigo-500/20 dark:shadow-indigo-400/20",
+                      "shadow-lg shadow-indigo-500/20 dark:shadow-indigo-400/20",
                       "glass:bg-white/80 glass:shadow-[0_0_20px_rgba(255,255,255,0.5)]",
-                      "transition-colors transition-shadow duration-300"
+                      "transition-all duration-300"
                     )}
                   />
                 )}
@@ -199,10 +199,10 @@ export default function Sidebar() {
                   href={item.href}
                   onClick={() => setSelectedMain(item.id)}
                   className={clsx(
-                    'w-full h-14 flex items-center justify-center rounded-xl group relative transition-colors transition-shadow duration-300',
+                    'w-full h-14 flex items-center justify-center rounded-xl group relative transition-all duration-300',
                     isActive
                       ? clsx(
-                          'text-indigo-600 bg-gray-100/80 dark:text-indigo-400 dark:bg-gray-800/50 shadow-md shadow-indigo-500/10 dark:shadow-indigo-400/10',
+                          'text-indigo-600 bg-gray-100/80 dark:text-indigo-400 dark:bg-gray-800/50 shadow-lg shadow-indigo-500/10 dark:shadow-indigo-400/10',
                           'glass:text-white glass:bg-white/20 glass:shadow-[0_8px_32px_0_rgba(255,255,255,0.1)]'
                         )
                       : clsx(
@@ -250,7 +250,7 @@ export default function Sidebar() {
                       "bg-gray-900 text-white dark:bg-gray-800",
                       "glass:bg-black/80 glass:backdrop-blur-xl glass:border glass:border-white/20",
                       "text-sm opacity-0 group-hover:opacity-100",
-                      "transition-colors transition-shadow duration-200 whitespace-nowrap pointer-events-none z-10",
+                      "transition-colors transition-shadow duration-300 whitespace-nowrap pointer-events-none z-10",
                       "shadow-xl"
                     )}
                   >
@@ -307,7 +307,7 @@ export default function Sidebar() {
                       key={subItem.id}
                       href={subItem.href}
                       className={clsx(
-                        'flex items-center gap-3 px-3 py-2 rounded-lg transition-colors transition-shadow duration-200 group relative',
+                        'flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-300 group relative',
                         isSubActive
                           ? clsx(
                               'bg-gray-200/80 text-gray-900 dark:bg-gray-800 dark:text-gray-100 shadow-sm dark:shadow-black/10',
