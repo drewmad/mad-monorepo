@@ -102,7 +102,6 @@ export default async function Directory({ searchParams }: DirectoryPageProps) {
         employees={employees}
         companies={companies}
         initialTab={view}
-        showTabs={false}
       />
     </main>
   );
