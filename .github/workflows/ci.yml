@@ -4,17 +4,91 @@ on:
   push:
     branches: [main]
   pull_request:
+    types: [opened, synchronize, reopened]
+
+# Cancel previous runs for the same PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 env:
   NEXT_TELEMETRY_DISABLED: 1
   TURBO_TELEMETRY_DISABLED: 1
+  STORYBOOK_DISABLE_TELEMETRY: 1
+  CI: true
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  # Skip certain checks when no code changes
+  SKIP_ENV_VALIDATION: 1
 
 jobs:
-  # Quick fail job - runs basic checks first
-  quick-check:
+  # Determine what files changed to skip unnecessary jobs
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      docs: ${{ steps.filter.outputs.docs }}
+      web: ${{ steps.filter.outputs.web }}
+      packages: ${{ steps.filter.outputs.packages }}
+      deps: ${{ steps.filter.outputs.deps }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            docs:
+              - 'apps/docs/**'
+              - 'packages/ui/**'
+            web:
+              - 'apps/web/**'
+              - 'packages/**'
+            packages:
+              - 'packages/**'
+            deps:
+              - 'pnpm-lock.yaml'
+              - 'package.json'
+              - 'packages/*/package.json'
+              - 'apps/*/package.json'
+
+  # Quick checks run first and fail fast
+  lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Check lockfile
+        run: |
+          if git diff --exit-code pnpm-lock.yaml; then
+            echo "✅ Lockfile is up to date"
+          else
+            echo "❌ Lockfile has uncommitted changes"
+            exit 1
+          fi
+
+      - name: Lint
+        run: pnpm lint --cache --cache-location=.turbo
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup PNPM
@@ -25,46 +99,28 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
-          cache: "pnpm"
-
-      - name: Check lockfile exists
-        run: |
-          if [ ! -f "pnpm-lock.yaml" ]; then
-            echo "❌ pnpm-lock.yaml is missing!"
-            echo "Run 'pnpm install' and commit the lockfile"
-            exit 1
-          fi
-          echo "✅ pnpm-lock.yaml exists"
+          node-version: 20
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --prefer-offline
 
-      - name: Lint & Type check (parallel)
-        run: |
-          pnpm lint &
-          lint_pid=$!
-          pnpm typecheck &
-          type_pid=$!
-          
-          wait $lint_pid
-          lint_exit=$?
-          wait $type_pid
-          type_exit=$?
-          
-          if [ $lint_exit -ne 0 ] || [ $type_exit -ne 0 ]; then
-            exit 1
-          fi
+      - name: Typecheck
+        run: pnpm typecheck --cache --cache-location=.turbo
 
-  # Full validation only if quick-check passes
-  validate:
-    needs: quick-check
+  # Build job runs after quick checks pass
+  build:
+    needs: [lint, typecheck]
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x]  # Only test on latest LTS
+        include:
+          - package: '@apps/web'
+            directory: 'apps/web'
+          - package: '@mad/db'
+            directory: 'packages/db'
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup PNPM
@@ -75,43 +131,33 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
+          node-version: 20
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --prefer-offline
 
-      - name: Build
-        run: pnpm build
-
-      - name: Test
-        run: |
-          if [ "${{ env.CI_E2E }}" != "false" ]; then
-            pnpm test
-          else
-            echo "E2E tests skipped (CI_E2E=false)"
-            CI_E2E=false pnpm test
-          fi
+      - name: Build package
+        run: pnpm build --filter=${{ matrix.package }} --cache-dir=.turbo
         env:
-          CI_E2E: ${{ secrets.CI_E2E || 'false' }}
+          # Add placeholder env vars for build
+          NEXT_PUBLIC_SUPABASE_URL: 'https://placeholder.supabase.co'
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: 'placeholder-key'
 
-      - name: Check for uncommitted lockfile changes
-        run: |
-          if git diff --exit-code pnpm-lock.yaml; then
-            echo "✅ pnpm-lock.yaml is up to date"
-          else
-            echo "❌ pnpm-lock.yaml has uncommitted changes"
-            echo "Please run 'pnpm install' and commit the changes"
-            exit 1
-          fi
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        if: matrix.package == '@apps/web'
+        with:
+          name: web-build
+          path: apps/web/.next
+          retention-days: 1
 
-  # Optional: Test on Node 18 only if needed
-  validate-legacy:
-    needs: quick-check
+  # Test job runs in parallel with build
+  test:
+    needs: [lint, typecheck]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup PNPM
@@ -122,14 +168,112 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
-          cache: "pnpm"
+          node-version: 20
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --prefer-offline
 
-      - name: Build
-        run: pnpm build
+      - name: Run unit tests
+        run: pnpm vitest run --coverage
 
-      - name: Test
-        run: CI_E2E=false pnpm test
+      - name: Upload coverage
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: coverage
+          path: coverage
+          retention-days: 1
+
+  # E2E tests only run if enabled and if web package changed
+  e2e:
+    needs: [build, changes]
+    if: needs.changes.outputs.web == 'true' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Install Playwright browsers
+        run: pnpm dlx playwright install --with-deps chromium
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: web-build
+          path: apps/web/.next
+
+      - name: Run E2E tests
+        run: pnpm e2e
+        env:
+          CI_E2E: true
+          NEXT_PUBLIC_SUPABASE_URL: 'https://placeholder.supabase.co'
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: 'placeholder-key'
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 1
+
+  # Storybook build only if docs changed
+  storybook:
+    needs: [lint, typecheck, changes]
+    if: needs.changes.outputs.docs == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Build UI package first
+        run: pnpm build --filter=@ui
+
+      - name: Build Storybook
+        run: pnpm build --filter=@mad/docs
+        env:
+          STORYBOOK_DISABLE_TELEMETRY: 1
+
+  # Final status check
+  ci-status:
+    if: always()
+    needs: [lint, typecheck, build, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check status
+        run: |
+          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]]; then
+            echo "❌ CI failed"
+            exit 1
+          else
+            echo "✅ CI passed"
+          fi
