@@ -2,11 +2,11 @@
 
 import { useModal } from '@/contexts/AppContext';
 import { Modal } from '@ui';
+import { EventModal, type EventModalProps } from './modals/EventModal';
 
 // Import future modal components here
 // import { ProjectModal } from './modals/ProjectModal';
 // import { TaskModal } from './modals/TaskModal';
-// import { EventModal } from './modals/EventModal';
 
 export function ModalManager() {
     const { modal, closeModal } = useModal();
@@ -26,8 +26,7 @@ export function ModalManager() {
                 return <div>Task Modal (to be implemented)</div>;
 
             case 'event':
-                // return <EventModal {...modal.props} />;
-                return <div>Event Modal (to be implemented)</div>;
+                return <EventModal {...(modal.props as unknown as EventModalProps)} />;
 
             case 'confirmation':
                 return (

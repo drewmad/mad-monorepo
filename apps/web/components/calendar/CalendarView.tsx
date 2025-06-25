@@ -25,12 +25,14 @@ interface CalendarViewProps {
     events: Event[];
     onEventCreate?: (event: Partial<Event>) => void;
     onEventDelete?: (eventId: string) => void;
+    onEventUpdate?: (event: Event) => void;
 }
 
 export function CalendarView({
     events,
     onEventCreate,
-    onEventDelete
+    onEventDelete,
+    onEventUpdate
 }: CalendarViewProps) {
     const { openModal } = useModal();
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -132,6 +134,14 @@ export function CalendarView({
         setShowCreateEvent(true);
     };
 
+    const handleEventClick = (event: Event) => {
+        openModal('event', {
+            event,
+            onUpdate: (updated: Event) => onEventUpdate?.(updated),
+            onDelete: (id: string) => onEventDelete?.(id)
+        });
+    };
+
     const handleDeleteEvent = (event: Event) => {
         openModal('confirmation', {
             title: 'Delete Event',
@@ -231,8 +241,7 @@ export function CalendarView({
                                                     key={event.id}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        // TODO: Open event details modal
-                                                        console.log('Open event:', event);
+                                                        handleEventClick(event);
                                                     }}
                                                     className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded truncate hover:bg-indigo-200 transition-colors"
                                                 >
@@ -282,7 +291,11 @@ export function CalendarView({
                                 {todaysEvents
                                     .sort((a, b) => a.time.localeCompare(b.time))
                                     .map((event) => (
-                                        <div key={event.id} className="p-3 bg-gray-50 rounded-lg">
+                                        <div
+                                            key={event.id}
+                                            onClick={() => handleEventClick(event)}
+                                            className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                                        >
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
                                                     <h4 className="font-medium text-gray-900">{event.title}</h4>
